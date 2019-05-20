@@ -1,5 +1,7 @@
 package com.furca.model;
 
+import java.util.Set;
+
 import javax.persistence.*;
 
 @Entity
@@ -12,6 +14,9 @@ public class Book{
     private String title;
     
     private String description;
+    
+	@ManyToMany(mappedBy = "books")
+    Set<Author> authors;
 
 	public int getId() {
 		return Id;
@@ -35,6 +40,14 @@ public class Book{
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	public Set<Author> getAuthors() {
+		return authors;
+	}
+
+	public void setAuthors(Set<Author> authors) {
+		this.authors = authors;
 	}
 
 

@@ -123,23 +123,23 @@ const authors = {
       type: 'text'
     },
     {
-      name: 'last_name',
+      name: 'age',
       type: 'text'
     },
-    {
+   /* {
       name: 'book_list',
       label: 'Books',
       type: 'inline',
       form: inline
-    }
+    }*/
     //{ name: 'content', type: 'editor' },
-    //{ name: 'tags', type: 'pivotRelation', resourceTable: 'tag', show: 'title', label: 'Tags' },
+    { name: 'books', type: 'pivotRelation', resourceTable: 'books', show: 'title', label: 'Books' },
   ],
   list: [{
       field: 'name'
     },
     {
-      field: 'last_name'
+      field: 'age'
     },
 
     /* { render: props => {

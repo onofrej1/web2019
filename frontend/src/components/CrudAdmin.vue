@@ -35,6 +35,17 @@
                   :label="field.label || field.name"
                 ></v-select>
 
+                <template v-if="field.type==='pivotRelation'">
+                  <template v-for="f in getOptions(field.resourceTable, field.show)">
+                    <v-checkbox
+                      :key="f.value"
+                      v-model="model[field.name]"
+                      :label="f.text"
+                      :value="f.value"
+                    ></v-checkbox>
+                  </template>
+                </template>
+
                 <template v-if="field.type==='inline'">
                   <v-expansion-panel :key="field.name">
                     <v-expansion-panel-content :key="field.name" style="padding:10px">

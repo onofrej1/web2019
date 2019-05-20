@@ -5,6 +5,33 @@ SET time_zone = '+00:00';
 SET foreign_key_checks = 0;
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
+DROP TABLE IF EXISTS `author`;
+CREATE TABLE `author` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `age` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+INSERT INTO `author` (`id`, `name`, `age`) VALUES
+(1,	'sss',	2),
+(2,	'bbb',	5),
+(3,	'rhrhrh',	7);
+
+DROP TABLE IF EXISTS `author_book`;
+CREATE TABLE `author_book` (
+  `author_id` int(11) NOT NULL,
+  `book_id` int(11) NOT NULL,
+  PRIMARY KEY (`author_id`,`book_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+INSERT INTO `author_book` (`author_id`, `book_id`) VALUES
+(1,	2),
+(1,	3),
+(1,	5),
+(2,	3),
+(2,	4);
+
 DROP TABLE IF EXISTS `book`;
 CREATE TABLE `book` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -14,10 +41,14 @@ CREATE TABLE `book` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 INSERT INTO `book` (`id`, `description`, `title`) VALUES
-(1,	'eege',	'gggegeeee'),
+(1,	'eege',	'abcd'),
 (2,	'bbb',	'aaaavvv'),
 (3,	'pppppnnn',	'oooo'),
-(4,	'bbb',	'aaaammm');
+(4,	'bbb',	'aaaammm'),
+(5,	'aaaa',	'bbb'),
+(6,	'err',	'rrrr'),
+(7,	'hhh',	'nnnn'),
+(8,	'yyy',	'nnnn');
 
 DROP TABLE IF EXISTS `event`;
 CREATE TABLE `event` (
@@ -30,7 +61,8 @@ CREATE TABLE `event` (
 INSERT INTO `event` (`id`, `locality`, `name`) VALUES
 (1,	'Košice',	'Fur?iansky maratón'),
 (2,	'Košice',	'eXtrém maratón'),
-(3,	'Košice',	'Štafetový maratón');
+(3,	'Košice',	'Štafetový maratón'),
+(15,	'bbbb',	'annnmm');
 
 DROP TABLE IF EXISTS `hibernate_sequence`;
 CREATE TABLE `hibernate_sequence` (
@@ -38,7 +70,7 @@ CREATE TABLE `hibernate_sequence` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 INSERT INTO `hibernate_sequence` (`next_val`) VALUES
-(2);
+(16);
 
 DROP TABLE IF EXISTS `result`;
 CREATE TABLE `result` (
@@ -2127,23 +2159,22 @@ CREATE TABLE `role` (
 
 DROP TABLE IF EXISTS `run`;
 CREATE TABLE `run` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `edition` int(11) DEFAULT NULL,
   `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   `run_date` date DEFAULT NULL,
   `event_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `FKhi4ccm2u573vbqakv70fxyw1o` (`event_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 INSERT INTO `run` (`id`, `edition`, `name`, `run_date`, `event_id`) VALUES
-(1,	0,	'Furčiansky maratón',	'2003-03-22',	1),
-(2,	0,	'Štafetový maratón',	'2003-03-22',	3),
+(2,	0,	'Štafetový maratón mmmmm',	'2003-03-14',	3),
 (3,	1,	'Furčiansky maratón',	'2004-03-20',	1),
 (4,	1,	'Štafetový maratón',	'2004-03-20',	3),
 (5,	1,	'eXtrém maratón',	'2004-07-17',	2),
 (6,	2,	'Furčiansky maratón',	'2005-03-26',	1),
-(7,	2,	'Štafetový maratón',	'2005-03-26',	3),
+(7,	2,	'Štafetový maratónhhhhyyy',	'2005-03-26',	3),
 (8,	2,	'eXtrém maratón',	'2005-07-30',	2),
 (9,	3,	'Furčiansky maratón',	'2006-03-26',	1),
 (10,	3,	'Štafetový maratón',	'2006-03-26',	3),
@@ -2152,16 +2183,16 @@ INSERT INTO `run` (`id`, `edition`, `name`, `run_date`, `event_id`) VALUES
 (13,	4,	'Štafetový maratón',	'2007-03-24',	3),
 (14,	4,	'eXtrém maratón',	'2007-07-28',	2),
 (15,	5,	'Furčiansky maratón',	'2008-03-22',	1),
-(16,	5,	'Štafetový maratón',	'2008-03-22',	3),
+(16,	5,	'Štafetový maratónwwwwww',	'2008-03-22',	3),
 (17,	5,	'eXtrém maratón',	'2008-07-26',	2),
 (18,	6,	'Furčiansky maratón',	'2009-03-21',	1),
-(19,	6,	'Štafetový maratón',	'2009-03-21',	3),
+(19,	6,	'Štafetový maratóngggeee',	'2009-03-21',	3),
 (20,	6,	'eXtrém maratón',	'2009-07-25',	2),
 (21,	7,	'Furčiansky maratón',	'2010-03-20',	1),
 (22,	7,	'Štafetový maratón',	'2010-03-20',	3),
 (23,	7,	'eXtrém maratón',	'2010-07-24',	2),
 (24,	8,	'Furčiansky maratón',	'2011-04-09',	1),
-(25,	8,	'Štafetový maratón',	'2011-04-09',	3),
+(25,	8,	'Štafetový maratónxxx ppppp',	'2011-04-09',	3),
 (26,	8,	'eXtrém maratón',	'2011-07-23',	2),
 (27,	9,	'Furčiansky maratón',	'2012-04-14',	1),
 (28,	9,	'Štafetový maratón',	'2012-04-14',	3),
@@ -2173,7 +2204,7 @@ INSERT INTO `run` (`id`, `edition`, `name`, `run_date`, `event_id`) VALUES
 (34,	11,	'Štafetový maratón',	'2014-04-12',	3),
 (35,	11,	'eXtrém maratón',	'2014-07-26',	2),
 (36,	12,	'Furčiansky maratón',	'2015-04-11',	1),
-(37,	12,	'Štafetový maratón',	'2015-04-11',	3),
+(37,	12,	'Štafetový maratónxxbb',	'2015-04-11',	3),
 (38,	12,	'eXtrém maratón',	'2015-07-25',	2),
 (39,	13,	'Furčiansky maratón',	'2016-04-09',	1),
 (40,	13,	'Štafetový maratón',	'2016-05-09',	3),
@@ -2183,7 +2214,10 @@ INSERT INTO `run` (`id`, `edition`, `name`, `run_date`, `event_id`) VALUES
 (44,	14,	'eXtrém maratón',	'2017-07-29',	2),
 (45,	15,	'Furčiansky maratón',	'2018-04-14',	1),
 (46,	15,	'Štafetový maratón',	'2018-04-14',	3),
-(47,	15,	'eXtrém maratón',	'2018-07-28',	2);
+(47,	15,	'eXtrém maratón',	'2018-07-28',	2),
+(245,	9,	'bsss',	NULL,	15),
+(247,	9,	'stvrty',	NULL,	15),
+(251,	4,	'yyyy',	NULL,	15);
 
 DROP TABLE IF EXISTS `runner`;
 CREATE TABLE `runner` (
@@ -2807,4 +2841,4 @@ CREATE TABLE `user_role` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 
--- 2019-02-22 23:08:11
+-- 2019-05-20 21:56:20

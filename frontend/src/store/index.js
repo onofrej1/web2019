@@ -77,9 +77,9 @@ export default new Vuex.Store({
       let method = data.id ? "put" : "post";
       let param = data.id ? "/" + data.id +"/" : "/";
       let modelSettings = CrudModels[state.activeResource];
-      let apiUrl = modelSettings.apiUrl !== null ? state.baseUrl+modelSettings.apiUrl : state.apiUrl;
-      console.log(method);
-      console.log(data);
+      let apiUrl = modelSettings.apiUrl !== undefined ? state.baseUrl+modelSettings.apiUrl : state.apiUrl;
+      console.log(apiUrl);
+      console.log(apiUrl + "/" + state.activeResource + param);
       axios[method](
         apiUrl + "/" + state.activeResource + param,
         data
