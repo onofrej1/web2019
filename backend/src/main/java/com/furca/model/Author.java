@@ -17,8 +17,8 @@ public class Author {
 
 	@ManyToMany
 	@JoinTable(name = "author_book",
-		joinColumns = { @JoinColumn(name = "author_id", referencedColumnName = "id") }, 
-		inverseJoinColumns = {@JoinColumn(name = "book_id", referencedColumnName = "id") })
+		joinColumns = { @JoinColumn(name = "author_id") }, 
+		inverseJoinColumns = {@JoinColumn(name = "book_id") })
 	Set<Book> books;
 
 	public int getId() {
@@ -32,7 +32,8 @@ public class Author {
 	public String getName() {
 		return name;
 	}
-
+	
+	
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -42,7 +43,7 @@ public class Author {
 	}
 
 	public void setBooks(Set<Book> books) {
-		books = books;
+		this.books = books;
 	}
 
 	public int getAge() {

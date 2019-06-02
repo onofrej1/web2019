@@ -9,4 +9,5 @@ import java.util.List;
 @CrossOrigin("http://192.168.10.10:8081")
 public interface BookRepository extends PagingAndSortingRepository<Book, Integer> {
 	List<Book> findByTitle(String title);
+	//List<Book> findByIdIn(List<Integer> ids);
 }

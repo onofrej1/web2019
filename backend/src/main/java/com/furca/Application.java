@@ -9,9 +9,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 public class Application {
 	
     public static void main(String[] args) {
-    	AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-    	//ctx.register(GlobalCorsConfiguration.class);
-    	ctx.refresh();
+    	/*AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+    	ctx.register(GlobalCorsConfiguration.class);
+    	ctx.refresh();*/
     	   
         SpringApplication.run(Application.class, args);
     }

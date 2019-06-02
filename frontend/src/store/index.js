@@ -75,10 +75,10 @@ export default new Vuex.Store({
     },
     saveResourceData({ state }, data) {
       let method = data.id ? "put" : "post";
-      let param = data.id ? "/" + data.id +"/" : "/";
+      let param = data.id ? "/" + data.id +"/?aa=bbb" : "/";
       let modelSettings = CrudModels[state.activeResource];
       let apiUrl = modelSettings.apiUrl !== undefined ? state.baseUrl+modelSettings.apiUrl : state.apiUrl;
-      console.log(apiUrl);
+      console.log(apiUrl+'?aa=bbb');
       console.log(apiUrl + "/" + state.activeResource + param);
       axios[method](
         apiUrl + "/" + state.activeResource + param,

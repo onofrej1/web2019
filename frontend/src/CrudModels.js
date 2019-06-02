@@ -112,6 +112,7 @@ var bookForm = {
 
 const authors = {
   title: 'Authors',
+  apiUrl: '',
   filter: [{
     field: 'name',
     type: 'text',
