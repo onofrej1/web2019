@@ -46,6 +46,11 @@ public class Author {
 		this.books = books;
 	}
 
+	@Override
+	public String toString() {
+		return "Author [Id=" + Id + ", name=" + name + ", age=" + age + ", books=" + books + "]";
+	}
+
 	public int getAge() {
 		return age;
 	}

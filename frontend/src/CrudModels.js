@@ -78,7 +78,7 @@ var runInline = {
         v-model="model.edition"
         label="Edition"
         required>
-      </v-text-field>
+      </v-text-field>      
     </div>
   `
 };

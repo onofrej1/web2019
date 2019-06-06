@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 public class Run{
 	
 	@Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private int Id;
 	
 	@Column(name="name")
@@ -28,11 +28,17 @@ public class Run{
     @Column(name="edition")
     private int edition;
     
-    @ManyToOne
+    @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(name="event_id", nullable=false)
     private Event event;
     
-    @OneToMany(mappedBy="run")
+    @Override
+	public String toString() {
+		return "Run [Id=" + Id + ", name=" + name + ", runDate=" + runDate + ", edition=" + edition + ", event=" + event
+				+ ", results=" + results + "]";
+	}
+
+	@OneToMany(mappedBy="run")
     private Set<Result> results;
 
 	public int getId() {

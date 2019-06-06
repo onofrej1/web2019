@@ -47,7 +47,7 @@
                 </template>
 
                 <template v-if="field.type==='inline'">
-                  <v-expansion-panel :key="field.name">
+                  <v-expansion-panel :key="field.name" >
                     <v-expansion-panel-content :key="field.name" style="padding:10px">
                       <template v-slot:header>
                         <div>{{ field.label || field.name }}</div>
@@ -57,11 +57,12 @@
                         <div
                           class="grey lighten-4"
                           :key="field.name+'-'+index"
-                          style="padding: 10px; border-top:4px solid grey !important"
+                          style="padding: 10px; border-top:4px solid grey !important; width:70%"
                         >
                           <component
                             :key="field.name+'-'+index"
                             v-bind:is="field.form"
+                            class="text-xs-right"
                             :model="model[field.name][index]"
                           ></component>
                         </div>
@@ -179,8 +180,6 @@
 import CrudModels from "./../CrudModels";
 import DarkLayout from "./DarkLayout";
 
-var _ = require("lodash");
-
 import { mapState, mapActions } from "vuex";
 //console.log(this.abc);
 
@@ -195,7 +194,8 @@ export default {
       model: {},
       search: {},
       appComponents: [],
-      abc: []
+      abc: [],
+      menu: false,
     };
   },
   components: {
@@ -309,24 +309,24 @@ export default {
       //console.log('length'+this.model[field].length)
       console.log(JSON.stringify(this.model));
     },
-    onDelete: function(data, index) {
+    onDelete: function(data, index) {      
       console.log("delete");
+
       data.splice(index, 1);
     },
     onSubmit(evt) {
       evt.preventDefault();
       console.log(JSON.stringify(this.model));
-      //console.log(this.model.book_list[1].name);
+      
       let model = this.model;
       for (let key in model) {
-        if (model[key] instanceof Array && !model[key].every(v => typeof v === "String")) {
+        if (model[key] instanceof Array && model[key].every(v => !isNaN(v))) {
             model[key] = model[key].map(v => this.resourceData[key].find(r => r.id == v));
         }
       }
       console.log(model);
-      this.saveResourceData(model);
-      console.log("resource:" + this.activeResource);
-      this.fetchResourceData(this.activeResource);
+
+      this.saveResourceData(model);            
       this.model = {};
       this.activeForm = false;
     },

@@ -1,0 +1,65 @@
+/*Set<Run> existingRuns = (Set<Run>) runRepo.findByEvent(event);
+		Set<Run> runs = (Set<Run>) event.getRuns();
+		eventRepo.save(event);
+
+		List<Run> runsToRemove = existingRuns.stream()
+				.filter(r -> runs.stream().filter(rr -> rr.getId() == r.getId()).count() == 0)
+				.collect(Collectors.toList());
+
+		runRepo.deleteAll(runsToRemove);
+
+		for (Run run : runs) {
+			Optional<Run> modelOptional = runRepo.findById(run.getId());
+			Run model = modelOptional.isPresent() ? modelOptional.get() : new Run();
+			BeanUtils.copyProperties(model, run);
+			model.setEvent(event);
+
+			runRepo.save(model);
+		}*/
+
+		for (Run run : event.getRuns()) {
+			Run model = new Run();
+			BeanUtils.copyProperties(model, run);
+			model.setEvent(event);
+
+			runRepo.save(model);
+		}
+
+
+binder.registerCustomEditor(Set.class, "books", new CustomCollectionEditor(Set.class) {
+
+			protected Object convertElement(Object element) {
+				System.out.println("abcd");
+				if (element != null) {
+					Integer benefitId = Integer.parseInt(element.toString());
+					Optional<Book> bookOptional = bookRepo.findById(benefitId); // something that able to get benefit
+																				// object
+					Book model = bookOptional.isPresent() ? bookOptional.get() : new Book();
+					System.out.println(model.getTitle());
+					return model;
+				}
+				return null;
+			}
+
+		});
+
+<v-menu        
+        :close-on-content-click="false"
+        :nudge-right="40"
+        lazy
+        transition="scale-transition"
+        offset-y
+        full-width
+        min-width="290px"
+      >
+        <template v-slot:activator="{ on }">
+          <v-text-field
+            v-model="model.runDate"
+            label="Picker without buttons"
+            prepend-icon="event"
+            readonly
+            v-on="on"
+          ></v-text-field>
+        </template>
+        <v-date-picker v-model="model.runDate"></v-date-picker>
+      </v-menu>

@@ -9,7 +9,7 @@ export default new Vuex.Store({
   state: {
     baseUrl: "http://localhost:8083",
     apiUrl: "http://localhost:8083/api",
-    activeResource: "posts",
+    activeResource: "books",
     resourceData: {}
   },
   getters: {
@@ -73,19 +73,19 @@ export default new Vuex.Store({
         }
       );
     },
-    saveResourceData({ state }, data) {
+    saveResourceData({ dispatch, state }, data) {
       let method = data.id ? "put" : "post";
-      let param = data.id ? "/" + data.id +"/?aa=bbb" : "/";
+      let param = data.id ? "/" + data.id +"/" : "/";
       let modelSettings = CrudModels[state.activeResource];
       let apiUrl = modelSettings.apiUrl !== undefined ? state.baseUrl+modelSettings.apiUrl : state.apiUrl;
-      console.log(apiUrl+'?aa=bbb');
-      console.log(apiUrl + "/" + state.activeResource + param);
+      
       axios[method](
         apiUrl + "/" + state.activeResource + param,
         data
       ).then(
         response => {
-          //console.log("data", response.data);
+            dispatch('fetchResourceData', state.activeResource);
+            console.log("saveResourceDataResponse", response);
         },
         error => {
           console.log(error);
@@ -94,10 +94,8 @@ export default new Vuex.Store({
     },
     fetchResourceData({ commit, state }, resourceName) {
       return axios.get(state.apiUrl + "/" + resourceName +"/").then(
-        response => {
-          //console.log(JSON.stringify(response.data));
-          var data = response.data._embedded[resourceName];
-          //console.log(data)
+        response => {          
+          var data = response.data._embedded[resourceName];          
           commit("setResourceData", {
             resourceName,
             resourceData: data
