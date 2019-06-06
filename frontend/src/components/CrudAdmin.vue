@@ -317,7 +317,14 @@ export default {
       evt.preventDefault();
       console.log(JSON.stringify(this.model));
       //console.log(this.model.book_list[1].name);
-      this.saveResourceData(this.model);
+      let model = this.model;
+      for (let key in model) {
+        if (model[key] instanceof Array && !model[key].every(v => typeof v === "String")) {
+            model[key] = model[key].map(v => this.resourceData[key].find(r => r.id == v));
+        }
+      }
+      console.log(model);
+      this.saveResourceData(model);
       console.log("resource:" + this.activeResource);
       this.fetchResourceData(this.activeResource);
       this.model = {};

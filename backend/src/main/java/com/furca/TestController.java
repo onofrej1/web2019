@@ -78,8 +78,9 @@ public class TestController {
 	
 	@RequestMapping(value = "/authors/{id}/", method = RequestMethod.PUT)
 	public ResponseEntity updateAuthor(@PathVariable("id") long id, 
-			@RequestBody String params) throws IOException
+			@RequestParam("books") String[] params) throws IOException
 			 {
+		System.out.println(params);
 		//Set<Book> existingBooks = (Set<Book>) bookRepo.findByIdIn(ids);
 		//System.out.println(existingBooks);
 		/*final Iterator<Entry<String, List<String>>> it = params.entrySet().iterator();
@@ -89,12 +90,12 @@ public class TestController {
 	        values = it.next().getValue();
 	        System.out.println(values);
 	    }*/
-		ObjectMapper mapper = new ObjectMapper();
+		/*ObjectMapper mapper = new ObjectMapper();
 	    JsonNode actualObj = mapper.readTree(params);
 	    List<JsonNode> ids = actualObj.findValues("books");
 	    System.out.println(actualObj.get("books"));
 		System.out.println(params);
-		System.out.println(ids);
+		System.out.println(ids);*/
 		//String itemIds = params.get("books");
 	      /*for (String itemId : itemIds) {
 	          System.out.println("item from map with String id " + itemId + "<br/>");
