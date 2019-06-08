@@ -109,7 +109,7 @@
         </v-card-title>
 
         <v-container>
-          <v-layout row wrap justify-start>
+          <v-layout row wrap justify-start v-if="false">
             <template v-for="filter in resourceSettings.filter">
               <v-flex :key="filter.field" md4>
                 <v-select

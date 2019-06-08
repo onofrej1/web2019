@@ -6,6 +6,7 @@ import VueRouter from 'vue-router'
 
 //import Test from "./components/Test.vue";
 import CrudAdmin from "./components/CrudAdmin.vue";
+import Login from "./components/Login.vue";
 import HelloWorld from "./components/HelloWorld.vue";
 
 
@@ -24,12 +25,12 @@ const routes = [{
     name: 'crud',
     component: CrudAdmin,
     meta: {
-      adminLayout: true,
+      adminPage: true,
     }
   },
   {
-    path: '/bar',
-    component: HelloWorld
+    path: '/login',
+    component: Login
   }
 ];
 

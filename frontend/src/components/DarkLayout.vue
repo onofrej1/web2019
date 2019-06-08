@@ -5,23 +5,32 @@
       <v-toolbar-title class="white--text">O5 Bežecký klub Furča</v-toolbar-title>
 
       <v-spacer></v-spacer>
+
       <v-btn icon>
         <v-icon>search</v-icon>
+      </v-btn>
+
+      <v-btn icon to="/login">
+        <v-icon>account_circle</v-icon>
       </v-btn>
     </v-toolbar>
 
     <v-card id="menu">
       <v-list two-line dense class="pt-0">
-        <v-list-tile :key="item">
+        <v-list-tile>
+          <v-list-tile-avatar>
+            <img src="https://picsum.photos/200">
+          </v-list-tile-avatar>
           <v-list-tile-content>
-            <v-list-tile-title>Permissions</v-list-tile-title>
-            <v-list-tile-sub-title>Set roles and permissions</v-list-tile-sub-title>
+            <v-list-tile-title>Profile</v-list-tile-title>
+            <v-list-tile-sub-title>User profile settigns</v-list-tile-sub-title>
           </v-list-tile-content>
         </v-list-tile>
+
         <v-divider></v-divider>
         <v-list-group
           :prepend-icon="groupIcons[groupName]"
-          :key="group"
+          :key="groupName"
           no-action
           v-for="(group, groupName) in modelNames"
         >
@@ -32,8 +41,8 @@
               </v-list-tile-content>
             </v-list-tile>
           </template>
-          <template v-for="(item) in group">
-            <v-list-tile :key="item.title">
+          <template v-for="item in group">
+            <v-list-tile :key="item.resource">
               <v-list-tile-content>
                 <v-list-tile-title @click="setModel(item.resource)">{{ item.title }}</v-list-tile-title>
               </v-list-tile-content>
@@ -46,7 +55,7 @@
           </template>
         </v-list-group>
         <v-divider></v-divider>
-        <v-list-tile :key="item">
+        <v-list-tile>
           <v-list-tile-action>
             <v-icon medium>folder</v-icon>
           </v-list-tile-action>
@@ -61,7 +70,7 @@
     <div class="content">
       aaa
       <router-view></router-view>
-      {{ modelGroups }}
+
       <router-link to="/foo">Go to Foo</router-link>
       <router-link to="/bar">Go to Bar</router-link>
     </div>
