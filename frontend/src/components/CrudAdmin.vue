@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
-    <!--<v-btn color="primary" @click="login()">Login</v-btn>
-    <v-btn color="primary" @click="register()">Register</v-btn>-->
+    <v-btn color="primary" @click="login()">Login</v-btn>
+    <v-btn color="primary" @click="register()">Register</v-btn>
     <v-layout row>
       <v-flex v-if="activeForm">
         <v-card class="elevation-8">
@@ -35,19 +35,29 @@
                   :label="field.label || field.name"
                 ></v-select>
 
-                <template v-if="field.type==='pivotRelation'">
-                  <template v-for="f in getOptions(field.resourceTable, field.show)">
-                    <v-checkbox
-                      :key="f.value"
-                      v-model="model[field.name]"
-                      :label="f.text"
-                      :value="f.value"
-                    ></v-checkbox>
+                <v-combobox
+                  :key="field.name"
+                  v-if="field.type==='pivotRelation'"
+                  v-model="model[field.name]"
+                  :items="getOptions(field.resourceTable, field.show)"
+                  item-text="text"
+                  item-value="text"
+                  :label="field.name || field.label"
+                  multiple
+                >
+                  <template v-slot:selection="data">
+                    <v-chip
+                      :key="JSON.stringify(data.item)"
+                      :selected="data.selected"
+                      :disabled="data.disabled"
+                      class="v-chip--select-multi"
+                      @input="data.parent.selectItem(data.item)"
+                    >{{ data.item && data.item.text }}</v-chip>
                   </template>
-                </template>
+                </v-combobox>
 
                 <template v-if="field.type==='inline'">
-                  <v-expansion-panel :key="field.name" >
+                  <v-expansion-panel :key="field.name">
                     <v-expansion-panel-content :key="field.name" style="padding:10px">
                       <template v-slot:header>
                         <div>{{ field.label || field.name }}</div>
@@ -195,7 +205,7 @@ export default {
       search: {},
       appComponents: [],
       abc: [],
-      menu: false,
+      menu: false
     };
   },
   components: {
@@ -309,7 +319,7 @@ export default {
       //console.log('length'+this.model[field].length)
       console.log(JSON.stringify(this.model));
     },
-    onDelete: function(data, index) {      
+    onDelete: function(data, index) {
       console.log("delete");
 
       data.splice(index, 1);
@@ -317,16 +327,22 @@ export default {
     onSubmit(evt) {
       evt.preventDefault();
       console.log(JSON.stringify(this.model));
-      
+
       let model = this.model;
       for (let key in model) {
-        if (model[key] instanceof Array && model[key].every(v => !isNaN(v))) {
-            model[key] = model[key].map(v => this.resourceData[key].find(r => r.id == v));
+        if (
+          model[key] instanceof Array &&
+          model[key].every(v => v.text && v.value)
+        ) {
+          //&& model[key].every(v => !isNaN(v))) {
+          model[key] = model[key].map(v =>
+            this.resourceData[key].find(r => r.id == v.value)
+          );
         }
       }
       console.log(model);
 
-      this.saveResourceData(model);            
+      this.saveResourceData(model);
       this.model = {};
       this.activeForm = false;
     },
@@ -365,16 +381,12 @@ export default {
 
       for (let prop of this.resourceSettings.form) {
         let name = prop.name;
-        /*if(prop.type === 'inline') {
-          row[name] = []
-        }*/
         if (row) {
           let value =
-            row[name] instanceof Array && prop.type !== "inline"
-              ? row[name].map(v => v.id)
+            row[name] instanceof Array && prop.type === "pivotRelation"
+              ? row[name].map(v => ({ value: v.id, text: v[prop.show] })) //.map(v => v.name)
               : row[name];
           row[name] = value;
-          console.log(value);
         }
         field = {
           ...prop

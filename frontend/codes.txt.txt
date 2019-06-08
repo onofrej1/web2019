@@ -63,3 +63,15 @@ binder.registerCustomEditor(Set.class, "books", new CustomCollectionEditor(Set.c
         </template>
         <v-date-picker v-model="model.runDate"></v-date-picker>
       </v-menu>
+
+
+       <template v-if="field.type==='pivotRelationx'">
+                  <template v-for="f in getOptions(field.resourceTable, field.show)">
+                    <v-checkbox
+                      :key="f.value"
+                      v-model="model[field.name]"
+                      :label="f.text"
+                      :value="f.value"
+                    ></v-checkbox>
+                  </template>
+                </template>

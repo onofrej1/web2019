@@ -112,6 +112,7 @@ var bookForm = {
 
 const authors = {
   title: 'Authors',
+  group: "Admin",
   apiUrl: '',
   filter: [{
     field: 'name',
@@ -200,6 +201,7 @@ const posts = {
 
 const users = {
   title: 'Users',
+  group: 'Permissions',
   filter: [{
     field: 'username',
     type: 'text',
@@ -210,7 +212,7 @@ const users = {
       type: 'text'
     },
     {
-      name: 'email',
+      name: 'lastName',
       type: 'text'
     },
 
@@ -221,7 +223,7 @@ const users = {
       field: 'username'
     },
     {
-      field: 'email'
+      field: 'lastName'
     },
   ],
   footer: footer,
@@ -276,6 +278,7 @@ const tag = {
 
 const books = {
   title: "Books",
+  group: "Settings",
   filter: [],
   form: [{
       label: 'Title',
@@ -302,6 +305,7 @@ const books = {
 
 const runs = {
   title: 'Runs',
+  group: "Admin",
   filter: [{
     field: 'name',
     type: 'select',
@@ -338,6 +342,7 @@ const runs = {
 
 const events = {
   title: 'Events',
+  group: "Admin",
   apiUrl: '',
   filter: [{
     field: 'name',
@@ -371,6 +376,7 @@ const events = {
 
 const runners = {
   title: 'Runers',
+  group: "Admin",
   filter: [{
     field: 'lastName',
     type: 'text',
@@ -407,7 +413,7 @@ const runners = {
 };
 
 const models = {
-  //users,
+  users,
   //posts,
   authors,
   books,
