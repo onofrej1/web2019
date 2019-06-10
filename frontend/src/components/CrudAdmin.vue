@@ -9,92 +9,8 @@
             <v-toolbar-title>{{ activeResource }}</v-toolbar-title>
           </v-toolbar>-->
           <v-card-text>
-            <v-form>
-              <template v-for="field in form">
-                <v-text-field
-                  :key="field.name"
-                  v-if="field.type==='text'"
-                  v-model="model[field.name]"
-                  :label="field.label || field.name"
-                  required
-                ></v-text-field>
-
-                <v-date-picker
-                  v-if="field.type==='date'"
-                  :key="field.name"
-                  v-model="model[field.name]"
-                  :landscape="landscape"
-                  :reactive="reactive"
-                ></v-date-picker>
-
-                <v-select
-                  v-if="field.type==='relation'"
-                  :key="field.name"
-                  :items="getOptions(field.resourceTable, field.show)"
-                  v-model="model[field.name]"
-                  :label="field.label || field.name"
-                ></v-select>
-
-                <v-combobox
-                  :key="field.name"
-                  v-if="field.type==='pivotRelation'"
-                  v-model="model[field.name]"
-                  :items="getOptions(field.resourceTable, field.show)"
-                  item-text="text"
-                  item-value="text"
-                  :label="field.name || field.label"
-                  multiple
-                >
-                  <template v-slot:selection="data">
-                    <v-chip
-                      :key="JSON.stringify(data.item)"
-                      :selected="data.selected"
-                      :disabled="data.disabled"
-                      class="v-chip--select-multi"
-                      @input="data.parent.selectItem(data.item)"
-                    >{{ data.item && data.item.text }}</v-chip>
-                  </template>
-                </v-combobox>
-
-                <template v-if="field.type==='inline'">
-                  <v-expansion-panel :key="field.name">
-                    <v-expansion-panel-content :key="field.name" style="padding:10px">
-                      <template v-slot:header>
-                        <div>{{ field.label || field.name }}</div>
-                      </template>
-
-                      <template v-for="(f, index) in model[field.name]">
-                        <div
-                          class="grey lighten-4"
-                          :key="field.name+'-'+index"
-                          style="padding: 10px; border-top:4px solid grey !important; width:70%"
-                        >
-                          <component
-                            :key="field.name+'-'+index"
-                            v-bind:is="field.form"
-                            class="text-xs-right"
-                            :model="model[field.name][index]"
-                          ></component>
-                        </div>
-                        <div :key="field.name+'-d'+index" class="text-xs-right">
-                          <v-btn flat @click="onDelete(model[field.name], index)">
-                            <v-icon :key="'remove'+index" small>delete</v-icon>Remove
-                          </v-btn>
-                        </div>
-                      </template>
-                      <v-btn color="primary" @click="onAdd(field.name)">Add new</v-btn>
-                    </v-expansion-panel-content>
-                  </v-expansion-panel>
-                </template>
-              </template>
-            </v-form>
+            <my-form :data="model" :fields="form" @submit="onSubmit"></my-form>
           </v-card-text>
-
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="primary" @click="onSubmit">Save</v-btn>
-            <v-btn>Cancel</v-btn>
-          </v-card-actions>
         </v-card>
       </v-flex>
     </v-layout>
@@ -189,6 +105,7 @@
 <script>
 import CrudModels from "./../CrudModels";
 import DarkLayout from "./DarkLayout";
+import MyForm from "./MyForm";
 
 import { mapState, mapActions } from "vuex";
 //console.log(this.abc);
@@ -209,7 +126,8 @@ export default {
     };
   },
   components: {
-    DarkLayout
+    DarkLayout,
+    MyForm
     //editor: Editor,
     //quillEditor
   },
@@ -310,21 +228,11 @@ export default {
       this.buildForm(item);
       this.activeForm = true;
     },
-    onAdd: function(field) {
-      if (this.model[field] === undefined) {
-        //this.model[field] = [];
-        this.model = { ...this.model, [field]: [] };
-      }
-      this.model[field].push({});
-      //console.log('length'+this.model[field].length)
-      console.log(JSON.stringify(this.model));
-    },
-    onDelete: function(data, index) {
-      console.log("delete");
-
-      data.splice(index, 1);
-    },
-    onSubmit(evt) {
+    
+    onSubmit(evt, data) {
+      console.log(evt);
+      console.log(data);
+      return;
       evt.preventDefault();
       console.log(JSON.stringify(this.model));
 

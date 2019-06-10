@@ -25,6 +25,7 @@ public class Event{
     private String locality;
     
 	@OneToMany(mappedBy="event", cascade=CascadeType.ALL)
+	@OrderBy(value = "run_date ASC")
     private Set<Run> runs;
 
 	public int getId() {

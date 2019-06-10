@@ -65,10 +65,12 @@ public class ApiController {
 
 	@RequestMapping(value = "/events/", method = RequestMethod.POST)
 	public ResponseEntity<Object> createEvent(@RequestBody Event event) {
-		for (Run run : event.getRuns()) {
-			run.setEvent(event);
-		}
-		eventRepo.save(event);
+		System.out.println(event);
+		//for (Run run : event.getRuns()) {
+			//runRepo.save(run);
+			//run.setEvent(event);
+		//}
+		//eventRepo.save(event);
 
 		return new ResponseEntity<Object>(HttpStatus.OK);
 	}

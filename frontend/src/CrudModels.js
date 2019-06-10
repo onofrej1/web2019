@@ -309,7 +309,8 @@ const aaa = (props) => {
     template: `
     <div style="padding:10px">
       <p v-for="run in row.runs">
-        {{ run.edition }}.rocnik - {{ run.runDate }}
+        <v-icon :key="row.id" small>event</v-icon> {{ run.edition }}. rocnik 
+        {{ run.runDate }}
       </p>
     </div>
     `
