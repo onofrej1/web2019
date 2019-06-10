@@ -29,7 +29,7 @@ export default {
       } else {
         this.layout = null;
       }
-      console.log(this.isAdminPage);
+      //console.log(this.isAdminPage);
     }
   },
   components: {

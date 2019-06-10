@@ -170,7 +170,7 @@
           </template>
 
           <template v-slot:expand="props" v-if="expandRow">
-            <component v-bind:is="expandRow"></component>
+            <component v-bind:is="expandRow" :row="props.item"></component>
           </template>
 
           <template v-slot:pageText="props" v-if="pageText">

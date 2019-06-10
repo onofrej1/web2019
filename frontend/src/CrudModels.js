@@ -148,8 +148,7 @@ const authors = {
        console.log(props);
        return 'aaa'+ props.item.text;
      } },*/
-  ],
-  footer: footer2,
+  ]
 }
 
 const posts = {
@@ -225,8 +224,7 @@ const users = {
     {
       field: 'lastName'
     },
-  ],
-  footer: footer,
+  ]
 }
 
 /*const menuItem = {
@@ -303,6 +301,22 @@ const books = {
   ],
 };
 
+const aaa = (props) => {
+  console.log(props);
+  var xxx = {
+    name: 'my-footer',
+    props: ['row'],
+    template: `
+    <div style="padding:10px">
+      <p v-for="run in row.runs">
+        {{ run.edition }}.rocnik - {{ run.runDate }}
+      </p>
+    </div>
+    `
+  };
+  return xxx;
+}
+
 const runs = {
   title: 'Runs',
   group: "Admin",
@@ -336,8 +350,7 @@ const runs = {
       field: 'edition'
     },
   ],
-  footer: footer,
-  expandRow: footer,
+  footer: footer
 };
 
 const events = {
@@ -370,8 +383,7 @@ const events = {
       field: 'locality'
     },
   ],
-  footer: footer,
-  expandRow: footer,
+  expandRow: aaa(),
 };
 
 const runners = {

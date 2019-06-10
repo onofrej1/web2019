@@ -1,9 +1,10 @@
 <template>
   <div>
     <v-toolbar dark color="primary" app>
-      <v-toolbar-side-icon></v-toolbar-side-icon>
-      <v-toolbar-title class="white--text">O5 Bežecký klub Furča</v-toolbar-title>
-
+      <!--<v-toolbar-side-icon></v-toolbar-side-icon>-->
+      <img src="./../assets/images/furca-logo.png" width="50px" />
+      <v-toolbar-title class="white--text" style="margin:5px">O5 Bežecký klub Furča</v-toolbar-title>
+      
       <v-spacer></v-spacer>
 
       <v-btn icon>
@@ -18,9 +19,12 @@
     <v-card id="menu">
       <v-list two-line dense class="pt-0">
         <v-list-tile>
-          <v-list-tile-avatar>
+          <!--<v-list-tile-avatar>
             <img src="https://picsum.photos/200">
-          </v-list-tile-avatar>
+          </v-list-tile-avatar>-->
+          <v-list-tile-action>
+            <v-icon medium>folder</v-icon>
+          </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title>Profile</v-list-tile-title>
             <v-list-tile-sub-title>User profile settigns</v-list-tile-sub-title>
@@ -43,12 +47,12 @@
           </template>
           <template v-for="item in group">
             <v-list-tile :key="item.resource">
-              <v-list-tile-content>
-                <v-list-tile-title @click="setModel(item.resource)">{{ item.title }}</v-list-tile-title>
+              <v-list-tile-content class="list-content-link">
+                <v-list-tile-title class="" @click="setModel(item.resource)">{{ item.title }}</v-list-tile-title>
               </v-list-tile-content>
               <v-list-tile-action>
-                <v-btn icon ripple>
-                  <v-icon color="grey lighten-1">info</v-icon>
+                <v-btn icon ripple @click="setModel(item.resource)">
+                  <v-icon color="grey lighten-1" large>arrow_right</v-icon>
                 </v-btn>
               </v-list-tile-action>
             </v-list-tile>
@@ -68,11 +72,10 @@
     </v-card>
 
     <div class="content">
-      aaa
+      
       <router-view></router-view>
 
-      <router-link to="/foo">Go to Foo</router-link>
-      <router-link to="/bar">Go to Bar</router-link>
+      
     </div>
 
     <v-footer style="border:1px solid lightgray" app></v-footer>
@@ -81,10 +84,15 @@
 
 <script>
 var _ = require("underscore");
+import logo from "./../assets/images/furca-logo.png"
+//import logo from "./../assets/images/header.jpg"
+
+
 export default {
   name: "dark-layout",
   data: () => ({
     drawer: true,
+    //logox: logo,
     groupIcons: {
       Permissions: "account_circle",
       Admin: "list_alt"
@@ -129,5 +137,9 @@ export default {
   margin-left: 300px;
   margin-top: 65px;
   padding: 10px;
+}
+
+.list-content-link {
+  cursor: pointer;
 }
 </style>
