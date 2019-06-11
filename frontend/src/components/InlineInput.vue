@@ -10,7 +10,7 @@
         <div
           class="grey lighten-4"
           :key="field.name+'-'+index"
-          style="padding: 10px; border-top:4px solid grey !important; width:70%"
+          style="padding: 10px; border-top:4px solid grey !important;"
         >
           <component
             :key="field.name+'-'+index"

@@ -8,6 +8,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.furca.repository.BookRepository;
+import com.furca.repository.EventRepository;
 
 @Configuration
 public class GlobalCorsConfiguration implements WebMvcConfigurer {
@@ -18,11 +19,11 @@ public class GlobalCorsConfiguration implements WebMvcConfigurer {
     }*/
 	
 	@Autowired
-	private BookRepository bookRepo;
+	private EventRepository eventRepo;
 	
 	@Override
     public void addFormatters(FormatterRegistry registry) {
-        //registry.addConverter(new StringToBookConverter(bookRepo));
+        registry.addConverter(new StringToEventConverter(eventRepo));
         //registry.addConverter(new IntegerToBookConverter(bookRepo));
     }
 }

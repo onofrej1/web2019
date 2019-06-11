@@ -9,7 +9,7 @@
             <v-toolbar-title>{{ activeResource }}</v-toolbar-title>
           </v-toolbar>-->
           <v-card-text>
-            <my-form :data="model" :fields="form" @submit="onSubmit"></my-form>
+            <my-form :data="formData" :fields="form" @submit="submit" @cancel="cancel"></my-form>
           </v-card-text>
         </v-card>
       </v-flex>
@@ -118,7 +118,7 @@ export default {
       models: CrudModels,
       table: [],
       form: [],
-      model: {},
+      formData: {},
       search: {},
       appComponents: [],
       abc: [],
@@ -194,20 +194,7 @@ export default {
       "setActiveResource",
       "fetchResourceData",
       "saveResourceData"
-    ]),
-
-    getOptions: function(resourceName, field) {
-      let resource = this.resourceData[resourceName];
-      let options =
-        resource &&
-        resource.map(data => {
-          return {
-            value: data.id,
-            text: data[field]
-          };
-        });
-      return options;
-    },
+    ]),    
     getFilterOptions: function(data, field) {
       var filterOptions = data.map(row => {
         return {
@@ -219,42 +206,27 @@ export default {
       return filterOptions;
     },
     createItem: function() {
-      this.model = {};
+      this.formData = {};
       this.buildForm(null);
       this.activeForm = true;
     },
     editItem: function(item) {
-      this.model = item;
+      this.formData = item;
       this.buildForm(item);
       this.activeForm = true;
     },
-    
-    onSubmit(evt, data) {
-      console.log(evt);
+
+    submit(e) {
+      e.originalEvent.preventDefault();
+      let data = e.data;
+     
       console.log(data);
-      return;
-      evt.preventDefault();
-      console.log(JSON.stringify(this.model));
 
-      let model = this.model;
-      for (let key in model) {
-        if (
-          model[key] instanceof Array &&
-          model[key].every(v => v.text && v.value)
-        ) {
-          //&& model[key].every(v => !isNaN(v))) {
-          model[key] = model[key].map(v =>
-            this.resourceData[key].find(r => r.id == v.value)
-          );
-        }
-      }
-      console.log(model);
-
-      this.saveResourceData(model);
-      this.model = {};
+      this.saveResourceData(data);
+      this.formData = {};
       this.activeForm = false;
     },
-    onReset() {
+    cancel() {
       this.activeForm = false;
     },
     makeTable() {

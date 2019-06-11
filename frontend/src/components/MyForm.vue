@@ -11,18 +11,13 @@
           required
         ></v-text-field>
 
-        <v-date-picker
-          v-if="field.type==='date'"
-          :key="field.name"
-          v-model="data[field.name]"
-          :landscape="landscape"
-          :reactive="reactive"
-        ></v-date-picker>
-
+        <v-date-picker v-if="field.type==='datex'" :key="field.name" v-model="data[field.name]"></v-date-picker>
+        {{ data[field.name] }}
         <v-select
           v-if="field.type==='relation'"
           :key="field.name"
           :items="getOptions(field.resourceTable, field.show)"
+          :value="data[field.name].id"
           v-model="data[field.name]"
           :label="field.label || field.name"
         ></v-select>
@@ -53,32 +48,54 @@
         </template>
       </template>
       <v-spacer></v-spacer>
-      <v-btn color="primary" @click="onSubmit">Save</v-btn>
-      <v-btn>Cancel</v-btn>
+      <v-btn color="primary" @click="submit">Save</v-btn>
+      <v-btn @click="cancel">Cancel</v-btn>
     </v-form>
   </div>
 </template>
 
 <script>
 import InlineInput from "./InlineInput";
+import { mapState } from "vuex";
 
 export default {
   name: "my-form",
   props: {
     msg: String,
     data: Object,
-    fields: Array,
-    //submit: Function
+    fields: Array
   },
   components: {
     InlineInput
   },
+  computed: {
+    ...mapState(["resourceData"])
+  },
   methods: {
-    onSubmit: function() {
-      console.log("submit");
-      console.log(this.data);
-      //this.submit(data);
+    getOptions: function(resourceName, field) {
+      const resource = this.resourceData[resourceName] || [];
+      return resource.map(data => ({ value: data.id, text: data[field] }));
     },
+    submit: function(e) {
+       console.log(data);
+      let data = this.data;
+      for (let key in data) {
+        // combobox values
+        if (
+          data[key] instanceof Array &&
+          data[key].every(v => v.text && v.value)
+        ) {
+          console.log('map');
+          data[key] = data[key].map(v =>
+            this.resourceData[key].find(r => r.id == v.value)
+          );
+        }
+      }
+      this.$emit("submit", { data: data, originalEvent: e });
+    },
+    cancel: function(e) {
+      this.$emit("cancel");
+    }
   }
 };
 </script>

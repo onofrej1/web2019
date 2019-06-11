@@ -335,6 +335,12 @@ const runs = {
       type: 'text'
     },
     {
+      name: 'event',
+      type: 'relation',
+      resourceTable: 'events',
+      show: 'name',
+    },
+    {
       name: 'runDate',
       type: 'date'
     },

@@ -1,10 +1,10 @@
 <template>
   <div>
     <v-toolbar dark color="primary" app>
-      <!--<v-toolbar-side-icon></v-toolbar-side-icon>-->
-      <img src="./../assets/images/furca-logo.png" width="50px" />
+      <v-toolbar-side-icon></v-toolbar-side-icon>
+      <!--<img src="./../assets/images/furca-logo.png" width="50px" />-->
       <v-toolbar-title class="white--text" style="margin:5px">O5 Bežecký klub Furča</v-toolbar-title>
-      
+
       <v-spacer></v-spacer>
 
       <v-btn icon>
@@ -48,7 +48,7 @@
           <template v-for="item in group">
             <v-list-tile :key="item.resource">
               <v-list-tile-content class="list-content-link">
-                <v-list-tile-title class="" @click="setModel(item.resource)">{{ item.title }}</v-list-tile-title>
+                <v-list-tile-title class @click="setModel(item.resource)">{{ item.title }}</v-list-tile-title>
               </v-list-tile-content>
               <v-list-tile-action>
                 <v-btn icon ripple @click="setModel(item.resource)">
@@ -72,10 +72,7 @@
     </v-card>
 
     <div class="content">
-      
       <router-view></router-view>
-
-      
     </div>
 
     <v-footer style="border:1px solid lightgray" app></v-footer>
@@ -84,9 +81,7 @@
 
 <script>
 var _ = require("underscore");
-import logo from "./../assets/images/furca-logo.png"
-//import logo from "./../assets/images/header.jpg"
-
+//import logo from "./../assets/images/furca-logo.png"
 
 export default {
   name: "dark-layout",
@@ -104,7 +99,6 @@ export default {
   },
   methods: {
     setModel: function(modelName) {
-      console.log(modelName);
       this.$router.push({
         name: "crud",
         params: { resource: modelName }
