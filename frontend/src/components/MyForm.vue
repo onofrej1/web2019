@@ -1,7 +1,6 @@
 <template>
   <div class="hello">
     <v-form>
-      
       <template v-for="field in fields">
         <v-text-field
           :key="field.name"
@@ -12,14 +11,14 @@
         ></v-text-field>
 
         <v-date-picker v-if="field.type==='datex'" :key="field.name" v-model="data[field.name]"></v-date-picker>
-        {{ data[field.name] }}
+
         <v-select
           v-if="field.type==='relation'"
           :key="field.name"
           :items="getOptions(field.resourceTable, field.show)"
           :value="data[field.name].id"
           v-model="data[field.name]"
-          :label="field.label || field.name"
+          :label="field.label || field.name"          
         ></v-select>
 
         <v-combobox
@@ -57,6 +56,7 @@
 <script>
 import InlineInput from "./InlineInput";
 import { mapState } from "vuex";
+var _ = require("underscore");
 
 export default {
   name: "my-form",
@@ -76,19 +76,18 @@ export default {
       const resource = this.resourceData[resourceName] || [];
       return resource.map(data => ({ value: data.id, text: data[field] }));
     },
-    submit: function(e) {
-       console.log(data);
+    submit: function(e) {      
       let data = this.data;
+      console.log(data);
       for (let key in data) {
-        // combobox values
-        if (
-          data[key] instanceof Array &&
-          data[key].every(v => v.text && v.value)
-        ) {
-          console.log('map');
+        const field = this.fields.find(f => f.name == key);
+        if (field && field.type == 'pivotRelation') {
           data[key] = data[key].map(v =>
-            this.resourceData[key].find(r => r.id == v.value)
+            this.resourceData[field.resourceTable].find(r => r.id == v.value)
           );
+        } else if (field && field.type == 'relation') {          
+          //data[key] = this.resourceData[field.resourceTable].find(r => r.id == data[key]);
+          //delete data[key].runs;
         }
       }
       this.$emit("submit", { data: data, originalEvent: e });

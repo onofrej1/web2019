@@ -23,7 +23,7 @@ public class GlobalCorsConfiguration implements WebMvcConfigurer {
 	
 	@Override
     public void addFormatters(FormatterRegistry registry) {
-        registry.addConverter(new StringToEventConverter(eventRepo));
+        //registry.addConverter(new StringToEventConverter(eventRepo));
         //registry.addConverter(new IntegerToBookConverter(bookRepo));
     }
 }

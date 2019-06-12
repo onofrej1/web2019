@@ -354,6 +354,11 @@ const runs = {
       render: (props) => `${moment(props.item.runDate, 'YYYY-MM-DD').format('DD/MM/YYYY')}`
     },
     {
+      field: 'event',
+      label: 'Event',
+      render: (props) => props.item.event.name
+    },
+    {
       field: 'edition'
     },
   ],

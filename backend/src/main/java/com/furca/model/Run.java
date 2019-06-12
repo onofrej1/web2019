@@ -36,7 +36,7 @@ public class Run{
 	public String toString() {
 		return "Run [Id=" + Id + ", name=" + name + ", runDate=" + runDate + ", edition=" + edition + ", event=" + event
 				+ ", results=" + results + "]";
-	}
+	}       
 
 	@OneToMany(mappedBy="run")
     private Set<Result> results;

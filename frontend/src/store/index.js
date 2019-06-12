@@ -10,7 +10,8 @@ export default new Vuex.Store({
     baseUrl: "http://localhost:8083",
     apiUrl: "http://localhost:8083/api",
     activeResource: "books",
-    resourceData: {}
+    resourceData: {},
+    models: CrudModels,
   },
   getters: {
     getActiveResourceData: state => state.resourceData[state.activeResource]
@@ -73,17 +74,21 @@ export default new Vuex.Store({
         }
       );
     },
-    saveResourceData({ dispatch, state }, data) {
+    saveResourceData({ dispatch, state }, data) {      
       let method = data.id ? "put" : "post";
       let param = data.id ? "/" + data.id +"/" : "/";
       let modelSettings = CrudModels[state.activeResource];
       let apiUrl = modelSettings.apiUrl !== undefined ? state.baseUrl+modelSettings.apiUrl : state.apiUrl;
       
+      data.runDate = '2019-06-08';
+      console.log(data);
+
       axios[method](
         apiUrl + "/" + state.activeResource + param,
         data
       ).then(
         response => {
+            this.updateRelations(data, state);
             dispatch('fetchResourceData', state.activeResource);
             console.log("saveResourceDataResponse", response);
         },
@@ -91,6 +96,25 @@ export default new Vuex.Store({
           console.log(error);
         }
       );
+    },
+    updateRelations(data, state) {
+      let formFields = state.models[state.activeResource].form;
+      const axiosUriList = axios.create({        
+        headers: {'Content-Type': 'text/uri-list'}
+      });
+
+      for(let i in formFields)
+      {
+          console.log(formFields[i]);
+          let field = formFields[i];
+          if(field.type == 'relation') {
+            axiosUriList.put(
+              state.apiUrl + "/" + state.activeResource + '/'+data.id +'/'+field.name,
+              state.apiUrl + "/"+field.resourceTable+'/'+data[field.name]
+            );
+            //delete data[field.name];
+          }
+      }
     },
     fetchResourceData({ commit, state }, resourceName) {
       return axios.get(state.apiUrl + "/" + resourceName +"/").then(

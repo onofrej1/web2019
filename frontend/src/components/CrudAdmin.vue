@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
-    <v-btn color="primary" @click="login()">Login</v-btn>
-    <v-btn color="primary" @click="register()">Register</v-btn>
+    <!--<v-btn color="primary" @click="login()">Login</v-btn>
+    <v-btn color="primary" @click="register()">Register</v-btn>-->
     <v-layout row>
       <v-flex v-if="activeForm">
         <v-card class="elevation-8">

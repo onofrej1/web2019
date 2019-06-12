@@ -46,7 +46,7 @@ public class ApiController {
 		return new ResponseEntity<Object>(HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/events/{id}/", method = RequestMethod.PUT)
+	/*@RequestMapping(value = "/events/{id}/", method = RequestMethod.PUT)
 	public ResponseEntity<Object> updateEvent(@PathVariable("id") long id, @RequestBody Event event) {
 
 		Set<Run> deleteRuns = runRepo.findByEvent(event).stream()
@@ -73,7 +73,7 @@ public class ApiController {
 		//eventRepo.save(event);
 
 		return new ResponseEntity<Object>(HttpStatus.OK);
-	}
+	}*/
 
 	/*
 	 * @RequestMapping(value = "xxx", method = RequestMethod.POST)
