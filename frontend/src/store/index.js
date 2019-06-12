@@ -19,6 +19,12 @@ export default new Vuex.Store({
   mutations: {
     setActiveResource(state, payload) {
       state.activeResource = payload;
+
+      let form = state.models[payload].form;
+      state.activeResourceRelations = form.filter(field => field.type == 'relation')
+        .map(field => field.name);
+      console.log('aaaaa');
+      console.log(state.activeResourceRelations);
     },
     setResourceData(state, payload) {
       //state.resourceData[payload.resourceName] = payload.resourceData;
@@ -81,6 +87,8 @@ export default new Vuex.Store({
       let apiUrl = modelSettings.apiUrl !== undefined ? state.baseUrl+modelSettings.apiUrl : state.apiUrl;
       
       data.runDate = '2019-06-08';
+      let formData = data;
+      //data = data.filter(d)
       console.log(data);
 
       axios[method](
