@@ -2,7 +2,7 @@ const moment = require('moment');
 
 var footer = {
   name: 'my-footer',
-  template: '<b>footer</b>'
+  template: '<b>footer vv</b>'
 };
 
 var header = {
@@ -16,7 +16,7 @@ var header = {
       
         >
           <v-icon small>arrow_upward</v-icon>
-          {{ header.text }} aaa
+          {{ header.text }}
         </th>
       </tr>
   `
@@ -369,7 +369,12 @@ const events = {
       form: runInline
     },
   ],
-  list: [{
+  list: [
+    /*{
+      field: 'xx',
+      render: (props) => `<v-icon>info</v-icon>`
+    },*/
+    {
       field: 'name'
     },
     {

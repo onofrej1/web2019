@@ -1,8 +1,8 @@
 <template>
   <div>
     <v-toolbar dark color="primary" app>
-      <v-toolbar-side-icon></v-toolbar-side-icon>
-      <!--<img src="./../assets/images/furca-logo.png" width="50px" />-->
+      <!--<v-toolbar-side-icon></v-toolbar-side-icon>-->
+      <img src="./../assets/images/furca-logo.png" width="50px" />
       <v-toolbar-title class="white--text" style="margin:5px">O5 Bežecký klub Furča</v-toolbar-title>
 
       <v-spacer></v-spacer>
