@@ -32,7 +32,7 @@
       v-if="fields"
       d-block
       :headers="fields"
-      :items="filteredItems"
+      :items="items"
       hide-actions
       class="elevation-1"
     >
@@ -99,7 +99,7 @@ export default {
   },
   components: {},
   computed: {
-    filteredItems: function() {
+    items: function() {
       var data = this.data;
       var search = this.search;
       if (!data) {

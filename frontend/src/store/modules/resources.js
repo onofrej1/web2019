@@ -15,7 +15,7 @@ const getSaveDataUrl = (id, state) => {
     let modelSettings = state.settings[state.resource];
     let apiUrl = modelSettings.apiUrl !== undefined ? state.baseUrl + modelSettings.apiUrl : state.apiUrl;
 
-    return apiUrl + "/" + state.resource + (id ? "/" + id +'/': '/');
+    return apiUrl + "/" + state.resource + (id ? "/" + id + '/' : '/');
 }
 
 const emptyDataObject = Object.keys(ResourceSettings).reduce((map, key) => {
@@ -65,22 +65,17 @@ export default {
             dispatch,
             state
         }, data) {
-            data.runDate = '2019-06-08';
+            //data.runDate = '2019-06-08';
             let formData = Object.assign({}, data);
             state.relations.forEach(relation => delete data[relation.name]);
 
             axios[data.id ? "put" : "post"](
                 getSaveDataUrl(data.id, state),
                 data
-            ).then(
-                response => {
-                    dispatch('updateRelations', formData);
-                    console.log(response.data);
-                },
-                error => {
-                    console.log(error);
-                }
-            );
+            ).then(response => {
+                dispatch('updateRelations', formData);
+                console.log(response.data);
+            }).catch(error => console.log(error));
         },
         updateRelations({
             state,
@@ -88,8 +83,8 @@ export default {
         }, data) {
             state.relations.forEach(relation => {
                 axiosUriListRequest.put(
-                    state.apiUrl + "/" + state.resource + '/' + data.id + '/' + relation.name,
-                    state.apiUrl + "/" + relation.resourceTable + '/' + data[relation.name])
+                        state.apiUrl + "/" + state.resource + '/' + data.id + '/' + relation.name,
+                        state.apiUrl + "/" + relation.resourceTable + '/' + data[relation.name])
                     .then(response => dispatch('fetchData', state.resource));
             });
         },

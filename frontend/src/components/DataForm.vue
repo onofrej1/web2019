@@ -10,7 +10,12 @@
         required
       ></v-text-field>
 
-      <v-date-picker v-if="field.type==='datex'" :key="field.name" v-model="data[field.name]"></v-date-picker>
+      <v-date-picker
+        v-if="field.type==='date'"
+        locale="en-EN"
+        :key="field.name"
+        v-model="data[field.name]"
+      ></v-date-picker>
 
       <v-select
         v-if="field.type==='relation'"
@@ -55,6 +60,7 @@
 <script>
 import InlineInput from "./InlineInput";
 import { mapState } from "vuex";
+const moment = require("moment");
 
 export default {
   name: "data-form",
@@ -66,7 +72,8 @@ export default {
     InlineInput
   },
   computed: {
-    ...mapState("resources", { resources: "data" })
+    ...mapState("resources", { resources: "data" }),
+    formatDate: value => moment(value, "YYYY-MM-DD")
   },
   methods: {
     getOptions: function(resource, field) {
