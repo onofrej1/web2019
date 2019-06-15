@@ -1,9 +1,10 @@
 <template>
   <v-container fluid>
+    
     <!--<v-btn color="primary" @click="login()">Login</v-btn>
     <v-btn color="primary" @click="register()">Register</v-btn>-->
     <v-layout row>
-      <v-flex v-if="activeForm">
+      <v-flex v-if="showForm">
         <v-card class="elevation-8">
           <!--<v-toolbar>
             <v-toolbar-title>{{ activeResource }}</v-toolbar-title>
@@ -15,7 +16,7 @@
       </v-flex>
     </v-layout>
 
-    <v-flex v-if="!activeForm" md12>
+    <v-flex v-if="!showForm" md12>
       <v-card>
         <v-card-title>
           <v-btn small color="primary" @click="createItem({})">
@@ -25,13 +26,13 @@
         </v-card-title>
 
         <v-container>
-          <v-layout row wrap justify-start v-if="false">
+          <v-layout row wrap justify-start v-if="true">
             <template v-for="filter in resourceSettings.filter">
               <v-flex :key="filter.field" md4>
                 <v-select
                   v-if="filter.type==='select'"
                   :key="filter.field"
-                  :items="getFilterOptions(activeResourceData, filter.field)"
+                  :items="getFilterOptions(filter.field)"
                   v-model="search[filter.field]"
                   append-icon="search"
                   :label="filter.label"
@@ -61,7 +62,6 @@
           :items="filteredItems"
           hide-actions
           class="elevation-1"
-          v-model="abc"
         >
           <template v-slot:headers="props" v-if="customHeader">
             <component v-bind:is="customHeader" :props="props"></component>
@@ -103,47 +103,42 @@
 </template>
 
 <script>
-import CrudModels from "./../CrudModels";
 import DarkLayout from "./DarkLayout";
 import MyForm from "./MyForm";
 
-import { mapState, mapActions } from "vuex";
-//console.log(this.abc);
+import { mapState, mapGetters, mapActions } from "vuex";
 
 export default {
   name: "admin",
   data: function() {
     return {
-      activeForm: false,
-      models: CrudModels,
+      showForm: false,
       table: [],
       form: [],
       formData: {},
       search: {},
       appComponents: [],
-      abc: [],
       menu: false
     };
   },
   components: {
     DarkLayout,
     MyForm
-    //editor: Editor,
-    //quillEditor
   },
   computed: {
-    ...mapState(["activeResource", "resourceData"]),
-    activeResourceData: function() {
-      return this.resourceData[this.activeResource] || [];
-    },
-    resourceSettings: function() {
-      return this.models[this.activeResource];
-    },
+    ...mapState('resources', ['resource', 'settings', 'data']),
+    ...mapGetters('resources', {
+      resourceData: 'getResourceData',
+      resourceSettings: 'getResourceSettings'
+    }),
     customFooter: function() {
       return this.resourceSettings.footer;
     },
     customHeader: function() {
       return this.resourceSettings.header || false;
+    },
+    customBody: function() {
+      return this.resourceSettings.items || false;
     },
     expandRow: function() {
       return this.resourceSettings.expandRow || false;
@@ -151,11 +146,9 @@ export default {
     pageText: function() {
       return this.resourceSettings.pageText || false;
     },
-    customBody: function() {
-      return this.resourceSettings.items || false;
-    },
+    
     filteredItems: function() {
-      var data = this.activeResourceData;
+      var data = this.resourceData;
       var search = this.search;
       if (!data) {
         return [];
@@ -181,22 +174,21 @@ export default {
     //$route(to, from) {
     $route() {
       let resource = this.$route.params.resource;
-      this.activeForm = false;
-      this.setActiveResource(resource);
+      this.showForm = false;
+      this.setResource(resource);
       this.makeTable();
-      this.fetchResourceData(resource);
+      this.fetchData(resource);
     }
   },
   methods: {
-    ...mapActions([
-      "register",
-      "login",
-      "setActiveResource",
-      "fetchResourceData",
-      "saveResourceData"
+    ...mapActions('resources', [
+      "setResource",
+      "fetchData",
+      "saveData"
     ]),    
-    getFilterOptions: function(data, field) {
-      var filterOptions = data.map(row => {
+    getFilterOptions: function(field) {
+      console.log(this.resourceData);
+      var filterOptions = this.resourceData.map(row => {
         return {
           value: row[field],
           text: row[field]
@@ -208,12 +200,10 @@ export default {
     createItem: function() {
       this.formData = {};
       this.buildForm(null);
-      this.activeForm = true;
     },
     editItem: function(item) {
       this.formData = item;
       this.buildForm(item);
-      this.activeForm = true;
     },
 
     submit(e) {
@@ -222,14 +212,15 @@ export default {
      
       console.log(data);
 
-      this.saveResourceData(data);
+      this.saveData(data);
       this.formData = {};
-      this.activeForm = false;
+      this.showForm = false;
     },
     cancel() {
-      this.activeForm = false;
+      this.showForm = false;
     },
     makeTable() {
+      console.log(this.data);
       this.table = [
         {
           text: "id",
@@ -273,12 +264,12 @@ export default {
         };
 
         if (prop.type == "relation" || prop.type == "pivotRelation") {
-          this.fetchResourceData(prop.resourceTable);
+          this.fetchData(prop.resourceTable);
         }
 
         this.form.push(field);
       }
-      //console.log(this.form);
+      this.showForm = true;
     }
   }
 };

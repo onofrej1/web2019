@@ -39,25 +39,6 @@ var items = {
   `
 }
 
-var footer2 = {
-  name: 'my-footer',
-  template: '<p>footer2</p>'
-};
-
-var inline = {
-  name: 'inline',
-  props: ['model'],
-  template: `
-    <div>
-      <v-text-field
-        v-model="model.name"
-        label="Book"
-        required>
-      </v-text-field>
-    </div>
-  `
-};
-
 var runInline = {
   name: 'inline',
   props: ['model'],
@@ -151,7 +132,7 @@ const authors = {
   ]
 }
 
-const posts = {
+/*const posts = {
   title: 'Posts',
   filter: [{
       field: 'title',
@@ -190,13 +171,13 @@ const posts = {
     {
       field: 'text'
     },
-    /* { render: props => {
+     { render: props => {
        console.log(props);
        return 'aaa'+ props.item.text;
-     } },*/
+     } },
   ],
   footer: footer2,
-}
+}*/
 
 const users = {
   title: 'Users',
@@ -356,7 +337,7 @@ const runs = {
     {
       field: 'event',
       label: 'Event',
-      render: (props) => props.item.event.name
+      render: (props) => props.item.event ? props.item.event.name : ''
     },
     {
       field: 'edition'
@@ -436,7 +417,7 @@ const runners = {
   items: items
 };
 
-const models = {
+export default {
   users,
   //posts,
   authors,
@@ -445,5 +426,3 @@ const models = {
   events,
   runners
 };
-
-export default models;

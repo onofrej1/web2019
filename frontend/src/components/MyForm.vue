@@ -56,12 +56,10 @@
 <script>
 import InlineInput from "./InlineInput";
 import { mapState } from "vuex";
-var _ = require("underscore");
 
 export default {
   name: "my-form",
   props: {
-    msg: String,
     data: Object,
     fields: Array
   },
@@ -69,12 +67,11 @@ export default {
     InlineInput
   },
   computed: {
-    ...mapState(["resourceData"])
+    ...mapState('resources', {resourceData: 'data'})
   },
   methods: {
-    getOptions: function(resourceName, field) {
-      const resource = this.resourceData[resourceName] || [];
-      return resource.map(data => ({ value: data.id, text: data[field] }));
+    getOptions: function(resource, field) {
+      return (this.resourceData[resource] || []).map(data => ({ value: data.id, text: data[field] }));
     },
     submit: function(e) {      
       let data = this.data;
@@ -85,23 +82,13 @@ export default {
           data[key] = data[key].map(v =>
             this.resourceData[field.resourceTable].find(r => r.id == v.value)
           );
-        } else if (field && field.type == 'relation') {          
-          //data[key] = this.resourceData[field.resourceTable].find(r => r.id == data[key]);
-          //delete data[key].runs;
         }
       }
       this.$emit("submit", { data: data, originalEvent: e });
     },
-    cancel: function(e) {
+    cancel: function() {
       this.$emit("cancel");
     }
   }
 };
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-</style>

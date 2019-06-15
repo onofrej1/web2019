@@ -6,9 +6,7 @@
 </template>
 
 <script>
-import CrudModels from "./CrudModels";
-//import Admin from "./components/Admin.vue";
-//import CrudAdmin from "./components/CrudAdmin.vue";
+import ResourceSettings from "./ResourceSettings";
 import DarkLayout from "./components/DarkLayout.vue";
 import BlankLayout from "./components/BlankLayout.vue";
 
@@ -16,7 +14,7 @@ import BlankLayout from "./components/BlankLayout.vue";
 export default {
   name: "app",
   data: () => ({
-    models: CrudModels,
+    models: ResourceSettings,
     isAdminPage: false,
     layout: null,
   }),
@@ -29,7 +27,6 @@ export default {
       } else {
         this.layout = null;
       }
-      //console.log(this.isAdminPage);
     }
   },
   components: {
