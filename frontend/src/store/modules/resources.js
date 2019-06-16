@@ -43,9 +43,7 @@ export default {
         },
         setRelations(state, resource) {
             let form = state.settings[resource].form;
-            console.log(form);
             state.relations = form.filter(field => field.type == 'relation');
-            console.log(state.relations);
         },
         setData(state, payload) {
             state.data = {
@@ -74,17 +72,18 @@ export default {
                 data
             ).then(response => {
                 dispatch('updateRelations', formData);
-                console.log(response.data);
+                console.log(response);
             }).catch(error => console.log(error));
         },
         updateRelations({
             state,
             dispatch
         }, data) {
+            console.log(data);
             state.relations.forEach(relation => {
                 axiosUriListRequest.put(
                         state.apiUrl + "/" + state.resource + '/' + data.id + '/' + relation.name,
-                        state.apiUrl + "/" + relation.resourceTable + '/' + data[relation.name])
+                        state.apiUrl + "/" + relation.resourceTable + '/' + data[relation.name].id)
                     .then(response => dispatch('fetchData', state.resource));
             });
         },

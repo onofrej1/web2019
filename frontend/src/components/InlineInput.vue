@@ -8,9 +8,8 @@
 
       <template v-for="(f, index) in data">
         <div
-          class="grey lighten-4"
+          class="grey lighten-4 inline-wrapper"
           :key="field.name+'-'+index"
-          style="padding: 10px; border-top:4px solid grey !important;"
         >
           <component
             :key="field.name+'-'+index"
@@ -20,12 +19,12 @@
           ></component>
         </div>
         <div :key="field.name+'-d'+index" class="text-xs-right">
-          <v-btn flat @click="onDelete(data, index)">
+          <v-btn flat @click="deleteItem(data, index)">
             <v-icon :key="'remove'+index" small>delete</v-icon>Remove
           </v-btn>
         </div>
       </template>
-      <v-btn color="primary" @click="onAdd(field.name)">Add new</v-btn>
+      <v-btn color="primary" @click="addItem(field.name)">Add new</v-btn>
     </v-expansion-panel-content>
   </v-expansion-panel>
 </template>
@@ -38,17 +37,21 @@ export default {
     field: Object
   },
   methods: {
-      onAdd: function(field) {
+    addItem: function(field) {
       if (this.data === undefined) {
         this.data = [];
       }
       this.data.push({});
       console.log(JSON.stringify(this.data));
     },
-    onDelete: function(data, index) {
-      console.log("delete");
+    deleteItem: function(data, index) {
       data.splice(index, 1);
-    },
+    }
   }
 };
 </script>
+<style>
+.inline-wrapper {
+  padding: 10px; border-top:4px solid grey !important;
+}
+</style>

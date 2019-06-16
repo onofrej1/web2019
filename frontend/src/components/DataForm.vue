@@ -10,19 +10,40 @@
         required
       ></v-text-field>
 
-      <v-date-picker
-        v-if="field.type==='date'"
-        locale="en-EN"
+      <v-menu
         :key="field.name"
-        v-model="data[field.name]"
-      ></v-date-picker>
+        v-model="menu[field.name]"
+        :close-on-content-click="false"
+        :nudge-right="40"
+        lazy
+        v-if="field.type==='date'"
+        transition="scale-transition"
+        offset-y
+        full-width
+        min-width="290px"
+      >
+        <template v-slot:activator="{ on }">
+          <v-text-field
+            v-model="data[field.name]"
+            :label="field.label || field.name"
+            prepend-icon="event"
+            readonly
+            v-on="on"
+          ></v-text-field>
+        </template>
+        <v-date-picker
+          locale="en-EN"
+          :key="field.name"
+          v-model="data[field.name]"
+          @input="menu[field.name] = false"
+        ></v-date-picker>
+      </v-menu>
 
       <v-select
         v-if="field.type==='relation'"
         :key="field.name"
         :items="getOptions(field.resourceTable, field.show)"
-        :value="data[field.name].id"
-        v-model="data[field.name]"
+        v-model="relations[field.name]"
         :label="field.label || field.name"
       ></v-select>
 
@@ -68,12 +89,35 @@ export default {
     data: Object,
     fields: Array
   },
+  data: function() {
+    return {
+      menu: {}
+    };
+  },
+  mounted() {},
   components: {
     InlineInput
   },
   computed: {
     ...mapState("resources", { resources: "data" }),
-    formatDate: value => moment(value, "YYYY-MM-DD")
+    formatDate: value => moment(value, "YYYY-MM-DD"),
+    relations: function() {
+      let relations = this.fields.filter(field => field.type == "relation");
+      let mapped = {};
+      relations.forEach(relation => {
+        let value = this.data[relation.name];
+        value = {
+          value: value.id,
+          text: value[relation.show]
+        };
+        mapped = { ...mapped, [relation.name]: value };
+      });
+      console.log(mapped);
+      return mapped;
+    },
+    pivotRelations: function() {
+      return this.fields.filter(field => field.type == "pivotRelation")
+    }
   },
   methods: {
     getOptions: function(resource, field) {
@@ -84,15 +128,11 @@ export default {
     },
     submit: function(e) {
       let data = this.data;
-      console.log(data);
-      for (let key in data) {
-        const field = this.fields.find(f => f.name == key);
-        if (field && field.type == "pivotRelation") {
-          data[key] = data[key].map(v =>
-            this.resources[field.resourceTable].find(r => r.id == v.value)
-          );
-        }
-      }
+      this.pivotRelations.forEach(relation => {
+        data[relation.name] = data[relation.name].map(v =>
+          this.resources[relation.resourceTable].find(r => r.id == v.value)
+        );
+      });
       this.$emit("submit", { data: data, originalEvent: e });
     },
     cancel: function() {

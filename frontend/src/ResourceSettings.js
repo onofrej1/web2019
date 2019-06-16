@@ -283,7 +283,7 @@ const books = {
 };
 
 const aaa = (props) => {
-  console.log(props);
+  //console.log(props);
   var xxx = {
     name: 'my-footer',
     props: ['row'],
