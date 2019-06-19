@@ -136,11 +136,12 @@ export default {
       for (let prop of this.resourceSettings.form) {
         let name = prop.name;
         if (row) {
-          let value =
-            row[name] instanceof Array && prop.type === "pivotRelation"
-              ? row[name].map(v => ({ value: v.id, text: v[prop.show] })) //.map(v => v.name)
-              : row[name];
-          row[name] = value;
+          let value = row[name];
+          if(row[name] instanceof Array && prop.type === "pivotRelation") {
+            row[name] = row[name].map(v => ({ value: v.id, text: v[prop.show] }));
+          } else if(prop.type === "relation") {
+            row[name] = { value: value.id, text: value[prop.show] };
+          }
         }
 
         if (prop.type == "relation" || prop.type == "pivotRelation") {
@@ -148,6 +149,7 @@ export default {
         }
         this.form.push({ ...prop });
       }
+      console.log(this.form);
       this.showForm = true;
     }
   }

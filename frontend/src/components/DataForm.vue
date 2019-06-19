@@ -43,7 +43,7 @@
         v-if="field.type==='relation'"
         :key="field.name"
         :items="getOptions(field.resourceTable, field.show)"
-        v-model="relations[field.name]"
+        v-model="data[field.name]"
         :label="field.label || field.name"
       ></v-select>
 
@@ -91,7 +91,7 @@ export default {
   },
   data: function() {
     return {
-      menu: {}
+      menu: {},
     };
   },
   mounted() {},
@@ -101,20 +101,6 @@ export default {
   computed: {
     ...mapState("resources", { resources: "data" }),
     formatDate: value => moment(value, "YYYY-MM-DD"),
-    relations: function() {
-      let relations = this.fields.filter(field => field.type == "relation");
-      let mapped = {};
-      relations.forEach(relation => {
-        let value = this.data[relation.name];
-        value = {
-          value: value.id,
-          text: value[relation.show]
-        };
-        mapped = { ...mapped, [relation.name]: value };
-      });
-      console.log(mapped);
-      return mapped;
-    },
     pivotRelations: function() {
       return this.fields.filter(field => field.type == "pivotRelation")
     }

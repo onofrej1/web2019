@@ -87,7 +87,6 @@ export default {
   name: "dark-layout",
   data: () => ({
     drawer: true,
-    //logox: logo,
     groupIcons: {
       Permissions: "account_circle",
       Admin: "list_alt"

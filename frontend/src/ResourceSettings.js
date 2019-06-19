@@ -94,7 +94,7 @@ var bookForm = {
 const authors = {
   title: 'Authors',
   group: "Admin",
-  apiUrl: '',
+  //apiUrl: '',
   filter: [{
     field: 'name',
     type: 'text',
