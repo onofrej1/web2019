@@ -29,7 +29,7 @@ public class ApiController {
 	@Autowired
 	private AuthorRepository authorRepo;	
 
-	@RequestMapping("/aaa")
+	@RequestMapping("/helloworld")
 	public @ResponseBody String greeting() {
 		return "Hello World";
 	}
@@ -39,14 +39,7 @@ public class ApiController {
 		//binder.registerCustomEditor(Book.class, new BookEditor(bookRepo));		
 	}
 
-	@RequestMapping(value = "/authors/{id}/", method = RequestMethod.PUT)
-	public ResponseEntity<Object> updateAuthor(@PathVariable("id") long id, @RequestBody Author author) {		
-		authorRepo.save(author);
-
-		return new ResponseEntity<Object>(HttpStatus.OK);
-	}
-
-	/*@RequestMapping(value = "/events/{id}/", method = RequestMethod.PUT)
+	@RequestMapping(value = "/events/{id}/", method = RequestMethod.PUT)
 	public ResponseEntity<Object> updateEvent(@PathVariable("id") long id, @RequestBody Event event) {
 
 		Set<Run> deleteRuns = runRepo.findByEvent(event).stream()
@@ -66,14 +59,14 @@ public class ApiController {
 	@RequestMapping(value = "/events/", method = RequestMethod.POST)
 	public ResponseEntity<Object> createEvent(@RequestBody Event event) {
 		System.out.println(event);
-		//for (Run run : event.getRuns()) {
-			//runRepo.save(run);
-			//run.setEvent(event);
-		//}
-		//eventRepo.save(event);
+		for (Run run : event.getRuns()) {
+			runRepo.save(run);
+			run.setEvent(event);
+		}
+		eventRepo.save(event);
 
 		return new ResponseEntity<Object>(HttpStatus.OK);
-	}*/
+	}
 
 	/*
 	 * @RequestMapping(value = "xxx", method = RequestMethod.POST)

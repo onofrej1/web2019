@@ -73,8 +73,13 @@
       </template>
     </template>
     <v-spacer></v-spacer>
-    <v-btn color="primary" @click="submit">Save</v-btn>
-    <v-btn @click="cancel">Cancel</v-btn>
+    <template v-if="actions">
+      <component v-bind:is="actions" :submit="submit" :cancel="cancel"></component>
+    </template>
+    <template v-else>
+      <v-btn color="primary" @click="submit">Save</v-btn>
+      <v-btn @click="cancel">Cancel</v-btn>
+    </template>
   </v-form>
 </template>
 
@@ -87,11 +92,12 @@ export default {
   name: "data-form",
   props: {
     data: Object,
-    fields: Array
+    fields: Array,
+    actions: Object
   },
   data: function() {
     return {
-      menu: {},
+      menu: {}
     };
   },
   mounted() {},
@@ -102,7 +108,7 @@ export default {
     ...mapState("resources", { resources: "data" }),
     formatDate: value => moment(value, "YYYY-MM-DD"),
     pivotRelations: function() {
-      return this.fields.filter(field => field.type == "pivotRelation")
+      return this.fields.filter(field => field.type == "pivotRelation");
     }
   },
   methods: {
@@ -114,10 +120,10 @@ export default {
     },
     submit: function(e) {
       let data = this.data;
+      delete data["_links"];
+      console.log(data);
       this.pivotRelations.forEach(relation => {
-        data[relation.name] = data[relation.name].map(v =>
-          this.resources[relation.resourceTable].find(r => r.id == v.value)
-        );
+        data[relation.name] = data[relation.name].map(v => v.value);
       });
       this.$emit("submit", { data: data, originalEvent: e });
     },

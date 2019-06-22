@@ -1,7 +1,5 @@
 <template>
   <div>
-    blank
-    <router-link to="/crud/users">Go to Foo</router-link>
     <router-view></router-view>
   </div>
 </template>

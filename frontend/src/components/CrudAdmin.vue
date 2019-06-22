@@ -149,7 +149,7 @@ export default {
         }
         this.form.push({ ...prop });
       }
-      console.log(this.form);
+      //console.log(this.form);
       this.showForm = true;
     }
   }

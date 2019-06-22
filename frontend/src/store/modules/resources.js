@@ -67,15 +67,16 @@ export default {
         }, data) {
             let formData = Object.assign({}, data);
             state.relations.forEach(relation => delete data[relation.name]);
+            state.pivotRelations.forEach(relation => delete data[relation.name]);
 
-            /*axios[data.id ? "put" : "post"](
+            axios[data.id ? "put" : "post"](
                 getSaveUrl(data.id, state),
                 data
             ).then(response => {
+                dispatch('fetchData', state.resource)
                 dispatch('updateRelations', formData);
                 console.log(response);
-            }).catch(error => console.log(error));*/
-            dispatch('updateRelations', formData);
+            }).catch(error => console.log(error));
         },
         updateRelations({
             state,
@@ -88,12 +89,9 @@ export default {
                     .then(response => dispatch('fetchData', state.resource));
             });
             state.pivotRelations.forEach(relation => {
-                let urls = data[relation.name].reduce((urls = '', d) => {
-                    console.log(urls);
-                    urls += state.apiUrl + "/" + relation.resourceTable + '/' + d.id +'\n';
-                    return urls;
-                });
-                console.log(urls);
+                let urls = data[relation.name].reduce((accum, d, ) => {
+                    return accum += state.apiUrl + "/" + relation.resourceTable + '/' + d +'\n';
+                }, '');
                 axiosUriListRequest.put(
                         state.apiUrl + "/" + state.resource + '/' + data.id + '/' + relation.name,
                         urls)

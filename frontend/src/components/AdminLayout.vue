@@ -84,7 +84,7 @@ var _ = require("underscore");
 //import logo from "./../assets/images/furca-logo.png"
 
 export default {
-  name: "dark-layout",
+  name: "admin-layout",
   data: () => ({
     drawer: true,
     groupIcons: {

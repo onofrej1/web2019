@@ -1,13 +1,13 @@
 <template>
   <v-app> 
-    <dark-layout v-if="layout === 'dark'" :models="this.models"></dark-layout>
+    <admin-layout v-if="layout === 'admin'" :models="this.models"></admin-layout>
     <blank-layout v-if="layout == null"></blank-layout>
   </v-app>
 </template>
 
 <script>
 import ResourceSettings from "./ResourceSettings";
-import DarkLayout from "./components/DarkLayout.vue";
+import AdminLayout from "./components/AdminLayout.vue";
 import BlankLayout from "./components/BlankLayout.vue";
 
 
@@ -23,14 +23,14 @@ export default {
     $route() {
       this.isAdminPage = this.$route.meta.adminPage;
       if(this.isAdminPage) {
-        this.layout = 'dark';
+        this.layout = 'admin';
       } else {
         this.layout = null;
       }
     }
   },
   components: {
-    DarkLayout,
+    AdminLayout,
     BlankLayout,
   }
 };
