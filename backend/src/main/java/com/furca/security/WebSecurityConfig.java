@@ -78,10 +78,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             // we don't need CSRF because our token is invulnerable
             .csrf().disable()
 
-            .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
+            .exceptionHandling()
+            	.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+            	.and()
 
             // don't create session
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+            .sessionManagement()
+            	.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            	.and()
 
             .authorizeRequests()
 

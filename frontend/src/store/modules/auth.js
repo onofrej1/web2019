@@ -41,9 +41,12 @@ export default {
                 response => {
                     //localStorage.setItem('user', JSON.stringify(response.user));
                     var decoded = jwt_decode(response.data);
-                    console.log(decoded);
-                    localStorage.setItem('token', response.data);
+                    let token = response.data;
+                    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`; 
+                   
+                    localStorage.setItem('token', token);
                     console.log("data", response.data);
+                    console.log(decoded);
                 },
                 error => {
                     console.log(error);
@@ -51,8 +54,9 @@ export default {
             );
         },
         logout({state}) {
-            localStorage.removeItem('user');
-            axios({
+            localStorage.removeItem('token');
+            delete axios.defaults.headers.common['Authorization'];
+            /*axios({
                 method: 'get',
                 url: state.baseUrl + "/logout",
             }).then(
@@ -62,7 +66,7 @@ export default {
                 error => {
                     console.log(error);
                 }
-            );
+            );*/
         },
         register({
             state

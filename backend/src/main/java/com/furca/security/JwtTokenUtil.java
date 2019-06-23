@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 //import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.jsonwebtoken.Claims;
@@ -12,7 +13,13 @@ import io.jsonwebtoken.Clock;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.DefaultClock;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import com.furca.model.User;
@@ -31,6 +38,7 @@ public class JwtTokenUtil implements Serializable {
 
     @Value("${jwt.expiration}")
     private Long expiration;
+    
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -72,7 +80,11 @@ public class JwtTokenUtil implements Serializable {
 
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", "admin");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        final String authorities = auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+        claims.put("roles", authorities);
         return doGenerateToken(claims, user.getUsername());
     }
 
@@ -108,9 +120,8 @@ public class JwtTokenUtil implements Serializable {
             .signWith(SignatureAlgorithm.HS512, secret)
             .compact();
     }
-
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        User user = (User) userDetails;
+    
+    public Boolean validateToken(String token, UserDetails user) {
         final String username = getUsernameFromToken(token);
         //final Date created = getIssuedAtDateFromToken(token);
         //final Date expiration = getExpirationDateFromToken(token);
@@ -120,6 +131,18 @@ public class JwtTokenUtil implements Serializable {
                 //&& !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate())
         );
     }
+
+    /*public Boolean validateToken(String token, UserDetails userDetails) {
+        User user = (User) userDetails;
+        final String username = getUsernameFromToken(token);
+        //final Date created = getIssuedAtDateFromToken(token);
+        //final Date expiration = getExpirationDateFromToken(token);
+        return (
+            username.equals(user.getUsername())
+                && !isTokenExpired(token)
+                //&& !isCreatedBeforeLastPasswordReset(created, user.getLastPasswordResetDate())
+        );
+    }*/
 
     private Date calculateExpirationDate(Date createdDate) {
         return new Date(createdDate.getTime() + expiration * 1000);
