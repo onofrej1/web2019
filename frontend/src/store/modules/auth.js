@@ -1,6 +1,12 @@
 import axios from "axios";
 import {BASE_URL, API_URL} from './../../constants';
+import jwt_decode from 'jwt-decode';
 
+const axiosForm = axios.create({
+    headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+});
 export default {
     namespaced: true,
     state: {
@@ -18,20 +24,37 @@ export default {
     actions: {
         login({
             state
-        }) {
-            var formData = new FormData();
-            formData.append('username', 'user');
-            formData.append('password', 'user');
+        }, data) {
+            //var formData = new FormData();
+            //formData.append('username', data.username);
+            //formData.append('password', data.password);
+            let formData = {
+                username: data.username,
+                password: data.password,
+            };
 
             axios({
                 method: 'post',
                 url: state.baseUrl + "/login",
                 data: formData,
-                config: {
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    }
+            }).then(
+                response => {
+                    //localStorage.setItem('user', JSON.stringify(response.user));
+                    var decoded = jwt_decode(response.data);
+                    console.log(decoded);
+                    localStorage.setItem('token', response.data);
+                    console.log("data", response.data);
+                },
+                error => {
+                    console.log(error);
                 }
+            );
+        },
+        logout({state}) {
+            localStorage.removeItem('user');
+            axios({
+                method: 'get',
+                url: state.baseUrl + "/logout",
             }).then(
                 response => {
                     console.log("data", response.data);

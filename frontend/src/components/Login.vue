@@ -7,6 +7,7 @@
       </v-toolbar>
       <v-card-text>
         <data-form :data="{}" :fields="form" :actions="actions" @submit="submit"></data-form>
+        <v-btn color="primary" @click="logout()">Logout</v-btn>
       </v-card-text>
     </v-card>
 
@@ -15,6 +16,8 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 import DataForm from "./DataForm";
 
 let actions = {
@@ -50,10 +53,12 @@ export default {
     };
   },
   methods: {
+    ...mapActions('auth', ['login', 'logout']),
     submit: function(event) {
       console.log('login');
       let data = event.data;
       console.log(data);
+      this.login(data);
     }
   }
 };

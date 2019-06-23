@@ -28,6 +28,8 @@ public class User {
     @NotNull
     private String lastName;
     
+    
+    
     public String getFirstName() {
 		return firstName;
 	}
