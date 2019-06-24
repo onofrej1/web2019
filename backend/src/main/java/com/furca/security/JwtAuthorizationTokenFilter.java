@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,6 +20,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
@@ -74,6 +77,13 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
             // For simple validation it is completely sufficient to just check the token integrity. You don't have to call
             // the database compellingly. Again it's up to you ;)
             if (jwtTokenUtil.validateToken(authToken, userDetails)) {
+            	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+            	/*Set<String> roles = auth.getAuthorities().stream()
+            	     .map(r -> r.getAuthority()).collect(Collectors.toSet());
+            	
+            	System.out.println(roles);*/
+            	
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 logger.info("authorized user '{}', setting security context", username);

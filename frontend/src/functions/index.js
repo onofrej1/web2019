@@ -1,4 +1,5 @@
 import jwt_decode from 'jwt-decode';
+import axios from "axios";
 
 export const getHeader = function () {
     const token = JSON.parse(localStorage.getItem('token'))
@@ -11,3 +12,21 @@ export const getHeader = function () {
 export const getToken = function () {
     return jwt_decode(localStorage.getItem('token'));
 }
+
+export const axiosSetToken = function() {
+    axios.interceptors.request.use(
+        (config) => {
+          let token = localStorage.getItem('token');
+          console.log(getToken());
+          if (token) {
+            config.headers['Authorization'] = `Bearer ${ token }`;
+          }
+      
+          return config;
+        }, 
+      
+        (error) => {
+          return Promise.reject(error);
+        }
+      );
+};

@@ -60,7 +60,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	    return new BCryptPasswordEncoder();
 	}
 	
-	CorsConfigurationSource corsConfigurationSource() {
+	/*CorsConfigurationSource corsConfigurationSource() {
 	    CorsConfiguration configuration = new CorsConfiguration();
 	    List<String> allowOrigins = Arrays.asList("*");
 	    configuration.setAllowedOrigins(allowOrigins);
@@ -70,7 +70,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 	    source.registerCorsConfiguration("/**", configuration);
 	    return source;
-	}
+	}*/
 	
 	@Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
@@ -88,12 +88,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             	.and()
 
             .authorizeRequests()
-
+            .antMatchers(HttpMethod.OPTIONS,"/**").permitAll()
             // Un-secure H2 Database
             .antMatchers("/h2-console/**/**").permitAll()
             .antMatchers("/login").permitAll()
-            .antMatchers("/logout").permitAll()
             .antMatchers("/auth/**").permitAll()
+            .antMatchers("/api/**").hasAnyRole("ROLE_USER")
             .anyRequest().authenticated();
 
        httpSecurity

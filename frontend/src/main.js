@@ -7,7 +7,7 @@ import VueRouter from 'vue-router'
 import CrudAdmin from "./components/CrudAdmin.vue";
 import HelloWorld from "./components/HelloWorld.vue";
 import Login from "./components/Login.vue";
-import {getToken} from './functions';
+import {getToken, axiosSetToken} from './functions';
 
 import 'vuetify/dist/vuetify.min.css' // Ensure you are using css-loader
 import auth from './store/modules/auth';
@@ -40,7 +40,7 @@ const routes = [{
   }
 ];
 
-
+axiosSetToken();
 const router = new VueRouter({routes,mode:'history'})  
 
 router.beforeEach((to, from, next) => {

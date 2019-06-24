@@ -57,20 +57,11 @@ public class UserController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         final User user = userService.findByUsername(loginUser.getUsername());
         final String token = jwtTokenUtil.generateToken(user);
-        System.out.println(token);
+        
         return ResponseEntity.ok(token);
     }
 	
-	@RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public ResponseEntity logout(HttpServletRequest request, HttpServletResponse response) {
-		System.out.println("llogout");
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();  
-        if (auth != null){      
-           new SecurityContextLogoutHandler().logout(request, response, auth);  
-        }  
-        return ResponseEntity.ok("logout");
-    }
-
+	
 	/*@RequestMapping(value = "/login", method = RequestMethod.POST)
     public String login(@RequestBody User login) throws ServletException {
 

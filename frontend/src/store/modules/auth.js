@@ -55,18 +55,6 @@ export default {
         },
         logout({state}) {
             localStorage.removeItem('token');
-            delete axios.defaults.headers.common['Authorization'];
-            /*axios({
-                method: 'get',
-                url: state.baseUrl + "/logout",
-            }).then(
-                response => {
-                    console.log("data", response.data);
-                },
-                error => {
-                    console.log(error);
-                }
-            );*/
         },
         register({
             state
