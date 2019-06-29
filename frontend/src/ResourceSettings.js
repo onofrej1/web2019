@@ -305,8 +305,14 @@ const runs = {
   filter: [{
     field: 'name',
     type: 'select',
-    'op': 'eq'
-  }],
+    op: 'eq'
+  },
+  {
+    field: 'event',
+    type: 'text',
+    op: 'contains'
+  }
+],
   form: [{
       name: 'name',
       type: 'text'

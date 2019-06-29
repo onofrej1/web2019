@@ -18,9 +18,16 @@ export default {
     isAdminPage: false,
     layout: null,
   }),
+  mounted() {
+    this.init();
+  },
   watch: {
-    //$route(to, from) {
     $route() {
+      this.init();
+    }
+  },
+  methods: {
+    init: function() {
       this.isAdminPage = this.$route.meta.adminPage;
       if(this.isAdminPage) {
         this.layout = 'admin';

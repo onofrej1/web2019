@@ -44,23 +44,23 @@ axiosSetToken();
 const router = new VueRouter({routes,mode:'history'})  
 
 router.beforeEach((to, from, next) => {
-  console.log(to);
+  //console.log(to);
   if(to.meta.requiresAuth) {
     const token = getToken();
     
     if(!token) {
-      next({name:'login'})
+      next({name:'login'});
     }
     else if(to.meta.roles) {
       const roles = to.meta.roles.filter(value => token.roles.includes(value));
       if(roles.length > 0) {
-        next()
+        next();
       }else {
-        next('/login')
+        next('/login');
       }
     } 
   }else {
-  next()
+    next();
   }
 })
 

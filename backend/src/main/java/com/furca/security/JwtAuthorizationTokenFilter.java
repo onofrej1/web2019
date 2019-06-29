@@ -3,10 +3,13 @@ package com.furca.security;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,11 +18,16 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.furca.model.Role;
+import com.furca.model.User;
+import com.furca.repository.UserRepository;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,6 +39,9 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
     private final String tokenHeader;
+    
+    @Autowired
+    private UserRepository userRepository;
 
     public JwtAuthorizationTokenFilter(UserDetailsService userDetailsService, JwtTokenUtil jwtTokenUtil, @Value("${jwt.header}") String tokenHeader) {
         this.userDetailsService = userDetailsService;
@@ -73,7 +84,6 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
                 return;
             }
 
-
             // For simple validation it is completely sufficient to just check the token integrity. You don't have to call
             // the database compellingly. Again it's up to you ;)
             if (jwtTokenUtil.validateToken(authToken, userDetails)) {
@@ -82,15 +92,20 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
             	/*Set<String> roles = auth.getAuthorities().stream()
             	     .map(r -> r.getAuthority()).collect(Collectors.toSet());
             	
-            	System.out.println(roles);*/
-            	
+            	System.out.println(roles);
+            	User user = userRepository.findByUsername(username);
+            	Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
+                /*for (Role role : user.getRoles()){
+                    grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
+                }*/
+    
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 logger.info("authorized user '{}', setting security context", username);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
-        System.out.println("endd");
+        
         chain.doFilter(request, response);
     }
 }
