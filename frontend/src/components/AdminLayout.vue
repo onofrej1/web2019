@@ -72,6 +72,7 @@
     </v-card>
 
     <div class="content">
+      <slot></slot>
       <router-view></router-view>
     </div>
 
@@ -81,6 +82,8 @@
 
 <script>
 var _ = require("underscore");
+import Error from './Error';
+
 //import logo from "./../assets/images/furca-logo.png"
 
 export default {
@@ -103,6 +106,9 @@ export default {
         params: { resource: modelName }
       });
     }
+  },
+  components: {
+    Error
   },
   computed: {
     modelNames: function() {

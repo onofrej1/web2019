@@ -5,11 +5,11 @@ import {
     API_URL
 } from './../../constants';
 
-const axiosUriListRequest = axios.create({
+const uriListHeader = {
     headers: {
         'Content-Type': 'text/uri-list'
     }
-});
+};
 
 const getSaveUrl = (id, state) => {
     let modelSettings = state.settings[state.resource];
@@ -32,7 +32,8 @@ export default {
         settings: ResourceSettings,
         relations: [],
         pivotRelations: [],
-        data: emptyDataObject
+        data: emptyDataObject,
+        status: null,
     },
     getters: {
         getResourceData: state => state.data[state.resource],
@@ -47,11 +48,20 @@ export default {
             state.relations = form.filter(field => field.type == 'relation');
             state.pivotRelations = form.filter(field => field.type == 'pivotRelation');
         },
+        clearData(state, resource) {
+            state.data = {
+                ...state.data,
+                [resource]: []
+            };
+        },
         setData(state, payload) {
             state.data = {
                 ...state.data,
                 [payload.resource]: payload.data
             };
+        },
+        setStatus(state, status) {
+            state.status = status;
         }
     },
     actions: {
@@ -76,7 +86,10 @@ export default {
                 dispatch('fetchData', state.resource)
                 dispatch('updateRelations', formData);
                 console.log(response);
-            }).catch(error => console.log(error));
+            }).catch(error => {
+                dispatch('fetchData', state.resource);
+                console.log(error)
+            });
         },
         updateRelations({
             state,
@@ -85,23 +98,26 @@ export default {
             state.relations.forEach(relation => {
                 axiosUriListRequest.put(
                         state.apiUrl + "/" + state.resource + '/' + data.id + '/' + relation.name,
-                        state.apiUrl + "/" + relation.resourceTable + '/' + data[relation.name])
+                        state.apiUrl + "/" + relation.resourceTable + '/' + data[relation.name],
+                        uriListHeader)
                     .then(response => dispatch('fetchData', state.resource));
             });
             state.pivotRelations.forEach(relation => {
                 let urls = data[relation.name].reduce((accum, d, ) => {
-                    return accum += state.apiUrl + "/" + relation.resourceTable + '/' + d +'\n';
+                    return accum += state.apiUrl + "/" + relation.resourceTable + '/' + d + '\n';
                 }, '');
-                axiosUriListRequest.put(
+                axios.put(
                         state.apiUrl + "/" + state.resource + '/' + data.id + '/' + relation.name,
-                        urls)
+                        urls, uriListHeader)
                     .then(response => dispatch('fetchData', state.resource));
             });
         },
         fetchData({
             commit,
+            dispatch,
             state
         }, resource) {
+            commit("setStatus", 'loading');
             return axios.get(state.apiUrl + "/" + resource + "/").then(
                 response => {
                     var data = response.data._embedded[resource];
@@ -109,9 +125,13 @@ export default {
                         resource,
                         data: data
                     });
+                    commit("setStatus", 'success');
+                    //commit("setMessage", resource, {root: true});
+                    //dispatch('setMessage', resource);
                     return response;
                 },
                 error => {
+                    commit("setStatus", 'error');
                     console.log(error);
                 }
             );

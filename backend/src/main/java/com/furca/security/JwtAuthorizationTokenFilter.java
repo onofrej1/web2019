@@ -36,19 +36,15 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final UserDetailsService userDetailsService;
-    private final JwtTokenUtil jwtTokenUtil;
-    private final String tokenHeader;
+    @Autowired
+    private UserDetailsService userDetailsService;
     
     @Autowired
-    private UserRepository userRepository;
-
-    public JwtAuthorizationTokenFilter(UserDetailsService userDetailsService, JwtTokenUtil jwtTokenUtil, @Value("${jwt.header}") String tokenHeader) {
-        this.userDetailsService = userDetailsService;
-        this.jwtTokenUtil = jwtTokenUtil;
-        this.tokenHeader = tokenHeader;
-    }
-
+    private JwtTokenUtil jwtTokenUtil;
+    
+    @Value("${jwt.header}")
+    private String tokenHeader;
+    
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         logger.debug("processing authentication for '{}'", request.getRequestURL());
@@ -89,16 +85,7 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
             if (jwtTokenUtil.validateToken(authToken, userDetails)) {
             	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-            	/*Set<String> roles = auth.getAuthorities().stream()
-            	     .map(r -> r.getAuthority()).collect(Collectors.toSet());
-            	
-            	System.out.println(roles);
-            	User user = userRepository.findByUsername(username);
-            	Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-                /*for (Role role : user.getRoles()){
-                    grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
-                }*/
-    
+            	System.out.println(userDetails.getAuthorities());
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 logger.info("authorized user '{}', setting security context", username);

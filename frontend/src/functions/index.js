@@ -6,13 +6,14 @@ export const capitalize = (s) => {
     return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
-export const getHeader = function () {
+
+/*export const getHeader = function () {
     const token = JSON.parse(localStorage.getItem('token'))
     return {
         'Accept': 'application/json',
         'Authorization': 'Bearer' + token
     }
-}
+}*/
 
 export const getToken = function () {
     return jwt_decode(localStorage.getItem('token'));

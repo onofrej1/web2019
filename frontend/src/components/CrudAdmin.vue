@@ -19,11 +19,11 @@
           <h2>{{ capitalize(resource) }} list</h2>
           <v-layout row justify-end>
             <v-btn small color="primary" @click="createItem({})">
-              <v-icon>add</v-icon> Create
+              <v-icon>add</v-icon>Create
             </v-btn>
             <v-menu offset-y>
               <template v-slot:activator="{ on }">
-                <v-btn small color="primary" dark v-on="on">
+                <v-btn small color="primary" v-on="on" :disabled="filter.length == 0">
                   <v-icon>filter_list</v-icon>Add filter
                 </v-btn>
               </template>
@@ -42,45 +42,45 @@
             <v-layout row justify-end v-if="selectedFilters">
               <template v-for="(f, index) in selectedFilters">
                 <div :key="f.field">
-                <v-layout justify-end align-end row :key="f.field">
-                  <v-flex xs2 style="position:relative;bottom:15px">
-                    <v-icon @click="removeFilter(index)">cancel</v-icon>
-                  </v-flex>
-                  <v-flex xs10>
-                  <v-select
-                    v-if="f.type==='select'"
-                    :key="f.field"
-                    dense
-                    :items="getFilterOptions(f.field)"
-                    v-model="search[f.field]"
-                    append-icon="search"
-                    :label="f.label"
-                    :placeholder="f.field || f.label"
-                    style="width:90%"
-                  ></v-select>
+                  <v-layout justify-end align-end row :key="f.field">
+                    <v-flex xs2 style="position:relative;bottom:15px">
+                      <v-icon @click="removeFilter(index)">cancel</v-icon>
+                    </v-flex>
+                    <v-flex xs10>
+                      <v-select
+                        v-if="f.type==='select'"
+                        :key="f.field"
+                        dense
+                        :items="getFilterOptions(f.field)"
+                        v-model="search[f.field]"
+                        append-icon="search"
+                        :label="f.label"
+                        :placeholder="f.field || f.label"
+                        style="width:90%"
+                      ></v-select>
 
-                  <v-text-field
-                    v-if="f.type==='text'"
-                    :key="f.field"
-                    v-model="search[f.field]"
-                    append-icon="search"
-                    :label="f.label"
-                    :placeholder="f.field || f.label"
-                    style="width:90%"
-                  ></v-text-field>
-                  </v-flex>
-                </v-layout>
+                      <v-text-field
+                        v-if="f.type==='text'"
+                        :key="f.field"
+                        v-model="search[f.field]"
+                        append-icon="search"
+                        :label="f.label"
+                        :placeholder="f.field || f.label"
+                        style="width:90%"
+                      ></v-text-field>
+                    </v-flex>
+                  </v-layout>
                 </div>
               </template>
             </v-layout>
           </v-container>
         </v-card-title>
         <v-data-table
-          v-if="list"
+          v-if="list && status!='loading'"
           d-block
           :headers="list"
           :items="items"
-          hide-actions
+          :rows-per-page-items="[10,25,{text: 'all', value:-1}]"
           class="elevation-1"
         >
           <template v-slot:headers="props" v-if="resourceSettings.header">
@@ -91,7 +91,7 @@
             <component v-bind:is="resourceSettings.body" :props="props"></component>
           </template>
 
-          <template v-if="resourceSettings.footer" #footer>
+          <template v-if="resourceSettings.footer">
             <component v-bind:is="resourceSettings.footer"></component>
           </template>
 
@@ -105,15 +105,8 @@
                 <span v-html="field.render ? field.render(props) : props.item[field.value]"></span>
               </td>
               <td class="text-xs-right">
-                <span
-                  class="action"
-                  :key="JSON.stringify(action)"
-                  @click="action.action(props.item)"
-                  v-for="action in actions"
-                >
-                  <v-icon v-if="action.icon" color="primary">{{ action.icon }}</v-icon>
-                  {{ action.label || '' }}
-                </span>
+                <v-icon @click="editItem(props.item)">edit</v-icon>
+                <v-icon @click="deleteItem(props.item)">delete</v-icon>
               </td>
             </tr>
           </template>
@@ -141,11 +134,7 @@ export default {
       form: [],
       formData: {},
       selectedFilters: [],
-      search: {},
-      actions: [
-        { icon: "edit", action: this.editItem },
-        { icon: "delete", action: this.deleteItem }
-      ]
+      search: {}
     };
   },
   components: {
@@ -155,7 +144,7 @@ export default {
     this.init();
   },
   computed: {
-    ...mapState("resources", ["resource"]),
+    ...mapState("resources", ["resource", "status"]),
     ...mapGetters("resources", {
       resourceData: "getResourceData",
       resourceSettings: "getResourceSettings"
@@ -184,8 +173,10 @@ export default {
       return data;
     },
     filter: function() {
-      return this.resourceSettings.filter;
-    }, 
+      return this.resourceSettings.filter.filter(
+        f => !this.selectedFilters.includes(f)
+      );
+    },
     // zmaz
     pageText: function() {
       return this.resourceSettings.pageText || false;

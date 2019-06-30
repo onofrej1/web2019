@@ -1,6 +1,8 @@
 <template>
   <v-app> 
-    <admin-layout v-if="layout === 'admin'" :models="this.models"></admin-layout>
+    <admin-layout v-if="layout === 'admin'" :models="this.models">
+      <error></error>
+    </admin-layout>
     <blank-layout v-if="layout == null"></blank-layout>
   </v-app>
 </template>
@@ -9,7 +11,7 @@
 import ResourceSettings from "./ResourceSettings";
 import AdminLayout from "./components/AdminLayout.vue";
 import BlankLayout from "./components/BlankLayout.vue";
-
+import Error from './components/Error';
 
 export default {
   name: "app",
@@ -39,6 +41,7 @@ export default {
   components: {
     AdminLayout,
     BlankLayout,
+    Error
   }
 };
 </script>

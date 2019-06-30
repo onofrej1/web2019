@@ -423,7 +423,6 @@ const runners = {
       render: (props) => `${moment(props.item.birthday, 'YYYY-MM-DD').format('DD/MM/YYYY')}`
     },
   ],
-  footer: footer,
   header: header,
   items: items
 };

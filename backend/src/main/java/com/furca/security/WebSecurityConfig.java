@@ -74,7 +74,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/h2-console/**/**").permitAll()
             .antMatchers("/login").permitAll()
             .antMatchers("/auth/**").permitAll()
-            .antMatchers("/api/**").hasAnyRole("USER")
+            .antMatchers(HttpMethod.GET, "/api/**").hasAnyRole("EDITOR")
+            .antMatchers("/api/**").hasAnyRole("ADMIN")
             .anyRequest().authenticated();
 
        httpSecurity
