@@ -1,9 +1,11 @@
 <template>
   <v-app> 
     <admin-layout v-if="layout === 'admin'" :models="this.models">
-      <error></error>
+      <modal></modal>
     </admin-layout>
-    <blank-layout v-if="layout == null"></blank-layout>
+    <blank-layout v-if="layout == null">
+      <modal></modal>
+    </blank-layout>
   </v-app>
 </template>
 
@@ -11,7 +13,7 @@
 import ResourceSettings from "./ResourceSettings";
 import AdminLayout from "./components/AdminLayout.vue";
 import BlankLayout from "./components/BlankLayout.vue";
-import Error from './components/Error';
+import Modal from './components/Modal';
 
 export default {
   name: "app",
@@ -41,7 +43,7 @@ export default {
   components: {
     AdminLayout,
     BlankLayout,
-    Error
+    Modal
   }
 };
 </script>

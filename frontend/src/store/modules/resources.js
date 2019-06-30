@@ -23,6 +23,11 @@ const emptyDataObject = Object.keys(ResourceSettings).reduce((map, key) => {
     return map;
 }, {});
 
+var footer = {
+    name: 'my-footer',
+    template: '<b>footer </b>'
+  };
+
 export default {
     namespaced: true,
     state: {
@@ -127,6 +132,8 @@ export default {
                     });
                     commit("setStatus", 'success');
                     //commit("setMessage", resource, {root: true});
+                    console.log('aaa');
+                    //commit("modal/setMessageComponent", footer, { root: true });
                     //dispatch('setMessage', resource);
                     return response;
                 },

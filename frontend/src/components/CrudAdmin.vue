@@ -151,7 +151,7 @@ export default {
     }),
     items: function() {
       let data = this.resourceData;
-      console.log(data);
+      
       let search = this.search;
       if (!data) {
         return [];
@@ -223,7 +223,7 @@ export default {
       this.setForm(item);
     },
     deleteItem: function(item) {
-      console.log("delete"); //todo
+      console.log(item); //todo
     },
     submit(e) {
       e.originalEvent.preventDefault();

@@ -2,7 +2,7 @@
   <div>
     <v-toolbar dark color="primary" app>
       <!--<v-toolbar-side-icon></v-toolbar-side-icon>-->
-      <img src="./../assets/images/furca-logo.png" width="50px" />
+      <img src="./../assets/images/furca-logo.png" width="50px">
       <v-toolbar-title class="white--text" style="margin:5px">O5 Bežecký klub Furča</v-toolbar-title>
 
       <v-spacer></v-spacer>
@@ -61,7 +61,7 @@
         <v-divider></v-divider>
         <v-list-tile>
           <v-list-tile-action>
-            <v-icon medium>folder</v-icon>
+            <v-icon medium @click="openModal">folder</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title>Media manager</v-list-tile-title>
@@ -82,7 +82,7 @@
 
 <script>
 var _ = require("underscore");
-import Error from './Error';
+import { mapActions } from "vuex";
 
 //import logo from "./../assets/images/furca-logo.png"
 
@@ -100,16 +100,26 @@ export default {
     models: Object
   },
   methods: {
+    ...mapActions("modal", { showModal: "show" }),
     setModel: function(modelName) {
       this.$router.push({
         name: "crud",
         params: { resource: modelName }
       });
+    },
+    openModal: function() {
+      this.showModal({
+        title: "Modal title",
+        component: {
+          name: "test",
+          template: `
+          <h1>modal</h1>
+        `
+        }
+      });
     }
   },
-  components: {
-    Error
-  },
+  components: {},
   computed: {
     modelNames: function() {
       return _.chain(this.models)
