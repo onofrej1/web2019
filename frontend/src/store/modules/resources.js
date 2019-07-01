@@ -18,15 +18,10 @@ const getSaveUrl = (id, state) => {
     return apiUrl + "/" + state.resource + (id ? "/" + id + '/' : '/');
 }
 
-const emptyDataObject = Object.keys(ResourceSettings).reduce((map, key) => {
+const initData = Object.keys(ResourceSettings).reduce((map, key) => {
     map[key] = [];
     return map;
 }, {});
-
-var footer = {
-    name: 'my-footer',
-    template: '<b>footer </b>'
-  };
 
 export default {
     namespaced: true,
@@ -37,7 +32,7 @@ export default {
         settings: ResourceSettings,
         relations: [],
         pivotRelations: [],
-        data: emptyDataObject,
+        data: initData,
         status: null,
     },
     getters: {
@@ -76,7 +71,20 @@ export default {
             commit("setResource", resource);
             commit("setRelations", resource);
         },
-        saveData({
+        deleteResource({
+            dispatch,
+            state
+        }, id) {
+            axios.delete(
+                state.apiUrl + '/' + state.resource + '/'+id
+            ).then(response => {
+                dispatch('fetchData', state.resource)
+            }).catch(error => {
+                dispatch('fetchData', state.resource);
+                console.log(error)
+            });
+        },
+        saveResource({
             dispatch,
             state
         }, data) {
@@ -89,7 +97,7 @@ export default {
                 data
             ).then(response => {
                 dispatch('fetchData', state.resource)
-                dispatch('updateRelations', formData);
+                dispatch('updateRelations', {...formData, id: response.data.id});
                 console.log(response);
             }).catch(error => {
                 dispatch('fetchData', state.resource);
@@ -101,7 +109,7 @@ export default {
             dispatch
         }, data) {
             state.relations.forEach(relation => {
-                axiosUriListRequest.put(
+                axios.put(
                         state.apiUrl + "/" + state.resource + '/' + data.id + '/' + relation.name,
                         state.apiUrl + "/" + relation.resourceTable + '/' + data[relation.name],
                         uriListHeader)
@@ -130,11 +138,7 @@ export default {
                         resource,
                         data: data
                     });
-                    commit("setStatus", 'success');
-                    //commit("setMessage", resource, {root: true});
-                    console.log('aaa');
-                    //commit("modal/setMessageComponent", footer, { root: true });
-                    //dispatch('setMessage', resource);
+                    commit("setStatus", 'success');                    
                     return response;
                 },
                 error => {

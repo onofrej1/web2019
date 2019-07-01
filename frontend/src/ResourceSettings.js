@@ -1,4 +1,5 @@
 const moment = require('moment');
+import RunnerList from './components/RunnerList.vue';
 
 var footer = {
   name: 'my-footer',
@@ -423,6 +424,7 @@ const runners = {
       render: (props) => `${moment(props.item.birthday, 'YYYY-MM-DD').format('DD/MM/YYYY')}`
     },
   ],
+  //listView: RunnerList,
   header: header,
   items: items
 };

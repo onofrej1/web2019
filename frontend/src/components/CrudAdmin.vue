@@ -13,6 +13,8 @@
       </v-flex>
     </v-layout>
 
+    
+
     <v-flex v-if="!showForm" md12>
       <v-card>
         <v-card-title>
@@ -75,8 +77,13 @@
             </v-layout>
           </v-container>
         </v-card-title>
+
+        <template v-if="resourceSettings.listView">
+          <component v-bind:is="resourceSettings.listView" :items="items" :actions="actions"></component>
+        </template>
+    
         <v-data-table
-          v-if="list && status!='loading'"
+          v-if="list && status!='loading' && !resourceSettings.listView"
           d-block
           :headers="list"
           :items="items"
@@ -134,7 +141,11 @@ export default {
       form: [],
       formData: {},
       selectedFilters: [],
-      search: {}
+      search: {},
+      actions: {
+        edit: this.editItem,
+        delete: this.deleteItem,
+      }
     };
   },
   components: {
@@ -151,7 +162,7 @@ export default {
     }),
     items: function() {
       let data = this.resourceData;
-      
+
       let search = this.search;
       if (!data) {
         return [];
@@ -189,7 +200,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("resources", ["setResource", "fetchData", "saveData"]),
+    ...mapActions("resources", ["setResource", "fetchData", "saveResource", "deleteResource"]),
     init: function() {
       let resource = this.$route.params.resource;
       this.showForm = false;
@@ -223,13 +234,15 @@ export default {
       this.setForm(item);
     },
     deleteItem: function(item) {
-      console.log(item); //todo
+      if(window.confirm("Realy delete ?")) {
+        this.deleteResource(item.id);
+      }
     },
     submit(e) {
       e.originalEvent.preventDefault();
       console.log(e.data);
 
-      this.saveData(e.data);
+      this.saveResource(e.data);
       this.formData = {};
       this.showForm = false;
     },
