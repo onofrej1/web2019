@@ -99,23 +99,20 @@ public class UserController {
 	// private UserValidator userValidator;
 
 	@PostMapping("/registration")
-	public String registration(@Valid @RequestBody User user, BindingResult result) {
+	public ResponseEntity registration(@Valid @RequestBody User user) {
 		// userValidator.validate(userForm, bindingResult);
-		System.out.println(user);
-		System.out.print(user.getUsername());
-		if (result.hasErrors()) {
+		
+		//if (result.hasErrors()) {
 			// System.out.print(result.getFieldError("firstName").getDefaultMessage());
-			// System.out.print(result.getFieldError("lastName").getDefaultMessage());
+			//return ResponseEntity.ok("fail");
+		//}
 
-			return "redirect:/chyba";
-		}
-
-		userService.save(user);
+		//userService.save(user);
 
 		// securityService.autologin(userForm.getUsername(),
 		// userForm.getPasswordConfirm());
 
-		return "redirect:/welcome";
+		return ResponseEntity.ok("success");
 	}
 
 	/*

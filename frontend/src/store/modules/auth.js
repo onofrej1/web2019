@@ -51,11 +51,7 @@ export default {
         },
         register({
             state
-        }) {
-            var data = {
-                username: "user",
-                password: "user"
-            };
+        }, data) {
             /*var formData = new FormData();
             formData.append('username', 'user');
             formData.append('password', 'user');*/

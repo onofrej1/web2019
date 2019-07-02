@@ -14,6 +14,9 @@
       <v-btn icon to="/login">
         <v-icon>account_circle</v-icon>
       </v-btn>
+      <v-btn icon to="/register">
+        <v-icon>search</v-icon>
+      </v-btn>
     </v-toolbar>
 
     <v-card id="menu">

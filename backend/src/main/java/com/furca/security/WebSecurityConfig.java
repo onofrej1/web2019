@@ -73,6 +73,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             // Un-secure H2 Database
             .antMatchers("/h2-console/**/**").permitAll()
             .antMatchers("/login").permitAll()
+            .antMatchers("/registration").permitAll()
             .antMatchers("/auth/**").permitAll()
             .antMatchers(HttpMethod.GET, "/api/**").hasAnyRole("EDITOR")
             .antMatchers("/api/**").hasAnyRole("ADMIN")

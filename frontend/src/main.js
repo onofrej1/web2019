@@ -7,6 +7,7 @@ import VueRouter from 'vue-router'
 import CrudAdmin from "./components/CrudAdmin.vue";
 import HelloWorld from "./components/HelloWorld.vue";
 import Login from "./components/Login.vue";
+import Register from "./components/Register.vue";
 import {getToken, axiosSetToken} from './functions';
 
 import 'vuetify/dist/vuetify.min.css' // Ensure you are using css-loader
@@ -33,6 +34,11 @@ const routes = [{
     path: '/login',
     component: Login,
     name: 'login'
+  },
+  {
+    path: '/register',
+    component: Register,
+    name: 'register'
   },
   {
     path: '/hello',

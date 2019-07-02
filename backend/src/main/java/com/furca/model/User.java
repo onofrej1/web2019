@@ -1,6 +1,7 @@
 package com.furca.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
 import java.util.Set;
@@ -20,30 +21,29 @@ public class User {
     @NotNull
     private String password;
     
-    @Column(name = "first_name", nullable = false)
+    @Column(name = "name", nullable = false)
     @NotNull
-    private String firstName;
+    private String name;
     
-    @Column(name = "last_name", nullable = false)
+    @Column(name = "email", nullable = false)
     @NotNull
-    private String lastName;
+    @Email
+    private String email;
     
-    
-    
-    public String getFirstName() {
-		return firstName;
+    public String getEmail() {
+		return email;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
-	public String getLastName() {
-		return lastName;
+	public String getName() {
+		return name;
 	}
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
+	public void setName(String name) {
+		this.name = name;
 	}
 
     //private String passwordConfirm;
