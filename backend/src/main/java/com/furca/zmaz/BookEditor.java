@@ -1,4 +1,4 @@
-package com.furca;
+package com.furca.zmaz;
 
 import java.beans.PropertyEditorSupport;
 import java.util.Optional;

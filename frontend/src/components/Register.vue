@@ -20,8 +20,8 @@ import { mapActions } from "vuex";
 import DataForm from "./DataForm";
 
 let actions = {
-  name: 'actions',
-  props: ['submit', 'cancel'],
+  name: "actions",
+  props: ["submit", "cancel"],
   template: `<div>
     <v-btn color="primary" @click="submit">Submit</v-btn>
     <v-btn>Cancel</v-btn>
@@ -29,7 +29,7 @@ let actions = {
 };
 
 export default {
-  name: "Login",
+  name: "Register",
   props: {
     msg: String
   },
@@ -38,35 +38,62 @@ export default {
   },
   data: function() {
     return {
+      refs: this.$refs,
       actions: actions,
       form: [
         {
           name: "username",
           label: "Username",
-          type: "text"
+          type: "text",
+          flex: "xs12",
+          rules: [
+            v => !!v || "E-mail is required",
+            // test unique user name
+            //v =>  || "user name is allready taken"
+          ]
         },
         {
           name: "password",
           label: "Password",
-          type: "text"
+          type: "password",
+          rules: [v => !!v || 'Password is required'],
+          flex: "xs6 md3"
+        },
+        {
+          name: "password_repeat",
+          label: "Password confirm",
+          type: "password",
+          rules: [v => {
+            console.log(refs);
+            //v == this.$refs.password.nodeValue || 'Passwords dont match'
+            return true;
+            }
+            ],
+          flex: "xs6 md3"
         },
         {
           name: "name",
           label: "Name",
-          type: "text"
+          type: "text",
+          rules: [v => !!v || 'Name is required'],
+          flex: "xs12"
         },
         {
           name: "email",
           label: "Email",
-          type: "text"
+          type: "text",
+          flex: "xs12",
+          rules: [
+            v => !!v || "E-mail is required",
+            v => /.+@.+/.test(v) || "E-mail must be valid"
+          ]
         }
       ]
     };
   },
   methods: {
-    ...mapActions('auth', ['register']),
+    ...mapActions("auth", ["register"]),
     submit: function(event) {
-      console.log('login');
       let data = event.data;
       console.log(data);
       this.register(data);

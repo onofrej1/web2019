@@ -1,4 +1,4 @@
-package com.furca;
+package com.furca.zmaz;
 
 import java.util.Optional;
 import org.springframework.core.convert.converter.Converter;

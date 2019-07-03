@@ -1,4 +1,4 @@
-package com.furca;
+package com.furca.exception;
 
 import java.util.Arrays;
 import java.util.List;

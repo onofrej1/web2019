@@ -1,4 +1,4 @@
-package com.furca;
+package com.furca.zmaz;
 
 
 import org.springframework.beans.factory.annotation.Autowired;

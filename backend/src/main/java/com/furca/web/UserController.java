@@ -107,7 +107,7 @@ public class UserController {
 			//return ResponseEntity.ok("fail");
 		//}
 
-		//userService.save(user);
+		userService.save(user);
 
 		// securityService.autologin(userForm.getUsername(),
 		// userForm.getPasswordConfirm());
