@@ -4,7 +4,7 @@
     <v-container>
       <v-layout row wrap>
         <template v-for="field in fields">
-          <v-flex :key="field.name" :[getFlex(field)]="true">
+          <v-flex :key="field.name" :[getFlexAttribute(field)]="true">
             <v-text-field
               :ref="field.name"
               :key="field.name"
@@ -137,8 +137,8 @@ export default {
         text: data[field]
       }));
     },
-    getFlex(field) {
-      return field.flex;
+    getFlexAttribute(field) {
+      return field.flex || 'xs12';
     },
     submit: function(e) {
       if (!this.$refs.form.validate()) {

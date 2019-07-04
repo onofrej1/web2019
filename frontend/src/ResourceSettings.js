@@ -93,7 +93,7 @@ var bookForm = {
 }*/
 
 const authors = {
-  title: 'Authors',
+  title: 'Author',
   group: "Admin",
   //apiUrl: '',
   filter: [{
@@ -181,7 +181,7 @@ const authors = {
 }*/
 
 const users = {
-  title: 'Users',
+  title: 'User',
   group: 'Permissions',
   filter: [{
     field: 'username',
@@ -193,19 +193,36 @@ const users = {
       type: 'text'
     },
     {
-      name: 'lastName',
+      name: 'email',
       type: 'text'
-    },
-
-    //{ name: 'content', type: 'editor' },
-    //{ name: 'tags', type: 'pivotRelation', resourceTable: 'tag', show: 'title', label: 'Tags' },
+    },    
+    { name: 'roles', type: 'pivotRelation', resourceTable: 'roles', show: 'name', label: 'Roles' },
   ],
   list: [{
       field: 'username'
     },
     {
-      field: 'lastName'
+      field: 'email'
     },
+  ]
+}
+
+const roles = {
+  title: 'Role',
+  group: 'Permissions',
+  filter: [{
+    field: 'name',
+    type: 'text',
+    'op': 'eq'
+  }],
+  form: [{
+      name: 'name',
+      type: 'text'
+    },        
+  ],
+  list: [{
+      field: 'name'
+    },    
   ]
 }
 
@@ -257,7 +274,7 @@ const tag = {
 };*/
 
 const books = {
-  title: "Books",
+  title: "Book",
   group: "Settings",
   filter: [],
   form: [{
@@ -301,7 +318,7 @@ const aaa = (props) => {
 }
 
 const runs = {
-  title: 'Runs',
+  title: 'Run',
   group: "Admin",
   filter: [{
     field: 'name',
@@ -354,7 +371,7 @@ const runs = {
 };
 
 const events = {
-  title: 'Events',
+  title: 'Event',
   group: "Admin",
   apiUrl: '',
   filter: [{
@@ -392,7 +409,7 @@ const events = {
 };
 
 const runners = {
-  title: 'Runers',
+  title: 'Runner',
   group: "Admin",
   filter: [{
     field: 'lastName',
@@ -425,7 +442,7 @@ const runners = {
     },
   ],
   //listView: RunnerList,
-  header: header,
+  //header: header,
   items: items
 };
 
@@ -436,5 +453,6 @@ export default {
   books,
   runs,
   events,
-  runners
+  runners,
+  roles
 };

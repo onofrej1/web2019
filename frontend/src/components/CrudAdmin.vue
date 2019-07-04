@@ -13,12 +13,10 @@
       </v-flex>
     </v-layout>
 
-    
-
     <v-flex v-if="!showForm" md12>
       <v-card>
         <v-card-title>
-          <h2>{{ capitalize(resource) }} list</h2>
+          <h2>{{ capitalize(resourceSettings.title) }} list</h2>
           <v-layout row justify-end>
             <v-btn small color="primary" @click="createItem({})">
               <v-icon>add</v-icon>Create
@@ -81,16 +79,45 @@
         <template v-if="resourceSettings.listView">
           <component v-bind:is="resourceSettings.listView" :items="items" :actions="actions"></component>
         </template>
-    
+
         <v-data-table
           v-if="list && status!='loading' && !resourceSettings.listView"
           d-block
+          :pagination.sync="pagination"
           :headers="list"
+          v-model="selected"
           :items="items"
           :rows-per-page-items="[10,25,{text: 'all', value:-1}]"
           class="elevation-1"
         >
-          <template v-slot:headers="props" v-if="resourceSettings.header">
+          <template v-slot:headers="props" v-if="!resourceSettings.header">
+            <tr>              
+              <th v-if="resourceSettings.bulkActions">
+                <v-checkbox
+                  :input-value="props.all"
+                  :indeterminate="props.indeterminate"
+                  primary
+                  hide-details
+                  @click.stop="toggleAll"
+                ></v-checkbox>
+              </th>
+              <th v-if="resourceSettings.expandRow">More</th>
+              <th
+                v-for="header in props.headers"
+                :key="header.text"
+                :class="['text-xs-right column sortable', pagination.descending ? 'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '']"
+                @click="changeSort(header.value)"
+              >
+                <v-icon small>arrow_upward</v-icon>
+                {{ header.text }}
+              </th>
+              <th class="text-xs-right">
+                Actions
+              </th>              
+            </tr>
+          </template>
+
+          <template v-slot:items="props" v-if="resourceSettings.header">
             <component v-bind:is="resourceSettings.header" :props="props"></component>
           </template>
 
@@ -107,7 +134,13 @@
           </template>
 
           <template v-slot:items="props" v-else>
-            <tr @click="props.expanded = !props.expanded">
+            <tr>
+              <td @click="props.selected = !props.selected" v-if="resourceSettings.bulkActions">
+                <v-checkbox :input-value="props.selected" primary hide-details></v-checkbox>
+              </td>
+              <th v-if="resourceSettings.expandRow" @click="props.expanded = !props.expanded">
+                <v-icon>info</v-icon>
+              </th>              
               <td class="text-xs-right" :key="field.value" v-for="field in list">
                 <span v-html="field.render ? field.render(props) : props.item[field.value]"></span>
               </td>
@@ -144,8 +177,12 @@ export default {
       search: {},
       actions: {
         edit: this.editItem,
-        delete: this.deleteItem,
-      }
+        delete: this.deleteItem
+      },
+      pagination: {
+        sortBy: "name"
+      },
+      selected: []
     };
   },
   components: {
@@ -200,7 +237,12 @@ export default {
     }
   },
   methods: {
-    ...mapActions("resources", ["setResource", "fetchData", "saveResource", "deleteResource"]),
+    ...mapActions("resources", [
+      "setResource",
+      "fetchData",
+      "saveResource",
+      "deleteResource"
+    ]),
     init: function() {
       let resource = this.$route.params.resource;
       this.showForm = false;
@@ -234,7 +276,7 @@ export default {
       this.setForm(item);
     },
     deleteItem: function(item) {
-      if(window.confirm("Realy delete ?")) {
+      if (window.confirm("Realy delete ?")) {
         this.deleteResource(item.id);
       }
     },
@@ -248,7 +290,7 @@ export default {
     },
     cancel() {
       this.showForm = false;
-    },
+    },    
     setList() {
       this.list = [
         {
@@ -265,6 +307,9 @@ export default {
           align: "right"
         });
       }
+      /*this.list.push({
+        text: 'actions',
+      });*/
     },
     setForm(row) {
       this.form = [
@@ -295,6 +340,21 @@ export default {
       }
       //console.log(this.form);
       this.showForm = true;
+    },
+    toggleAll() {
+      if (this.selected.length) {
+        this.selected = [];
+      } else {
+        this.selected = this.items.slice();
+      } 
+    },
+    changeSort(column) {
+      if (this.pagination.sortBy === column) {
+        this.pagination.descending = !this.pagination.descending;
+      } else {
+        this.pagination.sortBy = column;
+        this.pagination.descending = false;
+      }
     }
   }
 };
