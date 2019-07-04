@@ -3,6 +3,7 @@ import App from './App.vue'
 import Vuetify from 'vuetify'
 import store from './store'
 import VueRouter from 'vue-router'
+import VeeValidate from 'vee-validate'
 
 import CrudAdmin from "./components/CrudAdmin.vue";
 import HelloWorld from "./components/HelloWorld.vue";
@@ -17,7 +18,10 @@ import auth from './store/modules/auth';
 Vue.use(require('vue-moment'));
 Vue.use(Vuetify)
 Vue.use(VueRouter)
-
+Vue.use(VeeValidate, {
+  fieldsBagName: 'veeFields',
+  events: 'change'
+});
 //Vue.config.productionTip = false
 
 const routes = [{

@@ -44,38 +44,32 @@ export default {
         {
           name: "username",
           label: "Username",
+          validate: 'required',
           type: "text",
           flex: "xs12",
-          rules: [
-            v => !!v || "E-mail is required",
-            // test unique user name
-            //v =>  || "user name is allready taken"
-          ]
+          attr: {
+            'prepend-inner-icon': "person"
+          },
         },
         {
           name: "password",
           label: "Password",
           type: "password",
-          rules: [v => !!v || 'Password is required'],
+          validate: 'required|min:6',
           flex: "xs6 md3"
         },
         {
-          name: "password_repeat",
+          name: "password_confirm",
           label: "Password confirm",
           type: "password",
-          rules: [v => {
-            console.log(refs);
-            //v == this.$refs.password.nodeValue || 'Passwords dont match'
-            return true;
-            }
-            ],
+          validate: 'required|confirmed:password',
           flex: "xs6 md3"
         },
         {
           name: "name",
           label: "Name",
           type: "text",
-          rules: [v => !!v || 'Name is required'],
+          validate: 'required',
           flex: "xs12"
         },
         {
@@ -83,10 +77,7 @@ export default {
           label: "Email",
           type: "text",
           flex: "xs12",
-          rules: [
-            v => !!v || "E-mail is required",
-            v => /.+@.+/.test(v) || "E-mail must be valid"
-          ]
+          validate: "required|email"
         }
       ]
     };

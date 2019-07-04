@@ -13,6 +13,7 @@
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
     "underscore": "^1.9.1",
+    "vee-validate": "^2.2.11",
     "vue": "^2.6.7",
     "vue-moment": "^4.0.0",
     "vue-router": "^3.0.6",

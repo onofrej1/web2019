@@ -92,7 +92,7 @@ export default {
             state.relations.forEach(relation => delete data[relation.name]);
             state.pivotRelations.forEach(relation => delete data[relation.name]);
 
-            axios[data.id ? "put" : "post"](
+            axios[data.id ? "patch" : "post"](
                 getSaveUrl(data.id, state),
                 data
             ).then(response => {

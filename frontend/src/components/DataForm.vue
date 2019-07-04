@@ -1,24 +1,29 @@
 
 <template>
-  <v-form ref="form">
+  <v-form>
     <v-container>
       <v-layout row wrap>
         <template v-for="field in fields">
           <v-flex :key="field.name" :[getFlexAttribute(field)]="true">
             <v-text-field
-              :ref="field.name"
+              v-bind="getCommonProps(field)"
               :key="field.name"
-              v-if="field.type==='text'"
+              v-if="field.type==='textxxx'"
+              v-validate="field.validate"
+              :error-messages="errors.collect(field.name)"
+              :data-vv-name="field.name"
               v-model="data[field.name]"
-              :rules="field.rules"
               :label="field.label || field.name"
             ></v-text-field>
 
+            <v-text-field v-model="data[field.name]" v-bind="getCommonProps(field)" v-if="field.type==='text'"></v-text-field>
+
             <v-text-field
               type="password"
-              :ref="field.name"
               :key="field.name"
-              :rules="field.rules"
+              v-validate="field.validate"
+              :error-messages="errors.collect(field.name)"
+              :data-vv-name="field.name"
               v-if="field.type==='password'"
               v-model="data[field.name]"
               :label="field.label || field.name"
@@ -41,6 +46,9 @@
                   v-model="data[field.name]"
                   :label="field.label || field.name"
                   prepend-icon="event"
+                  v-validate="field.validate"
+                  :error-messages="errors.collect(field.name)"
+                  :data-vv-name="field.name"
                   readonly
                   v-on="on"
                 ></v-text-field>
@@ -57,6 +65,9 @@
               v-if="field.type==='relation'"
               :key="field.name"
               :rules="field.rules"
+              v-validate="field.validate"
+              :error-messages="errors.collect(field.name)"
+              :data-vv-name="field.name"
               :items="getOptions(field.resourceTable, field.show)"
               v-model="data[field.name]"
               :label="field.label || field.name"
@@ -109,6 +120,7 @@ const moment = require("moment");
 
 export default {
   name: "data-form",
+  //inject: ['$validator'],
   props: {
     data: Object,
     fields: Array,
@@ -116,7 +128,7 @@ export default {
   },
   data: function() {
     return {
-      menu: {},
+      menu: {}
     };
   },
   mounted() {},
@@ -128,6 +140,25 @@ export default {
     formatDate: value => moment(value, "YYYY-MM-DD"),
     pivotRelations: function() {
       return this.fields.filter(field => field.type == "pivotRelation");
+    },
+    getCommonProps: function() {
+      var vm = this;
+      console.log(this.data);
+      return function(field) {
+        console.log(field);
+        console.log(vm.data);
+        //console.log(this.errors);
+        
+        return {
+          key: field.name,
+          'v-validate': field.validate,
+          name: field.name,
+          label: field.label || field.name,
+          "data-vv-name": field.name,
+         // 'v-model': vm.data[field.name],
+          "error-messages": vm.errors.collect(field.name)
+        };
+      };
     }
   },
   methods: {
@@ -138,20 +169,34 @@ export default {
       }));
     },
     getFlexAttribute(field) {
-      return field.flex || 'xs12';
+      return field.flex || "xs12 sm12 md12";
+    },
+    getCommonPropsx: function(field) {
+      console.log(this.data);
+      console.log(field.name);
+      console.log(this.data[field.name]);
+      return {
+        key: field.name,
+        'v-validate': field.validate,
+        name: field.name,
+        label: field.label || field.name,
+        "data-vv-name": field.name,
+        'v-model': this.data[field.name],
+        "error-messages": this.errors.collect(field.name)
+      };
     },
     submit: function(e) {
-      if (!this.$refs.form.validate()) {
-        return;
-        //this.snackbar = true
-      }
-      let data = this.data;
-      delete data["_links"];
-      console.log(data);
-      this.pivotRelations.forEach(relation => {
-        data[relation.name] = data[relation.name].map(v => v.value);
+      this.$validator.validateAll().then(valid => {
+        if (valid) {
+          let data = this.data;
+          delete data["_links"];
+          console.log(data);
+          this.pivotRelations.forEach(relation => {
+            data[relation.name] = data[relation.name].map(v => v.value);
+          });
+          this.$emit("submit", { data: data, originalEvent: e });
+        }
       });
-      this.$emit("submit", { data: data, originalEvent: e });
     },
     cancel: function() {
       this.$emit("cancel");
