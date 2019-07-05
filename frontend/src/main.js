@@ -10,10 +10,8 @@ import HelloWorld from "./components/HelloWorld.vue";
 import Login from "./components/Login.vue";
 import Register from "./components/Register.vue";
 import {getToken, axiosSetToken} from './functions';
-import validators from './validators';
 
 import 'vuetify/dist/vuetify.min.css' // Ensure you are using css-loader
-import auth from './store/modules/auth';
 //import '~vuetify/src/stylus/main' // Ensure you are using stylus-loader
 
 Vue.use(require('vue-moment'));
@@ -52,14 +50,19 @@ const routes = [{
 ];
 
 axiosSetToken();
-const router = new VueRouter({routes,mode:'history'})  
+export const router = new VueRouter({routes, mode:'history'})  
 
 router.beforeEach((to, from, next) => {
   //console.log(to);
+  console.log(to);
+  console.log(to.meta.requiresAuth);
   if(to.meta.requiresAuth) {
+    console.log('dnu');
     const token = getToken();
-    
+    console.log(localStorage.getItem('token'));
+    console.log(token);
     if(!token) {
+      console.log('next');
       next({name:'login'});
     }
     else if(to.meta.roles) {
@@ -70,7 +73,7 @@ router.beforeEach((to, from, next) => {
         next('/login');
       }
     } 
-  }else {
+  } else {
     next();
   }
 })

@@ -88,7 +88,8 @@ export default {
           validate: "required|confirmed:password",
           flex: "xs6 md6",
           props: {
-            "prepend-inner-icon": "lock"
+            "prepend-inner-icon": "lock",
+            'data-vv-as': "password"
           }
         },
         {
@@ -103,12 +104,6 @@ export default {
         }
       ]
     };
-  },
-  computed: {
-    ...mapState("resources", { resourceData: "data" }),
-    userNames: function() {
-      return this.users.map(u => u.username).join(",");
-    }
   },
   methods: {
     ...mapActions("auth", ["register"]),

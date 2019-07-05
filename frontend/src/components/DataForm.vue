@@ -10,7 +10,7 @@
               v-model="data[field.name]"
               v-bind="getProps(field)"
               v-validate="field.validate"
-              type="field.inputType || 'text'"
+              :type="field.inputType || 'text'"
             ></v-text-field>
 
             <v-menu
@@ -98,7 +98,6 @@ const moment = require("moment");
 
 export default {
   name: "data-form",
-  //inject: ['$validator'],
   props: {
     data: Object,
     fields: Array,
@@ -130,6 +129,7 @@ export default {
     getProps: function(field) {
       let customProps = field.props;
       let commonProps = {
+        ref: field.name,
         key: field.name,
         name: field.name,
         label: field.label || field.name,
@@ -139,7 +139,7 @@ export default {
       return { ...commonProps, ...customProps };
     },
     getFlexAttribute(field) {
-      return field.flex || "xs12 sm12 md12";
+      return field.flex || "xs12 sm12 md12 lg12";
     },
     submit: function(e) {
       this.$validator.validateAll().then(valid => {

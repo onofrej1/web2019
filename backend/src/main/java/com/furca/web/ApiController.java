@@ -1,4 +1,4 @@
-package com.furca;
+package com.furca.web;
 
 import java.util.Set;
 import java.util.stream.Collectors;

@@ -4,8 +4,8 @@ import java.util.Set;
 
 import org.springframework.data.rest.core.config.Projection;
 
-@Projection(name = "myEvent", types = { Event.class }) 
-public interface MyEvent {
+@Projection(name = "EventProjection", types = { Event.class }) 
+public interface EventProjection {
   Long getId();
   String getName();
   String getLocality();

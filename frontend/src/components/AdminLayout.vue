@@ -17,6 +17,9 @@
       <v-btn icon to="/register">
         <v-icon>search</v-icon>
       </v-btn>
+      <v-btn icon @click="logout()">
+        <v-icon>input</v-icon>
+      </v-btn>
     </v-toolbar>
 
     <v-card id="menu">
@@ -104,6 +107,7 @@ export default {
   },
   methods: {
     ...mapActions("modal", { showModal: "show" }),
+    ...mapActions("auth", ['logout']),
     setModel: function(modelName) {
       this.$router.push({
         name: "crud",

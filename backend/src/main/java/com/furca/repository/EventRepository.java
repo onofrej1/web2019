@@ -1,14 +1,12 @@
 package com.furca.repository;
 
 import com.furca.model.Event;
-import com.furca.model.MyEvent;
+import com.furca.model.EventProjection;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.data.rest.core.annotation.RestResource;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
-@RepositoryRestResource(excerptProjection = MyEvent.class)
-public interface EventRepository extends PagingAndSortingRepository<Event, Integer> {
+@RepositoryRestResource(excerptProjection = EventProjection.class)
+public interface EventRepository extends PagingAndSortingRepository<Event, Long> {
 	
 	
 }

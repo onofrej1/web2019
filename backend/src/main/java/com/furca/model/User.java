@@ -9,49 +9,30 @@ import java.util.Set;
 @Entity
 @Table(name = "user")
 public class User {
+	
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
  
-    @Column(nullable = false, unique = true)
+    @Column(name="username", nullable = false, unique = true)
     @NotNull
     private String username;
  
-    @Column(name = "password", nullable = false)
+    @Column(name="password", nullable = false)
     @NotNull
     private String password;
     
-    @Column(name = "name", nullable = false)
-    @NotNull
-    private String name;
-    
-    @Column(name = "email", nullable = false)
+    @Column(name="email", nullable = false, unique = true)
     @NotNull
     @Email
     private String email;
     
-    
-    
-    public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-    //private String passwordConfirm;
+    @Column(name="name", nullable = false)
+    @NotNull
+    private String name;
     
     private Set<Role> roles;
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     public Long getId() {
@@ -69,7 +50,7 @@ public class User {
     public void setUsername(String username) {
         this.username = username;
     }
-
+    
     public String getPassword() {
         return password;
     }
@@ -77,18 +58,25 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+    
+    public String getEmail() {
+		return email;
+	}
 
-   /* @Transient
-    public String getPasswordConfirm() {
-        return passwordConfirm;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public void setPasswordConfirm(String passwordConfirm) {
-        this.passwordConfirm = passwordConfirm;
-    }*/
+	public String getName() {
+		return name;
+	}
 
-    @ManyToMany
-    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	public void setName(String name) {
+		this.name = name;
+	}
+    
+	@ManyToMany
+	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     public Set<Role> getRoles() {
         return roles;
     }

@@ -1,11 +1,7 @@
 package com.furca.model;
 
 import java.sql.Time;
-import java.util.Date;
-import java.util.Set;
-
 import javax.persistence.*;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
@@ -13,7 +9,7 @@ public class Result{
 	
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private int Id;
+    private Long Id;
     
     @ManyToOne
     @JoinColumn(name="run_id", nullable=false)
@@ -39,11 +35,11 @@ public class Result{
     @Column(name="running_number")
     private String runningNumber;
 
-	public int getId() {
+	public Long getId() {
 		return Id;
 	}
 
-	public void setId(int id) {
+	public void setId(Long id) {
 		Id = id;
 	}
 

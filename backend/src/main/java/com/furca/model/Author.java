@@ -9,7 +9,7 @@ public class Author {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	int Id;
+	Long Id;
 
 	String name;
 	
@@ -21,18 +21,17 @@ public class Author {
 		inverseJoinColumns = {@JoinColumn(name = "book_id") })
 	Set<Book> books;
 
-	public int getId() {
+	public Long getId() {
 		return Id;
 	}
 	
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.Id = id;
 	}
 
 	public String getName() {
 		return name;
 	}
-	
 	
 	public void setName(String name) {
 		this.name = name;

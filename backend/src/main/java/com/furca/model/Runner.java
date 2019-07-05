@@ -4,32 +4,36 @@ import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class Runner{
 	
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private int Id;
+    private Long Id;
 	
-	@Column(name="first_name")
+	@Column(name="first_name", nullable=false)
+	@NotNull
     private String firstName;
     
-    @Column(name="last_name")
+    @Column(name="last_name", nullable=false)
+    @NotNull
     private String lastName;
     
+    @Column(name="birthday", nullable=false)
     @Temporal(TemporalType.DATE)
-    @Column(name="birthday")
+    @NotNull
     private Date birthday;
     
     @OneToMany(mappedBy="runner")
     private Set<Result> results;
     
-    public int getId() {
+    public Long getId() {
 		return Id;
 	}
 
-	public void setId(int id) {
+	public void setId(Long id) {
 		Id = id;
 	}
 
@@ -65,6 +69,4 @@ public class Runner{
 		this.results = results;
 	}
 
-	
-	
 }

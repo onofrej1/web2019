@@ -2,30 +2,23 @@ package com.furca.model;
 
 import java.util.Date;
 import java.util.Set;
-
 import javax.persistence.*;
-
-import org.springframework.data.rest.core.annotation.RestResource;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 public class Run{
 	
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private int Id;
+    private Long Id;
 	
 	@Column(name="name")
     private String name;
     
     @Column(name="run_date")
-    @Basic
     @Temporal(TemporalType.DATE)
     private java.util.Date runDate;
     
-    @Column(name="edition")
+    @Column(name="edition", nullable=false)
     private int edition;
     
     @ManyToOne(cascade=CascadeType.ALL)
@@ -41,11 +34,11 @@ public class Run{
 	@OneToMany(mappedBy="run")
     private Set<Result> results;
 
-	public int getId() {
+	public Long getId() {
 		return Id;
 	}
 	
-	public void setId(int Id) {
+	public void setId(Long Id) {
 		this.Id = Id;
 	}
 

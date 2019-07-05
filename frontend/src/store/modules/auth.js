@@ -1,9 +1,9 @@
 import axios from "axios";
+import {router} from './../../main'
 import {
     BASE_URL,
     API_URL
 } from './../../constants';
-import jwt_decode from 'jwt-decode';
 
 const axiosForm = axios.create({
     headers: {
@@ -19,11 +19,6 @@ export default {
     getters: {
 
     },
-    mutations: {
-        /*setXXX(state, payload) {
-            state.activeResource = payload;
-        },*/
-    },
     actions: {
         login({
             state
@@ -38,29 +33,24 @@ export default {
             }).then(
                 response => {
                     localStorage.setItem('token', response.data);
+                    //router.push({name: 'home'});
                 },
                 error => {
                     console.log(error);
                 }
             );
         },
-        logout({
-            state
-        }) {
+        logout() {
             localStorage.removeItem('token');
+            router.push({name: 'login'});
         },
         register({
             state
         }, data) {
-            /*var formData = new FormData();
-            formData.append('username', 'user');
-            formData.append('password', 'user');*/
-
             axios({
                 method: 'post',
                 url: state.baseUrl + "/registration",
                 data: data
-                //config: { headers: {'Content-Type': 'application/x-www-form-urlencoded' }}
             }).then(
                 response => {
                     console.log("data", response.data);
@@ -70,6 +60,22 @@ export default {
                 }
             );
         },
+        /*checkUserName({
+            state
+        }, username) {
+            axios({
+                method: 'post',
+                url: state.baseUrl + "/check-username",
+                data: username
+            }).then(
+                response => {
+                    return response.data;
+                },
+                error => {
+                    console.log(error);
+                }
+            );
+        },*/
 
     }
 };

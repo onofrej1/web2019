@@ -1,12 +1,11 @@
 package com.furca.model;
 
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.rest.core.config.Projection;
 
-@Projection(name = "myAuthor", types = { Author.class }) 
-public interface MyAuthor {
+@Projection(name = "AuthorProjection", types = { Author.class }) 
+public interface AuthorProjection {
   Long getId();
   String getName();
   String getAge();

@@ -1,13 +1,21 @@
 package com.furca.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Entity
 @Table(name = "role")
 public class Role {
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
+    
+    @Column(name="name", nullable = false, unique = true)
+    @NotNull
     private String name;
+    
     private Set<User> users;
 
     @Id

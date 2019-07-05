@@ -25,7 +25,6 @@ export default {
   name: "Modal",
   props: {
     component: Object
-    //
   },
   computed: {
     ...mapState("modal", { modalProps: "settings" }),

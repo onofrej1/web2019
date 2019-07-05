@@ -1,15 +1,25 @@
 <template>
   <div>
     <br>
-    <v-card style="width:50%; margin:auto;">
-      <v-toolbar>
-        <v-toolbar-title>Login</v-toolbar-title>
-      </v-toolbar>
-      <v-card-text>
-        <data-form :data="{}" :fields="form" :actions="actions" @submit="submit"></data-form>
-        <v-btn color="primary" @click="logout()">Logout</v-btn>
-      </v-card-text>
-    </v-card>
+    <v-container fluid>
+      <v-layout row>
+        <v-flex xs6 offset-xs3 md6 offset-md3 lg4 offset-lg4 style="max-width: 450px;">
+          <v-card>
+            <v-toolbar>
+              <v-toolbar-title>
+                <v-icon>person</v-icon> Login
+              </v-toolbar-title>
+            </v-toolbar>
+            <v-card-text>
+              <data-form :data="{}" :fields="form" :actions="actions" @submit="submit"></data-form>
+              <p class="text-xs-center">
+                [<v-icon small>person_add</v-icon> Create new account ]
+              </p>
+            </v-card-text>
+          </v-card>
+        </v-flex>
+      </v-layout>
+    </v-container>
 
     <router-link to="/crud/users">Go to Foo</router-link>
   </div>
@@ -21,11 +31,11 @@ import { mapActions } from "vuex";
 import DataForm from "./DataForm";
 
 let actions = {
-  name: 'actions',
-  props: ['submit', 'cancel'],
+  name: "actions",
+  props: ["submit", "cancel"],
   template: `<div>
-    <v-btn color="primary" @click="submit">Login</v-btn>
-    <v-btn>Cancel</v-btn>
+    <v-btn color="primary" block @click="submit">Login</v-btn>
+    
   </div>`
 };
 
@@ -43,19 +53,28 @@ export default {
       form: [
         {
           name: "username",
-          type: "text"
+          label: "User name",
+          type: "text",
+          props: {
+            "prepend-inner-icon": "person"
+          }
         },
         {
           name: "password",
-          type: "text"
+          label: "Password",
+          type: "text",
+          inputType: "password",
+          props: {
+            "prepend-inner-icon": "lock"
+          }
         }
       ]
     };
   },
   methods: {
-    ...mapActions('auth', ['login', 'logout']),
+    ...mapActions("auth", ["login", "logout"]),
     submit: function(event) {
-      console.log('login');
+      console.log("login");
       let data = event.data;
       console.log(data);
       this.login(data);

@@ -4,8 +4,8 @@ import java.util.Date;
 
 import org.springframework.data.rest.core.config.Projection;
 
-@Projection(name = "myRun", types = { Run.class }) 
-public interface MyRun {
+@Projection(name = "RunProjection", types = { Run.class }) 
+public interface RunProjection {
   Long getId();
   String getName();
   Date getRunDate();

@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class Event{
@@ -16,24 +17,25 @@ public class Event{
 
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private int Id;
+    private Long Id;
 	
-	
-	@Column(name="name")
+	@Column(name="name", nullable=false, unique=true)
+	@NotNull
     private String name;
 	
-	@Column(name="locality")
+	@Column(name="locality", nullable=false)
+	@NotNull
     private String locality;
     
 	@OneToMany(mappedBy="event", cascade=CascadeType.ALL)
 	@OrderBy(value = "run_date ASC")
     private Set<Run> runs;
 
-	public int getId() {
+	public Long getId() {
 		return Id;
 	}
 
-	public void setId(int id) {
+	public void setId(Long id) {
 		Id = id;
 	}
 
@@ -61,7 +63,7 @@ public class Event{
 		this.runs = runs;		
 	}
 	
-	public List<Integer> getRunIds() {
+	public List<Long> getRunIds() {
 		return this.getRuns()
 			.stream()
 			.map(Run::getId)

@@ -1,8 +1,5 @@
 package com.furca.security;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,18 +13,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
-	@Autowired
-	private AjaxSuccessHandler ajaxSuccessHandler;
 	
 	@Autowired
 	private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -38,9 +29,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
     private UserDetailsService userDetailsService;
-	
-	private SimpleUrlAuthenticationFailureHandler myFailureHandler = new SimpleUrlAuthenticationFailureHandler();
-	
+		
 	@Bean("authenticationManager")
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
@@ -51,7 +40,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public PasswordEncoder  encoder() {
 	    return new BCryptPasswordEncoder();
 	}
-	
 	
 	@Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
@@ -74,7 +62,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/h2-console/**/**").permitAll()
             .antMatchers("/login").permitAll()
             .antMatchers("/registration").permitAll()
-            .antMatchers("/auth/**").permitAll()
+            .antMatchers("/check-username").permitAll()
+            //.antMatchers("/").hasAnyRole("EDITOR")
+            //.antMatchers("/auth/**").permitAll()
             .antMatchers(HttpMethod.GET, "/api/**").hasAnyRole("EDITOR")
             .antMatchers("/api/**").hasAnyRole("ADMIN")
             .anyRequest().authenticated();

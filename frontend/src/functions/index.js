@@ -6,7 +6,9 @@ export const capitalize = (s) => {
     return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
-/*export const getHeader = function () {
+/*
+    zmaz
+    export const getHeader = function () {
     const token = JSON.parse(localStorage.getItem('token'))
     return {
         'Accept': 'application/json',
@@ -15,7 +17,8 @@ export const capitalize = (s) => {
 }*/
 
 export const getToken = function () {
-    return jwt_decode(localStorage.getItem('token'));
+    let token = localStorage.getItem('token');
+    return token ? jwt_decode(token) : null;
 }
 
 export const axiosSetToken = function() {

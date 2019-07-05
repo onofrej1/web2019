@@ -1,4 +1,4 @@
-package com.furca;
+package com.furca.exception;
  
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import com.furca.exception.ApiError;
  
 @ControllerAdvice
 public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler

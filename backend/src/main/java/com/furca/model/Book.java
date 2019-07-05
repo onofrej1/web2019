@@ -9,7 +9,7 @@ public class Book{
 	
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private int Id;
+    private Long Id;
 	
     private String title;
     
@@ -18,11 +18,11 @@ public class Book{
 	@ManyToMany(mappedBy = "books")
     Set<Author> authors;
 
-	public int getId() {
+	public Long getId() {
 		return Id;
 	}
 
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.Id = id;
 	}
 
