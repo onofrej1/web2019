@@ -75,3 +75,27 @@ binder.registerCustomEditor(Set.class, "books", new CustomCollectionEditor(Set.c
                     ></v-checkbox>
                   </template>
                 </template>
+
+
+                inputTypes: [
+        "text",
+        "number",
+        "password",
+        "search",
+        "email",
+        "url",
+        "tel",
+        "number",
+        "range",
+        "date",
+        "month",
+        "week",
+        "time",
+        "datetime",
+        "datetime-local",
+        "color",
+        "button",
+        "checkbox",
+        "radio"
+        // add other
+      ]

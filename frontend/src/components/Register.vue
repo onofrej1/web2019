@@ -1,86 +1,114 @@
 <template>
   <div>
     <br>
-    <v-card style="width:50%; margin:auto;">
-      <v-toolbar>
-        <v-toolbar-title>Create account</v-toolbar-title>
-      </v-toolbar>
-      <v-card-text>
-        <data-form :data="{}" :fields="form" :actions="actions" @submit="submit"></data-form>
-      </v-card-text>
-    </v-card>
+    <v-container fluid>
+      <v-layout row>
+        <v-flex md6 offset-md3 lg4 offset-lg4>
+          <v-card>
+            <v-toolbar>
+              <v-toolbar-title>
+                <v-icon>person_add</v-icon> Create account
+                </v-toolbar-title>
+            </v-toolbar>
+
+            <v-card-text>
+              <data-form :data="{}" :fields="form" :actions="actions" @submit="submit"></data-form>
+            </v-card-text>
+          </v-card>
+        </v-flex>
+      </v-layout>
+    </v-container>
 
     <router-link to="/crud/users">Go to Foo</router-link>
   </div>
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
+import { Validator } from "vee-validate";
 
 import DataForm from "./DataForm";
 
 let actions = {
   name: "actions",
   props: ["submit", "cancel"],
-  template: `<div>
-    <v-btn color="primary" @click="submit">Submit</v-btn>
-    <v-btn>Cancel</v-btn>
+  template: `<div class="text-xs-right">
+    <v-btn color="primary" text-xs-right @click="submit">
+      Submit
+    </v-btn>
   </div>`
 };
 
 export default {
   name: "Register",
-  props: {
-    msg: String
-  },
   components: {
     DataForm
   },
   data: function() {
     return {
-      refs: this.$refs,
       actions: actions,
+      users: [],
       form: [
         {
           name: "username",
-          label: "Username",
-          validate: 'required',
+          label: "Username/Login",
+          validate: "required|isUnique:users,username",
           type: "text",
           flex: "xs12",
-          attr: {
-            'prepend-inner-icon': "person"
-          },
-        },
-        {
-          name: "password",
-          label: "Password",
-          type: "password",
-          validate: 'required|min:6',
-          flex: "xs6 md3"
-        },
-        {
-          name: "password_confirm",
-          label: "Password confirm",
-          type: "password",
-          validate: 'required|confirmed:password',
-          flex: "xs6 md3"
-        },
-        {
-          name: "name",
-          label: "Name",
-          type: "text",
-          validate: 'required',
-          flex: "xs12"
+          props: {
+            "prepend-inner-icon": "person"
+          }
         },
         {
           name: "email",
           label: "Email",
           type: "text",
           flex: "xs12",
-          validate: "required|email"
+          validate: "required|email",
+          props: {
+            "prepend-inner-icon": "mail"
+          }
+        },
+        {
+          name: "password",
+          label: "Password",
+          type: "text",
+          inputType: "password",
+          validate: "required|min:6",
+          flex: "xs6 md6",
+          props: {
+            "prepend-inner-icon": "lock"
+          }
+        },
+        {
+          name: "password_confirm",
+          label: "Password confirm",
+          type: "text",
+          inputType: "password",
+          validate: "required|confirmed:password",
+          flex: "xs6 md6",
+          props: {
+            "prepend-inner-icon": "lock"
+          }
+        },
+        {
+          name: "name",
+          label: "Name",
+          type: "text",
+          validate: "required",
+          flex: "xs12",
+          props: {
+            "prepend-inner-icon": "person_outline"
+          }
         }
       ]
     };
+  },
+  computed: {
+    ...mapState("resources", { resourceData: "data" }),
+    userNames: function() {
+      return this.users.map(u => u.username).join(",");
+    }
   },
   methods: {
     ...mapActions("auth", ["register"]),

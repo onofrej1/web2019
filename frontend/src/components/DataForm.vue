@@ -6,36 +6,20 @@
         <template v-for="field in fields">
           <v-flex :key="field.name" :[getFlexAttribute(field)]="true">
             <v-text-field
-              v-bind="getCommonProps(field)"
-              :key="field.name"
-              v-if="field.type==='textxxx'"
-              v-validate="field.validate"
-              :error-messages="errors.collect(field.name)"
-              :data-vv-name="field.name"
+              v-if="field.type=='text'"
               v-model="data[field.name]"
-              :label="field.label || field.name"
-            ></v-text-field>
-
-            <v-text-field v-model="data[field.name]" v-bind="getCommonProps(field)" v-if="field.type==='text'"></v-text-field>
-
-            <v-text-field
-              type="password"
-              :key="field.name"
+              v-bind="getProps(field)"
               v-validate="field.validate"
-              :error-messages="errors.collect(field.name)"
-              :data-vv-name="field.name"
-              v-if="field.type==='password'"
-              v-model="data[field.name]"
-              :label="field.label || field.name"
+              type="field.inputType || 'text'"
             ></v-text-field>
 
             <v-menu
+              v-if="field.type==='date'"
               :key="field.name"
               v-model="menu[field.name]"
               :close-on-content-click="false"
               :nudge-right="40"
               lazy
-              v-if="field.type==='date'"
               transition="scale-transition"
               offset-y
               full-width
@@ -43,12 +27,11 @@
             >
               <template v-slot:activator="{ on }">
                 <v-text-field
+                  v-if="field.type=='date'"
                   v-model="data[field.name]"
-                  :label="field.label || field.name"
-                  prepend-icon="event"
+                  v-bind="getProps(field)"
                   v-validate="field.validate"
-                  :error-messages="errors.collect(field.name)"
-                  :data-vv-name="field.name"
+                  prepend-icon="event"
                   readonly
                   v-on="on"
                 ></v-text-field>
@@ -62,26 +45,21 @@
             </v-menu>
 
             <v-select
-              v-if="field.type==='relation'"
-              :key="field.name"
-              :rules="field.rules"
-              v-validate="field.validate"
-              :error-messages="errors.collect(field.name)"
-              :data-vv-name="field.name"
-              :items="getOptions(field.resourceTable, field.show)"
+              v-if="field.type=='relation'"
               v-model="data[field.name]"
-              :label="field.label || field.name"
+              v-bind="getProps(field)"
+              v-validate="field.validate"
+              :items="getOptions(field.resourceTable, field.show)"
             ></v-select>
 
             <v-combobox
-              :key="field.name"
-              v-if="field.type==='pivotRelation'"
+              v-if="field.type=='pivotRelation'"
               v-model="data[field.name]"
+              v-bind="getProps(field)"
+              v-validate="field.validate"
               :items="getOptions(field.resourceTable, field.show)"
               item-text="text"
-              :rules="field.rules"
               item-value="text"
-              :label="field.name || field.label"
               multiple
             >
               <template v-slot:selection="data">
@@ -140,25 +118,6 @@ export default {
     formatDate: value => moment(value, "YYYY-MM-DD"),
     pivotRelations: function() {
       return this.fields.filter(field => field.type == "pivotRelation");
-    },
-    getCommonProps: function() {
-      var vm = this;
-      console.log(this.data);
-      return function(field) {
-        console.log(field);
-        console.log(vm.data);
-        //console.log(this.errors);
-        
-        return {
-          key: field.name,
-          'v-validate': field.validate,
-          name: field.name,
-          label: field.label || field.name,
-          "data-vv-name": field.name,
-         // 'v-model': vm.data[field.name],
-          "error-messages": vm.errors.collect(field.name)
-        };
-      };
     }
   },
   methods: {
@@ -168,22 +127,19 @@ export default {
         text: data[field]
       }));
     },
-    getFlexAttribute(field) {
-      return field.flex || "xs12 sm12 md12";
-    },
-    getCommonPropsx: function(field) {
-      console.log(this.data);
-      console.log(field.name);
-      console.log(this.data[field.name]);
-      return {
+    getProps: function(field) {
+      let customProps = field.props;
+      let commonProps = {
         key: field.name,
-        'v-validate': field.validate,
         name: field.name,
         label: field.label || field.name,
         "data-vv-name": field.name,
-        'v-model': this.data[field.name],
         "error-messages": this.errors.collect(field.name)
       };
+      return { ...commonProps, ...customProps };
+    },
+    getFlexAttribute(field) {
+      return field.flex || "xs12 sm12 md12";
     },
     submit: function(e) {
       this.$validator.validateAll().then(valid => {

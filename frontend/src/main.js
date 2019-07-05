@@ -10,6 +10,7 @@ import HelloWorld from "./components/HelloWorld.vue";
 import Login from "./components/Login.vue";
 import Register from "./components/Register.vue";
 import {getToken, axiosSetToken} from './functions';
+import validators from './validators';
 
 import 'vuetify/dist/vuetify.min.css' // Ensure you are using css-loader
 import auth from './store/modules/auth';

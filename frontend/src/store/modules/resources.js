@@ -139,7 +139,7 @@ export default {
                         data: data
                     });
                     commit("setStatus", 'success');                    
-                    return response;
+                    return {...response, data:data};
                 },
                 error => {
                     commit("setStatus", 'error');
