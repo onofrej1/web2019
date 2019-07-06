@@ -117,6 +117,9 @@ export default {
     formatDate: value => moment(value, "YYYY-MM-DD"),
     pivotRelations: function() {
       return this.fields.filter(field => field.type == "pivotRelation");
+    },
+    relations: function() {
+      return this.fields.filter(field => field.type == "relation");
     }
   },
   methods: {
@@ -145,10 +148,13 @@ export default {
       this.$validator.validateAll().then(valid => {
         if (valid) {
           let data = this.data;
-          delete data["_links"];
           console.log(data);
+          delete data["_links"];
           this.pivotRelations.forEach(relation => {
             data[relation.name] = data[relation.name].map(v => v.value);
+          });
+          this.relations.forEach(relation => {
+            //data[relation.name] = data[relation.name].value;
           });
           this.$emit("submit", { data: data, originalEvent: e });
         }

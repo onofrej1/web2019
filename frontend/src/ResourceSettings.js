@@ -244,8 +244,8 @@ const menuItems = {
   group: 'Admin',
   form: [
     { label: 'Title', name: 'title', type: 'text' },
-    { label: 'Menu', name: 'menu_id', type: 'relation', resourceTable: 'menus', show: 'name' },
-    { label: 'Page', name: 'page_id', type: 'relation', resourceTable: 'pages', show: 'title' },
+    { label: 'Menu', name: 'menu', type: 'relation', resourceTable: 'menus', show: 'name' },
+    { label: 'Page', name: 'page', type: 'relation', resourceTable: 'pages', show: 'title' },
     //{ label: 'Parent', name: 'parent_id', type: 'relation', resourceTable: 'menuItems', show: 'title' },
   ],
   list: [
