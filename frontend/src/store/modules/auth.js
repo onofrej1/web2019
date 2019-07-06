@@ -19,11 +19,14 @@ export default {
     getters: {
 
     },
+    mutations: {
+       
+    },
     actions: {
         login({
             state
         }, data) {
-            axios({
+            return axios({
                 method: 'post',
                 url: state.baseUrl + "/login",
                 data: {
@@ -37,6 +40,7 @@ export default {
                 },
                 error => {
                     console.log(error);
+                    return Promise.reject(error);
                 }
             );
         },
@@ -57,6 +61,7 @@ export default {
                 },
                 error => {
                     console.log(error);
+
                 }
             );
         },

@@ -9,6 +9,9 @@ import CrudAdmin from "./components/CrudAdmin.vue";
 import HelloWorld from "./components/HelloWorld.vue";
 import Login from "./components/Login.vue";
 import Register from "./components/Register.vue";
+import Home from "./components/Home.vue";
+import Page from "./components/Page.vue";
+
 import {getToken, axiosSetToken} from './functions';
 
 import 'vuetify/dist/vuetify.min.css' // Ensure you are using css-loader
@@ -36,16 +39,28 @@ const routes = [{
   {
     path: '/login',
     component: Login,
+    layout: 'none',
     name: 'login'
   },
   {
     path: '/register',
     component: Register,
+    layout: 'none',
     name: 'register'
   },
   {
     path: '/hello',
     component: HelloWorld
+  },
+  {
+    path: '',
+    component: Home,
+    name: 'home'
+  },
+  {
+    path: '/page/:id',
+    component: Page,
+    name: 'home'
   }
 ];
 
@@ -54,15 +69,11 @@ export const router = new VueRouter({routes, mode:'history'})
 
 router.beforeEach((to, from, next) => {
   //console.log(to);
-  console.log(to);
-  console.log(to.meta.requiresAuth);
+  
   if(to.meta.requiresAuth) {
-    console.log('dnu');
     const token = getToken();
-    console.log(localStorage.getItem('token'));
-    console.log(token);
+
     if(!token) {
-      console.log('next');
       next({name:'login'});
     }
     else if(to.meta.roles) {

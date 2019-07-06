@@ -8,8 +8,6 @@ import java.util.Set;
 @Table(name = "role")
 public class Role {
 	
-	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
     
     @Column(name="name", nullable = false, unique = true)
@@ -45,4 +43,3 @@ public class Role {
         this.users = users;
     }
 }
-

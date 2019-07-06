@@ -226,29 +226,36 @@ const roles = {
   ]
 }
 
-/*const menuItem = {
+const menus = {
   title: 'Menu',
+  filter: [],
+  group: 'Admin',
   form: [
-    { label: 'Title', name: 'title', type: 'text' },
-    { label: 'Menu', name: 'menu_id', type: 'relation', resourceTable: 'menu', show: 'title' },
-    { label: 'Page', name: 'page_id', type: 'relation', resourceTable: 'page', show: 'title' },
-    { label: 'Parent', name: 'parent_id', type: 'relation', resourceTable: 'menuItem', show: 'title' },
+    { label: 'Name', name: 'name', type: 'text' },
   ],
   list: [
-    { field: 'title', label: 'Title', render: (row) => `<div>${row.title}</div>` }
+    { field: 'name', label: 'Title'}
   ],
 }
 
-const page = {
-  title: "Pages",
+const menuItems = {
+  title: 'MenuItem',
+  filter: [],
+  group: 'Admin',
   form: [
     { label: 'Title', name: 'title', type: 'text' },
-    { type: "editor", label: "Body", name: 'body' },
+    { label: 'Menu', name: 'menu_id', type: 'relation', resourceTable: 'menus', show: 'name' },
+    { label: 'Page', name: 'page_id', type: 'relation', resourceTable: 'pages', show: 'title' },
+    //{ label: 'Parent', name: 'parent_id', type: 'relation', resourceTable: 'menuItems', show: 'title' },
   ],
   list: [
-    { field: 'title', label: 'Title', render: (row) => `<div>${row.title}</div>` }
+    { field: 'title', label: 'Title' }
   ],
-};
+}
+
+/*
+
+
 
 const hamburg = {
   title: "Pages",
@@ -272,6 +279,19 @@ const tag = {
     { field: 'title', label: 'Title' }
   ]
 };*/
+
+const pages = {
+  title: "Page",
+  group: "Admin",
+  filter: [],
+  form: [
+    { label: 'Title', name: 'title', type: 'text' },
+    { type: "text", label: "Content", name: 'content' },
+  ],
+  list: [
+    { field: 'title', label: 'Title', render: (row) => `<div>${row.item.title}</div>` }
+  ],
+};
 
 const books = {
   title: "Book",
@@ -454,5 +474,8 @@ export default {
   runs,
   events,
   runners,
-  roles
+  roles,
+  pages,
+  menus,
+  menuItems
 };

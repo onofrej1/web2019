@@ -7,13 +7,19 @@
           <v-card>
             <v-toolbar>
               <v-toolbar-title>
-                <v-icon>person</v-icon> Login
+                <v-icon>person</v-icon>Login
               </v-toolbar-title>
             </v-toolbar>
             <v-card-text>
               <data-form :data="{}" :fields="form" :actions="actions" @submit="submit"></data-form>
+              <v-alert
+                v-model="error"
+                dismissible
+                type="error"
+              >{{ errorMessage }}</v-alert>
               <p class="text-xs-center">
-                [<v-icon small>person_add</v-icon> Create new account ]
+                [
+                <v-icon small>person_add</v-icon>Create new account ]
               </p>
             </v-card-text>
           </v-card>
@@ -50,6 +56,8 @@ export default {
   data: function() {
     return {
       actions: actions,
+      error: false,
+      errorMessage: null,
       form: [
         {
           name: "username",
@@ -74,10 +82,14 @@ export default {
   methods: {
     ...mapActions("auth", ["login", "logout"]),
     submit: function(event) {
-      console.log("login");
       let data = event.data;
-      console.log(data);
-      this.login(data);
+
+      this.login(data).catch(e => {
+        //console.log('errorr');
+        console.log(e);
+        this.error = true;
+        this.errorMessage = e.message || 'Bad credentials.';
+      });
     }
   }
 };
