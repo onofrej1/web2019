@@ -88,41 +88,27 @@ export default {
             dispatch,
             state
         }, data) {
-            let formData = Object.assign({}, data);
-            state.relations.forEach(relation => delete data[relation.name]);
-            state.pivotRelations.forEach(relation => delete data[relation.name]);
+            state.relations.forEach(relation =>  {
+                data[relation.name] = state.apiUrl + "/" + relation.resourceTable + '/' + data[relation.name];
+            });
 
+            let links = [];
+            state.pivotRelations.forEach(relation =>  {  
+                data[relation.name].forEach(d => {
+                    links.push(state.apiUrl + "/" + relation.resourceTable + '/' + d);
+                });
+                data[relation.name] = links;
+            });
+            
             axios[data.id ? "patch" : "post"](
                 getSaveUrl(data.id, state),
                 data
             ).then(response => {
                 dispatch('fetchData', state.resource)
-                dispatch('updateRelations', {...formData, id: response.data.id});
                 console.log(response);
             }).catch(error => {
                 dispatch('fetchData', state.resource);
                 console.log(error)
-            });
-        },
-        updateRelations({
-            state,
-            dispatch
-        }, data) {
-            state.relations.forEach(relation => {
-                axios.put(
-                        state.apiUrl + "/" + state.resource + '/' + data.id + '/' + relation.name,
-                        state.apiUrl + "/" + relation.resourceTable + '/' + data[relation.name],
-                        uriListHeader)
-                    .then(response => dispatch('fetchData', state.resource));
-            });
-            state.pivotRelations.forEach(relation => {
-                let urls = data[relation.name].reduce((accum, d, ) => {
-                    return accum += state.apiUrl + "/" + relation.resourceTable + '/' + d + '\n';
-                }, '');
-                axios.put(
-                        state.apiUrl + "/" + state.resource + '/' + data.id + '/' + relation.name,
-                        urls, uriListHeader)
-                    .then(response => dispatch('fetchData', state.resource));
             });
         },
         fetchData({
