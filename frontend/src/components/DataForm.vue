@@ -13,6 +13,13 @@
               :type="field.inputType || 'text'"
             ></v-text-field>
 
+            <v-textarea
+              v-if="field.type=='textarea'"
+              v-model="data[field.name]"
+              v-bind="getProps(field)"
+              v-validate="field.validate"
+            ></v-textarea>
+
             <v-menu
               v-if="field.type==='date'"
               :key="field.name"
@@ -117,17 +124,15 @@ export default {
         value: v.id,
         text: v[relation.show]
       }));
-      
     });
     this.relations.forEach(relation => {
-       this.fetchData(relation.resourceTable);
+      this.fetchData(relation.resourceTable);
       if (!this.data[relation.name]) return;
 
       this.data[relation.name] = {
         value: this.data[relation.name].id,
         text: this.data[relation.name][relation.show]
       };
-     
     });
   },
   components: {
@@ -177,7 +182,8 @@ export default {
           });
           this.relations.forEach(relation => {
             let value = data[relation.name];
-            data[relation.name] = isNaN(value) && value !== undefined ? value.value : value;
+            data[relation.name] =
+              isNaN(value) && value !== undefined ? value.value : value;
           });
           this.$emit("submit", { data: data, originalEvent: e });
         }

@@ -318,7 +318,6 @@ export default {
       for (let prop of this.resource.form) {
         this.form.push({ ...prop });
       }
-      //console.log(this.form);
       this.showForm = true;
     },
     toggleAll() {

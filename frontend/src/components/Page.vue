@@ -1,10 +1,10 @@
 <template>
   <page-sidebar-layout>
     <template slot="content-header">
-      Page
+      {{ page.title }}
     </template>
     <template slot="content">
-      <div v-html="page.body"></div>
+     <div v-html="page.content"></div>
     </template>
     <template slot="sidebar-header">
       Aktuality
@@ -15,26 +15,23 @@
 <script>
 import { mapState, mapActions } from "vuex";
 import PageSidebarLayout from "./PageSidebarLayout";
+
 export default {
   name: "Page",
   components: {
     PageSidebarLayout
   },
   computed: {
-    ...mapState('resources', ["data"]),
+    ...mapState('resources', {resourceData: 'data'}),
     page: function() {
-      if (!this.data.page) {
-        return {};
-      }
-      let id = this.$route.params.id;
-      return this.data.page.find(page => page.id == id);
+      return this.resourceData.pages.find(page => page.id == this.$route.params.id);
     }
   },
-  created() {
-    //this.fetchResourceData("page");
+  mounted() {
+    this.fetchData("pages");
   },
   methods: {
-    //...mapActions(["fetchResourceData"])
+    ...mapActions('resources', ['fetchData'])
   }
 };
 </script>

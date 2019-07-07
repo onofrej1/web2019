@@ -15,10 +15,10 @@ public class Page {
 	@NotNull
 	private String title;
 
-	@Column(name = "content", nullable = false)
-	@NotNull
+	@Column(name="content", nullable=false)
+	@Lob
 	private String content;
-
+	
 	public Long getId() {
 		return id;
 	}

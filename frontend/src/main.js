@@ -60,7 +60,7 @@ const routes = [{
   {
     path: '/page/:id',
     component: Page,
-    name: 'home'
+    name: 'page'
   }
 ];
 

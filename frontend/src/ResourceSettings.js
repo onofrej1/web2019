@@ -288,7 +288,7 @@ const pages = {
   filter: [],
   form: [
     { label: 'Title', name: 'title', type: 'text' },
-    { type: "text", label: "Content", name: 'content' },
+    { type: "textarea", label: "Content", name: 'content' },
   ],
   list: [
     { field: 'title', label: 'Title', render: (row) => `<div>${row.item.title}</div>` }
