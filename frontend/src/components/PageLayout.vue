@@ -1,5 +1,5 @@
 <template>
-  <div class="hello">
+  <div>
     <img src="./../assets/images/header.jpg" width="100%" height="200px" style="display:block;">
     <div class="page-toolbar text-xs-center">
       <!--<v-toolbar-side-icon></v-toolbar-side-icon>-->
@@ -14,7 +14,7 @@
         </v-list>
       </v-menu>
     </div>
-    {{ menuItems }}
+    
     <div>
       <slot></slot>
       <router-view></router-view>
@@ -87,6 +87,7 @@ export default {
       return item;
     },
     showPage(menuItem) {
+      
       this.$router.push(menuItem.link);
     }
   },

@@ -4,6 +4,7 @@ import Vuetify from 'vuetify'
 import store from './store'
 import VueRouter from 'vue-router'
 import VeeValidate from 'vee-validate'
+import CKEditor from '@ckeditor/ckeditor5-vue';
 
 import Admin from "./components/Admin.vue";
 import HelloWorld from "./components/HelloWorld.vue";
@@ -24,6 +25,7 @@ Vue.use(VeeValidate, {
   fieldsBagName: 'veeFields',
   events: 'change'
 });
+Vue.use( CKEditor );
 //Vue.config.productionTip = false
 
 const routes = [{

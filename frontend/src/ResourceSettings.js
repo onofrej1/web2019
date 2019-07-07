@@ -245,8 +245,8 @@ const menuItems = {
   form: [
     { label: 'Title', name: 'title', type: 'text' },
     { label: 'Link', name: 'link', type: 'text' },
-    { label: 'Menu', name: 'menu', type: 'relation', resourceTable: 'menus', show: 'name' },
-    { label: 'Page', name: 'page', type: 'relation', resourceTable: 'pages', show: 'title' },
+    { label: 'Menu', name: 'menu', validate: 'required', type: 'relation', resourceTable: 'menus', show: 'name' },
+    { label: 'Page', name: 'page', validate: 'required', type: 'relation', resourceTable: 'pages', show: 'title' },
     { label: 'Parent', name: 'parent', type: 'relation', resourceTable: 'menuItems', show: 'title' },
   ],
   list: [

@@ -14,11 +14,21 @@
             ></v-text-field>
 
             <v-textarea
-              v-if="field.type=='textarea'"
+              v-if="field.type=='textareax'"
               v-model="data[field.name]"
               v-bind="getProps(field)"
               v-validate="field.validate"
             ></v-textarea>
+
+            <ckeditor
+              :editor="ClassicEditor"
+              :config="{}"
+              v-if="field.type=='textarea'"
+              rows="8"
+              v-model="data[field.name]"
+              v-bind="getProps(field)"
+              v-validate="field.validate"
+            ></ckeditor>
 
             <v-menu
               v-if="field.type==='date'"
@@ -100,6 +110,7 @@
 
 <script>
 import InlineInput from "./InlineInput";
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { mapState, mapActions } from "vuex";
 const moment = require("moment");
 
@@ -112,7 +123,8 @@ export default {
   },
   data: function() {
     return {
-      menu: {}
+      menu: {},
+      ClassicEditor: ClassicEditor
     };
   },
   mounted() {
@@ -136,7 +148,7 @@ export default {
     });
   },
   components: {
-    InlineInput
+    InlineInput,
   },
   computed: {
     ...mapState("resources", { resources: "data" }),
@@ -151,10 +163,14 @@ export default {
   methods: {
     ...mapActions("resources", ["fetchData"]),
     getOptions: function(resource, field) {
-      return (this.resources[resource] || []).map(data => ({
-        value: data.id,
-        text: data[field]
-      }));
+      let emptyOption = { value: null, text: "" };
+
+      return [emptyOption].concat(
+        this.resources[resource].map(data => ({
+          value: data.id,
+          text: data[field]
+        }))
+      );
     },
     getProps: function(field) {
       let customProps = field.props;

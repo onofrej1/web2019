@@ -39,8 +39,8 @@
           </v-layout>
 
           <v-container>
-            <v-layout row justify-end v-if="selectedFilters">
-              <template v-for="(f, index) in selectedFilters">
+            <v-layout row justify-end v-if="activeFilters">
+              <template v-for="(f, index) in activeFilters">
                 <div :key="f.field">
                   <v-layout justify-end align-end row :key="f.field">
                     <v-flex xs2 style="position:relative;bottom:15px">
@@ -91,7 +91,7 @@
           class="elevation-1"
         >
           <template v-slot:headers="props" v-if="!resource.header">
-            <tr>              
+            <tr>
               <th v-if="resource.bulkActions">
                 <v-checkbox
                   :input-value="props.all"
@@ -111,9 +111,7 @@
                 <v-icon small>arrow_upward</v-icon>
                 {{ header.text }}
               </th>
-              <th class="text-xs-right">
-                Actions
-              </th>              
+              <th class="text-xs-right">Actions</th>
             </tr>
           </template>
 
@@ -140,7 +138,7 @@
               </td>
               <th v-if="resource.expandRow" @click="props.expanded = !props.expanded">
                 <v-icon>info</v-icon>
-              </th>              
+              </th>
               <td class="text-xs-right" :key="field.value" v-for="field in list">
                 <span v-html="field.render ? field.render(props) : props.item[field.value]"></span>
               </td>
@@ -173,7 +171,7 @@ export default {
       list: [],
       form: [],
       formData: {},
-      selectedFilters: [],
+      activeFilters: [],
       search: {},
       actions: {
         edit: this.editItem,
@@ -211,6 +209,7 @@ export default {
             return true;
           }
           let value = item[filter.field];
+          console.log(value);
           if (filter.op === "contains") {
             return value.includes(searchValue);
           }
@@ -222,7 +221,7 @@ export default {
     },
     filter: function() {
       return this.resource.filter.filter(
-        f => !this.selectedFilters.includes(f)
+        f => !this.activeFilters.includes(f)
       );
     },
     // zmaz
@@ -251,21 +250,23 @@ export default {
       this.fetchData(resource);
     },
     addFilter: function(filter) {
-      this.selectedFilters.push(filter);
+      this.activeFilters.push(filter);
     },
     removeFilter: function(index) {
-      this.selectedFilters.splice(index, 1);
+      this.activeFilters.splice(index, 1);
     },
     capitalize: capitalize,
     getFilterOptions: function(field) {
-      let filterOptions = this.resourceData.map(row => {
-        return {
-          value: row[field],
-          text: row[field]
-        };
-      });
-      filterOptions.unshift({ value: null, text: "" });
-      return filterOptions;
+      let emptyOption = { value: null, text: "" };
+
+      return [emptyOption].concat(
+        this.resourceData.map(row => {
+          return {
+            value: row[field],
+            text: row[field]
+          };
+        })
+      );
     },
     createItem: function() {
       this.formData = {};
@@ -289,7 +290,7 @@ export default {
     },
     cancel() {
       this.showForm = false;
-    },    
+    },
     setList() {
       this.list = [
         {
@@ -325,7 +326,7 @@ export default {
         this.selected = [];
       } else {
         this.selected = this.items.slice();
-      } 
+      }
     },
     changeSort(column) {
       if (this.pagination.sortBy === column) {
