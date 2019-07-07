@@ -5,7 +5,7 @@ import store from './store'
 import VueRouter from 'vue-router'
 import VeeValidate from 'vee-validate'
 
-import CrudAdmin from "./components/CrudAdmin.vue";
+import Admin from "./components/Admin.vue";
 import HelloWorld from "./components/HelloWorld.vue";
 import Login from "./components/Login.vue";
 import Register from "./components/Register.vue";
@@ -29,7 +29,7 @@ Vue.use(VeeValidate, {
 const routes = [{
     path: '/crud/:resource',
     name: 'crud',
-    component: CrudAdmin,
+    component: Admin,
     meta: {
       adminPage: true,
       requiresAuth: true,

@@ -93,7 +93,7 @@
 
 <script>
 import InlineInput from "./InlineInput";
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 const moment = require("moment");
 
 export default {
@@ -108,7 +108,28 @@ export default {
       menu: {}
     };
   },
-  mounted() {},
+  mounted() {
+    this.pivotRelations.forEach(relation => {
+      this.fetchData(relation.resourceTable);
+      if (!this.data[relation.name]) return;
+
+      this.data[relation.name] = this.data[relation.name].map(v => ({
+        value: v.id,
+        text: v[relation.show]
+      }));
+      
+    });
+    this.relations.forEach(relation => {
+       this.fetchData(relation.resourceTable);
+      if (!this.data[relation.name]) return;
+
+      this.data[relation.name] = {
+        value: this.data[relation.name].id,
+        text: this.data[relation.name][relation.show]
+      };
+     
+    });
+  },
   components: {
     InlineInput
   },
@@ -123,6 +144,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions("resources", ["fetchData"]),
     getOptions: function(resource, field) {
       return (this.resources[resource] || []).map(data => ({
         value: data.id,
@@ -145,16 +167,17 @@ export default {
       return field.flex || "xs12 sm12 md12 lg12";
     },
     submit: function(e) {
+      let data = this.data;
+      delete data["_links"];
+
       this.$validator.validateAll().then(valid => {
         if (valid) {
-          let data = this.data;
-          console.log(data);
-          delete data["_links"];
           this.pivotRelations.forEach(relation => {
             data[relation.name] = data[relation.name].map(v => v.value);
           });
           this.relations.forEach(relation => {
-            //data[relation.name] = data[relation.name].value;
+            let value = data[relation.name];
+            data[relation.name] = isNaN(value) && value !== undefined ? value.value : value;
           });
           this.$emit("submit", { data: data, originalEvent: e });
         }

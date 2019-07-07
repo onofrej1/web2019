@@ -94,7 +94,7 @@ var bookForm = {
 
 const authors = {
   title: 'Author',
-  group: "Admin",
+  group: "Runs",
   //apiUrl: '',
   filter: [{
     field: 'name',
@@ -229,7 +229,7 @@ const roles = {
 const menus = {
   title: 'Menu',
   filter: [],
-  group: 'Admin',
+  group: 'Content',
   form: [
     { label: 'Name', name: 'name', type: 'text' },
   ],
@@ -241,15 +241,17 @@ const menus = {
 const menuItems = {
   title: 'MenuItem',
   filter: [],
-  group: 'Admin',
+  group: 'Content',
   form: [
     { label: 'Title', name: 'title', type: 'text' },
+    { label: 'Link', name: 'link', type: 'text' },
     { label: 'Menu', name: 'menu', type: 'relation', resourceTable: 'menus', show: 'name' },
     { label: 'Page', name: 'page', type: 'relation', resourceTable: 'pages', show: 'title' },
-    //{ label: 'Parent', name: 'parent_id', type: 'relation', resourceTable: 'menuItems', show: 'title' },
+    { label: 'Parent', name: 'parent', type: 'relation', resourceTable: 'menuItems', show: 'title' },
   ],
   list: [
-    { field: 'title', label: 'Title' }
+    { field: 'title', label: 'Title' },
+    { field: 'link', label: 'Link' }
   ],
 }
 
@@ -282,7 +284,7 @@ const tag = {
 
 const pages = {
   title: "Page",
-  group: "Admin",
+  group: "Content",
   filter: [],
   form: [
     { label: 'Title', name: 'title', type: 'text' },
@@ -295,7 +297,7 @@ const pages = {
 
 const books = {
   title: "Book",
-  group: "Settings",
+  group: "Runs",
   filter: [],
   form: [{
       label: 'Title',
@@ -339,7 +341,7 @@ const aaa = (props) => {
 
 const runs = {
   title: 'Run',
-  group: "Admin",
+  group: "Runs",
   filter: [{
     field: 'name',
     type: 'select',
@@ -392,7 +394,7 @@ const runs = {
 
 const events = {
   title: 'Event',
-  group: "Admin",
+  group: "Runs",
   apiUrl: '',
   filter: [{
     field: 'name',
@@ -430,7 +432,7 @@ const events = {
 
 const runners = {
   title: 'Runner',
-  group: "Admin",
+  group: "Runs",
   filter: [{
     field: 'lastName',
     type: 'text',

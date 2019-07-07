@@ -98,7 +98,8 @@ export default {
     drawer: true,
     groupIcons: {
       Permissions: "account_circle",
-      Admin: "list_alt"
+      Runs: "calendar_today",
+      Content: "list_alt"
     }
   }),
   props: {

@@ -88,8 +88,12 @@ export default {
             dispatch,
             state
         }, data) {
+            //console.log('save resource');
+            console.log(data);
             state.relations.forEach(relation =>  {
-                data[relation.name] = state.apiUrl + "/" + relation.resourceTable + '/' + data[relation.name];
+                if(data[relation.name]) {
+                    data[relation.name] = state.apiUrl + "/" + relation.resourceTable + '/' + data[relation.name];
+                }  
             });
 
             let links = [];
