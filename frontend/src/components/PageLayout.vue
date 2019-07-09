@@ -13,13 +13,21 @@
           </v-list-tile>
         </v-list>
       </v-menu>
+
+       <multi-menu :node="{title: 'root', items: menuItems}" :depth="0"></multi-menu>
+    </div>
+    <div  style="position: relative">
+      cccc
+      <multi-menu :node="{title: 'root', items: menuItems}" :depth="0"></multi-menu>
     </div>
     
     <div>
       <slot></slot>
-      <router-view></router-view>
+     
     </div>
-
+    {{ menuItems }}
+    aaaa
+    <multi-menu :node="{title: 'root', items: menuItems}"></multi-menu>
     <div class="page-toolbar">
       <v-container class="page-toolbar">
         <v-layout justify-space-around>
@@ -52,12 +60,16 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
+import MultiMenu from './MultiMenu';
 
 export default {
   name: "PageLayout",
   data: () => ({
     
   }),
+  components: {
+    MultiMenu
+  },
   computed: {
     ...mapState("resources", { resources: "data" }),
     menuItems: function() {
@@ -84,6 +96,13 @@ export default {
         item.link = menuItem.link;
         item.isExternal = /^https?:\/\//.test(item.link);
       }
+
+      let items = this.resources.menuItems
+            .filter(i => i.parent && i.parent.id === menuItem.id)
+            .map(item => this.createMenuItem(item));
+
+      item.items = items;
+
       return item;
     },
     showPage(menuItem) {
