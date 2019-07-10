@@ -13,20 +13,26 @@
           </v-list-tile>
         </v-list>
       </v-menu>
-
-       <multi-menu :node="{title: 'root', items: menuItems}" :depth="0"></multi-menu>
     </div>
-    <div  style="position: relative">
-      cccc
+
+    <ul style="background-color:red">
+  <li style="background-color: green">Coffee</li>
+  <li>Tea</li>
+  <li>Milk</li>
+</ul> 
+
+    <br><br><br>
+    <div style="position: relative !important; min-width: 160px">
       <multi-menu :node="{title: 'root', items: menuItems}" :depth="0"></multi-menu>
     </div>
-    
+    <br><br><br><br>
     <div>
       <slot></slot>
      
     </div>
-    {{ menuItems }}
-    aaaa
+    
+    
+    
     <multi-menu :node="{title: 'root', items: menuItems}"></multi-menu>
     <div class="page-toolbar">
       <v-container class="page-toolbar">

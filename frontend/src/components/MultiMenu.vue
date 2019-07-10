@@ -1,8 +1,7 @@
 <template>
-  <div class="dropdown-menu">
-    <div @click="toggleChildren" >{{ node.title }}</div>
-
-    <div v-if="node.items && node.items.length" class="dropdown-submenu">
+  <div class="dropdown-submenu">
+    <div @click="toggleChildren">{{ node.title }}</div>
+    <div v-if="node.items && node.items.length" class="dropdown-menu">
       <multi-menu
         v-if="showChildren"
         :depth="depth + 1"
@@ -23,7 +22,7 @@ export default {
   },
   data() {
     return {
-      showChildren: false
+      showChildren: true
     };
   },
   computed: {
@@ -37,20 +36,20 @@ export default {
       return { "has-children": this.nodes };
     },
     indent() {
-      return { 
+      return {
         transform: `translate(${this.depth * 50}px)`,
-        'background-color': 'yellow',
-        cursor: 'pointer',
-        
-        padding: '10px'
-        };
+        "background-color": "yellow",
+        cursor: "pointer",
+
+        padding: "10px"
+      };
     }
   },
   indent2() {
-      return {
-        transform: `translate(${this.depth * 50}px)`,
-        width: '200px'
-      }
+    return {
+      transform: `translate(${this.depth * 50}px)`,
+      width: "200px"
+    };
   },
   methods: {
     toggleChildren() {
@@ -60,26 +59,38 @@ export default {
 };
 </script>
 <style>
-.dropdown-menux {
-  mmposition: absolute;
-  border: 1px solid black;
-  background-color: red;
-  xxtop: 100%;
-  left: 0;
-}
-
 .dropdown-submenu {
   position: relative;
-  background-color: red;
-  top: 0;
-  left: 100%;
-  width: 200px;
 }
 
-.xxxdropdown-submenu .xxdropdown-menu {
-  
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  float: left;
+  min-width: 160px;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  margin-top: 2px;
+  font-size: 14px;
+  text-align: left;
+  list-style: none;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+}
+
+.dropdown-submenu .dropdown-menu {
   top: 0;
   left: 100%;
   margin-top: -1px;
+  background-color: red;
+  border: 1px solid black;
 }
 </style>
