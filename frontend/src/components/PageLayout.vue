@@ -2,8 +2,13 @@
   <div>
     <img src="./../assets/images/header.jpg" width="100%" height="200px" style="display:block;">
     <div class="page-toolbar text-xs-center">
+      <template  v-for="item in menuItems">
+        <v-btn flat dark :key="item.title" v-if="item.items.length == 0">{{ item.title }}</v-btn>
+        
+        <dropdown-menu :key="item.title" v-else :node="item" :isRoot="true"></dropdown-menu>
+      </template>
       <!--<v-toolbar-side-icon></v-toolbar-side-icon>-->
-      <v-menu :key="item.title" offset-y class="menu" v-for="item in menuItems">
+      <!--<v-menu :key="item.title" offset-y class="menu" v-for="item in menuItems">
         <template v-slot:activator="{ on }">
           <v-btn flat dark v-on="on">{{ item.title }}</v-btn>
         </template>
@@ -11,29 +16,15 @@
           <v-list-tile v-for="(subItem, index) in item.items" :key="index">
             <v-list-tile-title @click="showPage(subItem)">{{ subItem.title }}</v-list-tile-title>
           </v-list-tile>
-        </v-list>
-      </v-menu>
+        </template>
+      </v-menu>-->
     </div>
 
-    <ul style="background-color:red">
-  <li style="background-color: green">Coffee</li>
-  <li>Tea</li>
-  <li>Milk</li>
-</ul> 
-
-    <br><br><br>
-    <div style="width: 160px; background-color: red">
-      <multi-menu :node="{title: 'root', items: menuItems}" :depth="0"></multi-menu>
-    </div>
-    <br><br><br><br>
     <div>
       <slot></slot>
      
     </div>
     
-    
-    
-    <multi-menu :node="{title: 'root', items: menuItems}"></multi-menu>
     <div class="page-toolbar">
       <v-container class="page-toolbar">
         <v-layout justify-space-around>
@@ -66,7 +57,7 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
-import MultiMenu from './MultiMenu';
+import DropdownMenu from './DropdownMenu';
 
 export default {
   name: "PageLayout",
@@ -74,7 +65,7 @@ export default {
     
   }),
   components: {
-    MultiMenu
+    DropdownMenu
   },
   computed: {
     ...mapState("resources", { resources: "data" }),
