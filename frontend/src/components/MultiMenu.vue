@@ -1,7 +1,7 @@
 <template>
   <div class="dropdown-submenu">
     <div @click="toggleChildren">{{ node.title }}</div>
-    <div v-if="node.items && node.items.length" class="dropdown-menu">
+    <div v-if="node.items && node.items.length && showChildren" class="dropdown-menu">      
       <multi-menu
         v-if="showChildren"
         :depth="depth + 1"
@@ -22,7 +22,7 @@ export default {
   },
   data() {
     return {
-      showChildren: true
+      showChildren: false
     };
   },
   computed: {
@@ -68,12 +68,9 @@ export default {
   top: 100%;
   left: 0;
   z-index: 1000;
-  display: none;
   float: left;
   min-width: 160px;
-  padding: 5px 0;
-  margin: 2px 0 0;
-  margin-top: 2px;
+  padding: 0 0;  
   font-size: 14px;
   text-align: left;
   list-style: none;
@@ -88,9 +85,6 @@ export default {
 
 .dropdown-submenu .dropdown-menu {
   top: 0;
-  left: 100%;
-  margin-top: -1px;
-  background-color: red;
-  border: 1px solid black;
+  left: 100%;  
 }
 </style>

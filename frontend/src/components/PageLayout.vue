@@ -22,7 +22,7 @@
 </ul> 
 
     <br><br><br>
-    <div style="position: relative !important; min-width: 160px">
+    <div style="width: 160px; background-color: red">
       <multi-menu :node="{title: 'root', items: menuItems}" :depth="0"></multi-menu>
     </div>
     <br><br><br><br>
