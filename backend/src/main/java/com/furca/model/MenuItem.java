@@ -22,6 +22,7 @@ public class MenuItem {
     @JoinColumn(name="menu_id")
     private Menu menu;
 	
+	
 	@ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(name="page_id")
     private Page page;

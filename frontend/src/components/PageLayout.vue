@@ -4,25 +4,13 @@
     <div class="page-toolbar text-xs-center">
       <template  v-for="item in menuItems">
         <v-btn flat dark :key="item.title" v-if="item.items.length == 0">{{ item.title }}</v-btn>
-        
         <dropdown-menu :key="item.title" v-else :node="item" :isRoot="true"></dropdown-menu>
       </template>
-      <!--<v-toolbar-side-icon></v-toolbar-side-icon>-->
-      <!--<v-menu :key="item.title" offset-y class="menu" v-for="item in menuItems">
-        <template v-slot:activator="{ on }">
-          <v-btn flat dark v-on="on">{{ item.title }}</v-btn>
-        </template>
-        <v-list v-if="item.items.length > 0">
-          <v-list-tile v-for="(subItem, index) in item.items" :key="index">
-            <v-list-tile-title @click="showPage(subItem)">{{ subItem.title }}</v-list-tile-title>
-          </v-list-tile>
-        </template>
-      </v-menu>-->
     </div>
 
     <div>
       <slot></slot>
-     
+      <router-view></router-view>
     </div>
     
     <div class="page-toolbar">
@@ -103,8 +91,12 @@ export default {
       return item;
     },
     showPage(menuItem) {
-      
-      this.$router.push(menuItem.link);
+      if(menuItem.isExternal) {
+        console.log('redirect');
+        window.location = menuItem.link;
+      } else {
+        this.$router.push(menuItem.link);
+      }  
     }
   },
 

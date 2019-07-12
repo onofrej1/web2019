@@ -1,13 +1,14 @@
 <template>
-  <div :class="submenu">
-    <div :class="link" @click="toggleChildren">
-      <v-btn flat :dark="isRoot">
+  <div :class="submenu" @mouseleave="hideMenu">
+    <div :class="link" @mouseover="showMenu">
+      <v-btn flat @click="goToPage" :dark="isRoot">
         {{ node.title }}
         <v-icon v-if="node.items.length">{{ linkIcon }}</v-icon>
       </v-btn>
     </div>
     <div v-if="node.items && node.items.length && showChildren" :class="menu">
-      <dropdown-menu v-if="showChildren" :key="item.title" v-for="item in node.items" :node="item"></dropdown-menu>
+      <dropdown-menu :key="item.title" v-for="item in node.items" :node="item">
+      </dropdown-menu>
     </div>
   </div>
 </template>
@@ -50,8 +51,22 @@ export default {
     }
   },
   methods: {
-    toggleChildren() {
-      this.showChildren = !this.showChildren;
+    showMenu() {
+      this.showChildren = true;
+    },
+    hideMenu() {
+      this.showChildren = false;
+    },
+    goToPage() {
+      if (this.node.items.length) {
+        return;
+      }
+      if(this.node.isExternal) {
+        console.log('redirect');
+        window.location = this.node.link;
+      } else {
+        this.$router.push({path: this.node.link});
+      }  
     }
   }
 };
@@ -76,14 +91,10 @@ export default {
   left: 0;
   text-align: left;
   z-index: 1000;
-  min-width: 160px;
   width: 100%;
   font-size: 14px;
-  text-align: left;
-
   background: #fff;
-  color: rgba(0,0,0,0.87);
-  xborder: 1px solid #ccc;
+  color: rgba(0, 0, 0, 0.87);
   border-radius: 4px;
   -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
@@ -95,12 +106,12 @@ export default {
 }
 
 .dropdown-submenu .dropdown-root-menu {
-  margin: 0 auto;
   top: 100;
   left: 0;
 }
 
-.dropdown-submenu .v-btn, .dropdown-root-submenu .v-btn {
+.dropdown-submenu .v-btn,
+.dropdown-root-submenu .v-btn {
   padding: 5px !important;
   margin-left: 0px !important;
   margin-right: 0px !important;
@@ -109,5 +120,4 @@ export default {
 .link {
   text-align: center;
 }
-
 </style>

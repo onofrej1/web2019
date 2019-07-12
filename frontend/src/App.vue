@@ -37,10 +37,9 @@ export default {
   methods: {
     init: function() {
       this.isAdminPage = this.$route.meta.adminPage;
+      this.layout = this.$route.meta.layout;
       if (this.isAdminPage) {
         this.layout = "admin";
-      } else {
-        //this.layout = null;
       }
     }
   },

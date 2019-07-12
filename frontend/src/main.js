@@ -41,13 +41,17 @@ const routes = [{
   {
     path: '/login',
     component: Login,
-    layout: 'none',
+    /*meta: {
+      layout: 'none',
+    },*/
     name: 'login'
   },
   {
     path: '/register',
     component: Register,
-    layout: 'none',
+    /*meta: {
+      layout: 'none',
+    },*/
     name: 'register'
   },
   {
@@ -55,15 +59,15 @@ const routes = [{
     component: HelloWorld
   },
   {
+    path: '/page/:id',
+    component: Page,
+    name: 'page',
+  },
+  {
     path: '',
     component: Home,
     name: 'home'
   },
-  {
-    path: '/page/:id',
-    component: Page,
-    name: 'page'
-  }
 ];
 
 axiosSetToken();

@@ -26,7 +26,11 @@
 </template>
 
 <script>
+
 export default {
-  name: "PageSidebarLayout"
+  name: "PageSidebarLayout",
+  components: {
+    
+  }
 };
 </script>
