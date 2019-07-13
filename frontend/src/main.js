@@ -12,6 +12,7 @@ import Login from "./components/Login.vue";
 import Register from "./components/Register.vue";
 import Home from "./components/Home.vue";
 import Page from "./components/Page.vue";
+import Upload from './components/Upload.vue';
 
 import {getToken, axiosSetToken} from './functions';
 
@@ -32,6 +33,16 @@ const routes = [{
     path: '/crud/:resource',
     name: 'crud',
     component: Admin,
+    meta: {
+      adminPage: true,
+      requiresAuth: true,
+      roles: ['ROLE_ADMIN', 'ROLE_MANAGER']
+    }
+  },
+  {
+    path: '/upload',
+    name: 'upload',
+    component: Upload,
     meta: {
       adminPage: true,
       requiresAuth: true,

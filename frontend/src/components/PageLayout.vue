@@ -79,7 +79,7 @@ export default {
         item.link = "/page/" + menuItem.page.id;
       } else {
         item.link = menuItem.link;
-        item.isExternal = /^https?:\/\//.test(item.link);
+        item.isExternalLink = /^https?:\/\//.test(item.link);
       }
 
       let items = this.resources.menuItems
@@ -91,8 +91,7 @@ export default {
       return item;
     },
     showPage(menuItem) {
-      if(menuItem.isExternal) {
-        console.log('redirect');
+      if(menuItem.isExternalLink) {
         window.location = menuItem.link;
       } else {
         this.$router.push(menuItem.link);

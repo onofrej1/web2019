@@ -63,6 +63,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/login").permitAll()
             .antMatchers("/registration").permitAll()
             .antMatchers("/check-username").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/pages").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/menuItems").permitAll()
             //.antMatchers("/").hasAnyRole("EDITOR")
             //.antMatchers("/auth/**").permitAll()
             .antMatchers(HttpMethod.GET, "/api/**").hasAnyRole("EDITOR")

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 //import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Clock;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.DefaultClock;
@@ -52,14 +53,20 @@ public class JwtTokenUtil implements Serializable {
 
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaimsFromToken(token);
-        return claimsResolver.apply(claims);
+        return claims == null ? null : claimsResolver.apply(claims);
     }
 
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser()
-            .setSigningKey(secret)
-            .parseClaimsJws(token)
-            .getBody();
+    	Claims claims = null;
+    	try {
+		 claims = Jwts.parser()
+	            .setSigningKey(secret)
+	            .parseClaimsJws(token)
+	            .getBody();
+    	} catch (ExpiredJwtException e) {
+    	    System.out.println(" Token expired ");
+    	}
+    	return claims;
     }
 
     private Boolean isTokenExpired(String token) {

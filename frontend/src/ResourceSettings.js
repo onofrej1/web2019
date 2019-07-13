@@ -322,6 +322,33 @@ const books = {
   ],
 };
 
+const news = {
+  title: "News",
+  group: "News",
+  filter: [],
+  form: [{
+      label: 'Content',
+      name: 'content',
+      type: 'textarea'
+    },
+    {
+      type: "date",
+      label: "Published on",
+      name: 'publishedOn'
+    },
+  ],
+  customForm: bookForm,
+  list: [{
+      field: 'content',
+      label: 'Content'
+    },
+    {
+      field: 'publishedOn',
+      label: 'Published'
+    }
+  ],
+};
+
 const aaa = (props) => {
   //console.log(props);
   var xxx = {
@@ -479,5 +506,6 @@ export default {
   roles,
   pages,
   menus,
-  menuItems
+  menuItems,
+  news,
 };

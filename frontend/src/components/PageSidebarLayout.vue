@@ -17,7 +17,15 @@
             <slot name="sidebar-header"></slot>
           </v-card-title>
           <v-card-text>
-            <slot name="sidebar-content"></slot>
+            <slot name="sidebar-content">
+              <div :key="item.id" v-for="item in news">
+                <v-icon>date_range</v-icon>
+                <strong>{{ moment(item.publishedOn).format('DD/MM/YYYY') }}</strong>
+                <p style="padding-left: 5px; margin-top: 3px">
+                  <span v-html="item.content"></span>
+                </p>              
+              </div>
+            </slot>
           </v-card-text> 
         </v-card>
       </v-flex>
@@ -26,11 +34,28 @@
 </template>
 
 <script>
+import { mapState, mapActions } from "vuex";
+import moment from 'moment';
 
 export default {
   name: "PageSidebarLayout",
+  data: () => ({
+    moment: moment
+  }),
   components: {
     
+  },
+  computed: {
+    ...mapState("resources", { resources: "data" }),
+    news: function() {
+      return this.resources.news;
+    }
+  },
+  methods: {
+    ...mapActions("resources", ["fetchData"]),
+  },
+  mounted() {
+    this.fetchData('news');
   }
 };
 </script>

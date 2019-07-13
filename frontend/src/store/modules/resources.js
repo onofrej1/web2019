@@ -121,7 +121,7 @@ export default {
             state
         }, resource) {
             commit("setStatus", 'loading');
-            return axios.get(state.apiUrl + "/" + resource + "/").then(
+            return axios.get(state.apiUrl + "/" + resource).then(
                 response => {
                     var data = response.data._embedded[resource];
                     commit("setData", {
