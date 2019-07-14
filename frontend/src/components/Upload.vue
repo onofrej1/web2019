@@ -1,54 +1,54 @@
 <template>
-  <div class="container">
-    <div class="large-12 medium-12 small-12 cell">
-      <label>File
-        <input type="file" id="file" ref="file" v-on:change="handleFileUpload()"/>
-      </label>
-      <button v-on:click="submitFile()">Submit</button>
-    </div>
-  </div>
+  <v-container>
+    <v-layout justify-space-around>
+      <v-flex mt-1 mb-1>
+        <v-card>
+          <v-card-text>
+            File
+            <input type="file" id="file" ref="file" @change="handleFileUpload()">
+            <v-btn @click="upload()">Submit</v-btn>
+
+            <div v-for="file in files" :key="file">
+              {{ file.created }} - {{ file.lastAccessTime}}
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
 import axios from "axios";
-import {
-    BASE_URL,
-    API_URL
-} from './../constants';
+import { mapActions, mapState } from "vuex";
 
-  export default {
-    /*
-      Defines the data used by the component
-    */
-    data(){
-      return {
-        file: ''
-      }
+import { BASE_URL, API_URL } from "./../constants";
+
+export default {
+  data() {
+    return {
+      file: ""
+    };
+  },
+  computed: {
+    ...mapState("files", ["files"])
+  },
+  methods: {
+    ...mapActions("files", ["uploadFile", "fetchFiles"]),
+    upload() {
+      let formData = new FormData();
+      formData.append("file", this.file);
+      formData.append("path", "images");
+
+      this.uploadFile(formData);
     },
 
-    methods: {
-      submitFile(){
-            let formData = new FormData();
-            formData.append('file', this.file);
-
-            axios.post( BASE_URL + '/upload',
-                formData,
-                {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-              }
-            ).then(function(){
-          console.log('SUCCESS!!');
-        })
-        .catch(function(){
-          console.log('FAILURE!!');
-        });
-      },
-
-      handleFileUpload(){
-        this.file = this.$refs.file.files[0];
-      }
+    handleFileUpload() {
+      this.file = this.$refs.file.files[0];
     }
+  },
+  mounted() {
+    this.fetchFiles();
   }
+};
 </script>

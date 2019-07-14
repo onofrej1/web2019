@@ -1,6 +1,11 @@
 package com.furca.web;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +37,32 @@ public class FileController {
         this.storageService = storageService;
     }
 
-    @GetMapping("/")
-    public String listUploadedFiles(Model model) throws IOException {
+    @GetMapping("/files")
+    public ResponseEntity<List> listUploadedFiles(Model model) throws IOException {
 
-        model.addAttribute("files", storageService.loadAll().map(
+        /*List files = storageService.loadAll().map(
                 path -> MvcUriComponentsBuilder.fromMethodName(FileController.class,
                         "serveFile", path.getFileName().toString()).build().toString())
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());*/
+    	List files = storageService.loadDir("images").map(file -> {
+    		System.out.println(file);
+    		BasicFileAttributes attr = null;
+			try {
+				attr = Files.readAttributes(file, BasicFileAttributes.class);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-        return "uploadForm";
+    		System.out.println("creationTime: " + attr.creationTime());
+    		System.out.println("lastAccessTime: " + attr.lastAccessTime());
+    		Map fileInfo = new HashMap();
+    		fileInfo.put("created", attr.creationTime().toString());
+    		fileInfo.put("lastAccessTime", attr.lastAccessTime().toString());
+    		return fileInfo;
+    	}).collect(Collectors.toList());
+
+        return ResponseEntity.ok(files);
     }
 
     @GetMapping("/files/{filename:.+}")
@@ -54,9 +76,11 @@ public class FileController {
 
     @PostMapping("/upload")
     public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file,
-            RedirectAttributes redirectAttributes) {
-
-        storageService.store(file);
+    		@RequestParam("path") String path) {
+    	
+    	System.out.println(path);
+    	
+        storageService.store(file, path);
 
         return ResponseEntity.ok("You successfully uploaded " + file.getOriginalFilename() + "!");
     }

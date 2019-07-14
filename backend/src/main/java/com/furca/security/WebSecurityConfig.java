@@ -7,6 +7,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -51,6 +52,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	    return firewall;
 	}
 	
+	
+	
 	@Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
@@ -67,6 +70,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             	.and()
 
             .authorizeRequests()
+            
             .antMatchers(HttpMethod.OPTIONS,"/**").permitAll()
             // Un-secure H2 Database
             .antMatchers("/h2-console/**/**").permitAll()
@@ -74,14 +78,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/registration").permitAll()
             .antMatchers("/check-username").permitAll()
             .antMatchers("/upload").permitAll()
+            .antMatchers("/images/**").permitAll()
+            .antMatchers("/results/**").permitAll()
+            
             
             .antMatchers(HttpMethod.GET, "/api/pages").permitAll()
             .antMatchers(HttpMethod.GET, "/api/articles").permitAll()
             .antMatchers(HttpMethod.GET, "/api/categories").permitAll()
             .antMatchers(HttpMethod.GET, "/api/tags").permitAll()
             .antMatchers(HttpMethod.GET, "/api/menuItems").permitAll()
+            .antMatchers("/files/**").hasAnyRole("ADMIN")
             
-            //.antMatchers("/").hasAnyRole("EDITOR")
             //.antMatchers("/auth/**").permitAll()
             .antMatchers(HttpMethod.GET, "/api/**").hasAnyRole("EDITOR")
             .antMatchers("/api/**").hasAnyRole("ADMIN")
@@ -96,6 +103,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .frameOptions().sameOrigin()  // required to set for H2 else H2 Console will be blank.
             .cacheControl();
 	}
+	
+	/*@Override
+    public void configure(WebSecurity web) throws Exception {
+      web
+        .ignoring()
+           .antMatchers("/resources/**");
+    }*/
 	
 	@Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {

@@ -1,8 +1,10 @@
 package com.furca.storage;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,6 +12,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -25,11 +28,10 @@ public class FileSystemStorageService implements StorageService {
     @Autowired
     public FileSystemStorageService(StorageProperties properties) {
         this.rootLocation = Paths.get(properties.getLocation());
-        System.out.println(this.rootLocation);
     }
 
     @Override
-    public void store(MultipartFile file) {
+    public void store(MultipartFile file, String path) {
         String filename = StringUtils.cleanPath(file.getOriginalFilename());
         try {
             if (file.isEmpty()) {
@@ -42,11 +44,10 @@ public class FileSystemStorageService implements StorageService {
                                 + filename);
             }
             try (InputStream inputStream = file.getInputStream()) {
-            	System.out.println(this.rootLocation.toString());
-            	System.out.println(this.rootLocation.toAbsolutePath().toString());
-            	System.out.println(this.rootLocation.resolve(filename).toAbsolutePath().toString());
-                Files.copy(inputStream, this.rootLocation.resolve(filename),
-                    StandardCopyOption.REPLACE_EXISTING);
+            	Files.copy(inputStream, Paths.get(path).resolve(filename),
+                        StandardCopyOption.REPLACE_EXISTING);
+                /*Files.copy(inputStream, this.rootLocation.resolve(filename),
+                    StandardCopyOption.REPLACE_EXISTING);*/
             }
         }
         catch (IOException e) {
@@ -61,6 +62,18 @@ public class FileSystemStorageService implements StorageService {
             return Files.walk(this.rootLocation, 1)
                 .filter(path -> !path.equals(this.rootLocation))
                 .map(this.rootLocation::relativize);
+        }
+        catch (IOException e) {
+            throw new StorageException("Failed to read stored files", e);
+        }
+
+    }
+    
+    @Override
+    public Stream<Path> loadDir(String dir) {
+    	Path path = Paths.get(dir);
+        try {
+            return Files.walk(path, 1);
         }
         catch (IOException e) {
             throw new StorageException("Failed to read stored files", e);

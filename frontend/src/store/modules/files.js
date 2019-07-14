@@ -1,48 +1,62 @@
 import axios from "axios";
-import {router} from './../../main'
+import {
+    router
+} from './../../main'
 import {
     BASE_URL,
     API_URL
 } from './../../constants';
 
-const axiosForm = axios.create({
+const axiosFormData = axios.create({
     headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'multipart/form-data'
     }
 });
+
 export default {
     namespaced: true,
     state: {
         baseUrl: BASE_URL,
         apiUrl: API_URL,
+        files: []
     },
     getters: {
 
     },
     mutations: {
-       
+        setFiles(state, files) {
+            state.files = files;
+        },
     },
     actions: {
-        login({
+        uploadFile({}, formData) {
+            axiosFormData.post(BASE_URL + '/upload',
+                    formData,
+                ).then(function () {
+                    console.log('SUCCESS!!');
+                })
+                .catch(function () {
+                    console.log('FAILURE!!');
+                });
+        },
+        fetchFiles({
+            commit,
+            dispatch,
             state
-        }, data) {
-            return axios({
-                method: 'post',
-                url: state.baseUrl + "/login",
-                data: {
-                    username: data.username,
-                    password: data.password,
-                },
-            }).then(
+        }, resource) {
+            //commit("setStatus", 'loading');
+            return axios.get(state.baseUrl + "/files").then(
                 response => {
-                    localStorage.setItem('token', response.data);
-                    //router.push({name: 'home'});
+                    var data = response.data;
+                    commit("setFiles", data);
+                    //commit("setStatus", 'success');                    
+                    return {...response, data:data};
                 },
                 error => {
+                    //commit("setStatus", 'error');
                     console.log(error);
-                    return Promise.reject(error);
                 }
             );
-        },
+        }
     }
 };
