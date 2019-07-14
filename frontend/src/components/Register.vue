@@ -25,7 +25,6 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
-import { Validator } from "vee-validate";
 
 import DataForm from "./DataForm";
 

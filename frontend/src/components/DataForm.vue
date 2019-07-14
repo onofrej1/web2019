@@ -23,7 +23,7 @@
             <ckeditor
               :editor="ClassicEditor"
               :config="{}"
-              v-if="field.type=='textarea'"
+              v-if="field.type=='editor'"
               rows="8"
               v-model="data[field.name]"
               v-bind="getProps(field)"

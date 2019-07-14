@@ -14,6 +14,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
 
 @Configuration
 @EnableWebSecurity
@@ -41,6 +43,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	    return new BCryptPasswordEncoder();
 	}
 	
+	@Bean
+	public HttpFirewall allowUrlEncodedSlashHttpFirewall() {
+	    StrictHttpFirewall firewall = new StrictHttpFirewall();
+	    //firewall.setAllowUrlEncodedSlash(true);
+	    firewall.setAllowSemicolon(true);
+	    return firewall;
+	}
+	
 	@Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
@@ -63,8 +73,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/login").permitAll()
             .antMatchers("/registration").permitAll()
             .antMatchers("/check-username").permitAll()
+            .antMatchers("/upload").permitAll()
+            
             .antMatchers(HttpMethod.GET, "/api/pages").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/articles").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/categories").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/tags").permitAll()
             .antMatchers(HttpMethod.GET, "/api/menuItems").permitAll()
+            
             //.antMatchers("/").hasAnyRole("EDITOR")
             //.antMatchers("/auth/**").permitAll()
             .antMatchers(HttpMethod.GET, "/api/**").hasAnyRole("EDITOR")

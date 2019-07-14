@@ -79,106 +79,55 @@ var bookForm = {
   `
 };
 
-/*const user = {
-  title: 'Users',
-  form: [
-    { name: 'name', type: 'text' },
-    { name: 'email', type: 'text' },
-    { name: 'roles', type: 'pivotRelation', resourceTable: 'role', show: 'title', label: 'Roles' },
-  ],
-  list: [
-    { field: 'name', label: 'Name' },
-    { field: 'email', label: 'Email' },
-  ]
-}*/
-
-const authors = {
-  title: 'Author',
-  group: "Runs",
-  //apiUrl: '',
+const articles = {
+  title: 'Article',
+  group: "Blog",
   filter: [{
-    field: 'name',
+    field: 'content',
     type: 'text',
     'op': 'contains',
-    label: 'Text'
+    label: 'Content'
   }],
-  form: [{
-      name: 'name',
-      type: 'text'
-    },
+  form: [
     {
-      name: 'age',
-      type: 'text'
-    },
-   /* {
-      name: 'book_list',
-      label: 'Books',
-      type: 'inline',
-      form: inline
-    }*/
-    //{ name: 'content', type: 'editor' },
-    { name: 'books', type: 'pivotRelation', resourceTable: 'books', show: 'title', label: 'Books' },
-  ],
-  list: [{
-      field: 'name'
-    },
-    {
-      field: 'age'
-    },
-
-    /* { render: props => {
-       console.log(props);
-       return 'aaa'+ props.item.text;
-     } },*/
-  ]
-}
-
-/*const posts = {
-  title: 'Posts',
-  filter: [{
-      field: 'title',
-      type: 'select',
-      'op': 'eq',
-      label: 'Title'
-    },
-    {
-      field: 'text',
-      type: 'text',
-      'op': 'contains',
-      label: 'Text'
-    }
-  ],
-  form: [{
       name: 'title',
       type: 'text'
     },
     {
-      name: 'author',
+      name: 'category',
+      type: 'relation',
+      resourceTable: 'categories',
+      show: 'category',
+    },
+    {
+      name: 'source',
       type: 'text'
     },
     {
-      name: 'text',
+      name: 'publishedBy',
       type: 'text'
     },
-    //{ name: 'content', type: 'editor' },
-    //{ name: 'tags', type: 'pivotRelation', resourceTable: 'tag', show: 'title', label: 'Tags' },
+    {
+      name: 'publishedOn',
+      type: 'date'
+    },
+    {
+      name: 'content',
+      type: 'editor'
+    },
+    { name: 'tags', type: 'pivotRelation', resourceTable: 'tags', show: 'tag', label: 'Tags' },
   ],
   list: [{
       field: 'title'
     },
     {
-      field: 'author'
+      field: 'publishedBy'
     },
     {
-      field: 'text'
-    },
-     { render: props => {
-       console.log(props);
-       return 'aaa'+ props.item.text;
-     } },
-  ],
-  footer: footer2,
-}*/
+      field: 'publishedOn'
+    }
+  ]
+}
 
 const users = {
   title: 'User',
@@ -255,10 +204,6 @@ const menuItems = {
   ],
 }
 
-/*
-
-
-
 const hamburg = {
   title: "Pages",
   form: [
@@ -272,15 +217,29 @@ const hamburg = {
   ],
 };
 
-const tag = {
-  title: "Tags",
+const tags = {
+  title: "Tag",
+  group: "Blog",
+  filter: [],
   form: [
-    { label: 'title', name: 'title', type: 'text' },
+    { label: 'Tag', name: 'tag', type: 'text' },
   ],
   list: [
-    { field: 'title', label: 'Title' }
+    { field: 'tag', label: 'Tag' }
   ]
-};*/
+};
+
+const categories = {
+  title: "Category",
+  group: "Blog",
+  filter: [],
+  form: [
+    { label: 'Category', name: 'category', type: 'text' },
+  ],
+  list: [
+    { field: 'category', label: 'Category' }
+  ]
+};
 
 const pages = {
   title: "Page",
@@ -288,48 +247,21 @@ const pages = {
   filter: [],
   form: [
     { label: 'Title', name: 'title', type: 'text' },
-    { type: "textarea", label: "Content", name: 'content' },
+    { type: "editor", label: "Content", name: 'content' },
   ],
   list: [
     { field: 'title', label: 'Title', render: (row) => `<div>${row.item.title}</div>` }
   ],
 };
 
-const books = {
-  title: "Book",
-  group: "Runs",
-  filter: [],
-  form: [{
-      label: 'Title',
-      name: 'title',
-      type: 'text'
-    },
-    {
-      type: "text",
-      label: "Description",
-      name: 'description'
-    },
-  ],
-  customForm: bookForm,
-  list: [{
-      field: 'title',
-      label: 'Title'
-    },
-    {
-      field: 'description',
-      label: 'Description'
-    }
-  ],
-};
-
 const news = {
   title: "News",
-  group: "News",
+  group: "Content",
   filter: [],
   form: [{
       label: 'Content',
       name: 'content',
-      type: 'textarea'
+      type: 'editor'
     },
     {
       type: "date",
@@ -349,9 +281,8 @@ const news = {
   ],
 };
 
-const aaa = (props) => {
-  //console.log(props);
-  var xxx = {
+const expandRun = (props) => {
+  return {
     name: 'my-footer',
     props: ['row'],
     template: `
@@ -363,7 +294,6 @@ const aaa = (props) => {
     </div>
     `
   };
-  return xxx;
 }
 
 const runs = {
@@ -443,10 +373,6 @@ const events = {
     },
   ],
   list: [
-    /*{
-      field: 'xx',
-      render: (props) => `<v-icon>info</v-icon>`
-    },*/
     {
       field: 'name'
     },
@@ -454,7 +380,7 @@ const events = {
       field: 'locality'
     },
   ],
-  expandRow: aaa(),
+  expandRow: expandRun(),
 };
 
 const runners = {
@@ -497,15 +423,15 @@ const runners = {
 
 export default {
   users,
-  //posts,
-  authors,
-  books,
+  articles,
+  categories,
+  tags,
   runs,
   events,
   runners,
   roles,
   pages,
-  menus,
+  //menus,
   menuItems,
   news,
 };

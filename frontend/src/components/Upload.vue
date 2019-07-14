@@ -10,6 +10,12 @@
 </template>
 
 <script>
+import axios from "axios";
+import {
+    BASE_URL,
+    API_URL
+} from './../constants';
+
   export default {
     /*
       Defines the data used by the component
@@ -21,24 +27,11 @@
     },
 
     methods: {
-      /*
-        Submits the file to the server
-      */
       submitFile(){
-        /*
-                Initialize the form data
-            */
             let formData = new FormData();
-
-            /*
-                Add the form data we need to submit
-            */
             formData.append('file', this.file);
 
-        /*
-          Make the request to the POST /single-file URL
-        */
-            axios.post( '/single-file',
+            axios.post( BASE_URL + '/upload',
                 formData,
                 {
                 headers: {
@@ -53,9 +46,6 @@
         });
       },
 
-      /*
-        Handles a change on the file upload
-      */
       handleFileUpload(){
         this.file = this.$refs.file.files[0];
       }

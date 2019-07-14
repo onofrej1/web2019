@@ -12,6 +12,7 @@ public class News {
     private Long Id;
 	
 	@Column(name="content", nullable=false)
+	@Lob
 	@NotNull
     private String content;
     

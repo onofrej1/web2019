@@ -14,9 +14,6 @@
       <v-btn icon to="/login">
         <v-icon>account_circle</v-icon>
       </v-btn>
-      <v-btn icon to="/register">
-        <v-icon>search</v-icon>
-      </v-btn>
       <v-btn icon @click="logout()">
         <v-icon>input</v-icon>
       </v-btn>
@@ -99,7 +96,8 @@ export default {
     groupIcons: {
       Permissions: "account_circle",
       Runs: "calendar_today",
-      Content: "list_alt"
+      Content: "list_alt",
+      Blog: "list_alt"
     }
   }),
   props: {

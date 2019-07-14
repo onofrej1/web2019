@@ -27,7 +27,7 @@ public class ApiController {
 	private RunRepository runRepo;
 
 	@Autowired
-	private AuthorRepository authorRepo;	
+	private ArticleRepository authorRepo;	
 
 	@RequestMapping("/helloworld")
 	public @ResponseBody String greeting() {
