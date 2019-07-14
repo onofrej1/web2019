@@ -2,6 +2,8 @@ package com.furca.web;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.List;
@@ -39,24 +41,27 @@ public class FileController {
 
     @GetMapping("/files")
     public ResponseEntity<List> listUploadedFiles(Model model) throws IOException {
-
+    	Path root = Paths.get("images");
         /*List files = storageService.loadAll().map(
                 path -> MvcUriComponentsBuilder.fromMethodName(FileController.class,
                         "serveFile", path.getFileName().toString()).build().toString())
                 .collect(Collectors.toList());*/
-    	List files = storageService.loadDir("images").map(file -> {
-    		System.out.println(file);
+    	
+    	List files = storageService.loadDir("images").map(path -> {
     		BasicFileAttributes attr = null;
 			try {
-				attr = Files.readAttributes(file, BasicFileAttributes.class);
+				attr = Files.readAttributes(path, BasicFileAttributes.class);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-    		System.out.println("creationTime: " + attr.creationTime());
-    		System.out.println("lastAccessTime: " + attr.lastAccessTime());
     		Map fileInfo = new HashMap();
+    		fileInfo.put("link", root.resolve(path).toUri());
+    		fileInfo.put("path", path.toFile().getName());
+    		//fileInfo.put("name", path.getFileName());
+    		fileInfo.put("size", attr.size());
+    		fileInfo.put("isDirectory", attr.isDirectory());
     		fileInfo.put("created", attr.creationTime().toString());
     		fileInfo.put("lastAccessTime", attr.lastAccessTime().toString());
     		return fileInfo;

@@ -9,7 +9,7 @@
             <v-btn @click="upload()">Submit</v-btn>
 
             <div v-for="file in files" :key="file">
-              {{ file.created }} - {{ file.lastAccessTime}}
+              {{ file.size }} - {{ file.lastAccessTime}}
             </div>
           </v-card-text>
         </v-card>
