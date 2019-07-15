@@ -22,7 +22,8 @@
 
             <ckeditor
               :editor="ClassicEditor"
-              :config="{}"
+              tag-name="textarea"
+              config= "{}"
               v-if="field.type=='editor'"
               rows="8"
               v-model="data[field.name]"

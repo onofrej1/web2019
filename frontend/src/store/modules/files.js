@@ -29,10 +29,11 @@ export default {
         },
     },
     actions: {
-        uploadFile({}, formData) {
+        uploadFile({dispatch}, formData) {
             axiosFormData.post(BASE_URL + '/upload',
                     formData,
                 ).then(function () {
+                    dispatch('fetchFiles');
                     console.log('SUCCESS!!');
                 })
                 .catch(function () {

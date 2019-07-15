@@ -4,13 +4,34 @@
       <v-flex mt-1 mb-1>
         <v-card>
           <v-card-text>
-            File
-            <input type="file" id="file" ref="file" @change="handleFileUpload()">
-            <v-btn @click="upload()">Submit</v-btn>
+            <p>
+              Choose file
+              <input type="file" id="file" ref="file" @change="handleFileUpload()">
+              <v-btn color="secondary" @click="upload()">Submit file</v-btn>
+            </p>
 
-            <div v-for="file in files" :key="file">
-              {{ file.size }} - {{ file.lastAccessTime}}
-            </div>
+            <v-layout row wrap>
+              <v-flex sm6 xs12 lg4 v-for="file in files" :key="file.path" pr-3 pb-3>
+                <v-card>
+                  <v-img :src="'http://localhost:8082/images/'+file.path" aspect-ratio="2.1"></v-img>
+
+                  <v-card-title primary-title>
+                    <div>
+                      <h3 class="headline mb-0">{{ file.path }}</h3>
+                    </div>
+                  </v-card-title>
+
+                  <v-card-actions>
+                    <v-btn flat color="orange">
+                      <v-icon>delete</v-icon>Delete
+                    </v-btn>
+                    <v-btn flat color="primary">
+                      <v-icon>save_alt</v-icon>Download
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-flex>
+            </v-layout>
           </v-card-text>
         </v-card>
       </v-flex>
