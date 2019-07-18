@@ -20,16 +20,7 @@
               v-validate="field.validate"
             ></v-textarea>
 
-            <ckeditor
-              :editor="ClassicEditor"
-              tag-name="textarea"
-              config= "{}"
-              v-if="field.type=='editor'"
-              rows="8"
-              v-model="data[field.name]"
-              v-bind="getProps(field)"
-              v-validate="field.validate"
-            ></ckeditor>
+            
 
             <v-menu
               v-if="field.type==='date'"
@@ -111,7 +102,7 @@
 
 <script>
 import InlineInput from "./InlineInput";
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+//import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { mapState, mapActions } from "vuex";
 const moment = require("moment");
 
@@ -125,7 +116,7 @@ export default {
   data: function() {
     return {
       menu: {},
-      ClassicEditor: ClassicEditor
+      //ClassicEditor: ClassicEditor
     };
   },
   mounted() {
