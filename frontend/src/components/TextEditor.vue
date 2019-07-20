@@ -1,13 +1,10 @@
 <template>
   <div class="editor-wrapper">
-    <v-btn @click="setContent()">Click</v-btn>
     <ckeditor
-      @change="console.log('ccc')"
       :editor="editor"
       v-model="editorData"
       :config="editorConfig"
     ></ckeditor>
-    {{ editorData }}
   </div>
 </template>
 
@@ -31,7 +28,6 @@ export default {
     return {
       editor: ClassicEditor,
       editorData: this.data,
-      //editorData: "<p>Content of the editor.</p>",
       editorConfig: {
         plugins: [
           EssentialsPlugin,
@@ -40,8 +36,8 @@ export default {
           LinkPlugin,
           ParagraphPlugin,
           Image,
-          InsertImage,
-          this.ChangeContent
+          InsertImage
+          //CustomPlugin
         ],
 
         toolbar: {
@@ -50,36 +46,20 @@ export default {
       }
     };
   },
-  computed: {
-    editorDataxxx: function() {
-      return this.data;
+  watch: {
+    editorData: function(newVal, oldVal) {
+      this.$emit("input", newVal);
+      //console.log("value changed from " + oldVal + " to " + newVal);
     }
   },
-  methods: {
-    onReady(editor) {
-      console.log("rredy");
-      console.log(editor);
-    },
-    setContent() {
-      console.log("set");
-      //this.editor.setData('xxx');
-    },
-    ChangeContent(editor) {
-      console.log(editor);
-      console.log(this);
-      let emit = this.$emit;
-      editor.model.document.on("change", () => {
-        emit("input", this.editorData);
-        console.log("The Document has changed!");
-      });
-    }
-  }
+  computed: {},
+  methods: {}
 };
+
+function customPlugin(editor) {
+  editor.model.document.on("change", () => {
+    console.log("The Document has changed!");
+  });
+}
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-</style>

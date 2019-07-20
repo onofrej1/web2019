@@ -57,7 +57,7 @@ public class FileController {
 			}
 
     		Map fileInfo = new HashMap();
-    		fileInfo.put("link", root.resolve(path).toUri());
+    		fileInfo.put("link", "http://localhost:8082/images/"+path.toFile().getName());
     		fileInfo.put("path", path.toFile().getName());
     		//fileInfo.put("name", path.getFileName());
     		fileInfo.put("size", attr.size());

@@ -14,18 +14,20 @@
             ></v-text-field>
 
             <v-textarea
-              v-if="field.type=='textareax'"
+              v-if="field.type=='textarea'"
               v-model="data[field.name]"
               v-bind="getProps(field)"
               v-validate="field.validate"
             ></v-textarea>
 
-            <text-editor
-              v-if="field.type=='editor'"
-              :data="data[field.name]"
-              @input="data[field.name] = $event"
-              v-bind="getProps(field)"
-            />
+            <div v-if="field.type=='editor'">
+              <label>{{ field.label || field.name }}</label>
+              <text-editor
+                :data="data[field.name]"
+                @input="data[field.name] = $event"
+                v-bind="getProps(field)"
+              />
+            </div>
 
             <v-menu
               v-if="field.type==='date'"

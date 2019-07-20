@@ -73,7 +73,7 @@ public class FileSystemStorageService implements StorageService {
     public Stream<Path> loadDir(String dir) {
     	Path path = Paths.get(dir);
         try {
-            return Files.walk(path, 1);
+            return Files.walk(path, 1).filter(Files::isRegularFile);
         }
         catch (IOException e) {
             throw new StorageException("Failed to read stored files", e);
