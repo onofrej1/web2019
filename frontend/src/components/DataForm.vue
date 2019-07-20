@@ -20,7 +20,12 @@
               v-validate="field.validate"
             ></v-textarea>
 
-            
+            <text-editor
+              v-if="field.type=='editor'"
+              :data="data[field.name]"
+              @input="data[field.name] = $event"
+              v-bind="getProps(field)"
+            />
 
             <v-menu
               v-if="field.type==='date'"
@@ -103,6 +108,7 @@
 <script>
 import InlineInput from "./InlineInput";
 //import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import TextEditor from "./TextEditor";
 import { mapState, mapActions } from "vuex";
 const moment = require("moment");
 
@@ -115,7 +121,7 @@ export default {
   },
   data: function() {
     return {
-      menu: {},
+      menu: {}
       //ClassicEditor: ClassicEditor
     };
   },
@@ -141,6 +147,7 @@ export default {
   },
   components: {
     InlineInput,
+    TextEditor
   },
   computed: {
     ...mapState("resources", { resources: "data" }),
@@ -181,6 +188,7 @@ export default {
     },
     submit: function(e) {
       let data = this.data;
+      console.log(data);
       delete data["_links"];
 
       this.$validator.validateAll().then(valid => {

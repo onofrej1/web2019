@@ -7,7 +7,7 @@ import VeeValidate from 'vee-validate'
 import CKEditor from '@ckeditor/ckeditor5-vue';
 
 import Admin from "./components/Admin.vue";
-import HelloWorld from "./components/HelloWorld.vue";
+//import HelloWorld from "./components/HelloWorld.vue";
 import Login from "./components/Login.vue";
 import Register from "./components/Register.vue";
 import Home from "./components/Home.vue";
@@ -65,10 +65,10 @@ const routes = [{
     },*/
     name: 'register'
   },
-  {
+  /*{
     path: '/hello',
     component: HelloWorld
-  },
+  },*/
   {
     path: '/page/:id',
     component: Page,
