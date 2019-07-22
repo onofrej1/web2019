@@ -29,6 +29,8 @@ import PasteFromOffice from "@ckeditor/ckeditor5-paste-from-office/src/pastefrom
 import Table from "@ckeditor/ckeditor5-table/src/table";
 import TableToolbar from "@ckeditor/ckeditor5-table/src/tabletoolbar";
 
+import imageIcon from '@ckeditor/ckeditor5-core/theme/icons/image.svg';
+
 import InsertImage from "./../plugins/InsertImage";
 
 export default {
@@ -86,12 +88,11 @@ export default {
           ]
         },
         image: {
-          toolbar: [
-            "imageStyle:full",
-            "imageStyle:side",
-            "|",
-            "imageTextAlternative"
-          ]
+          toolbar: [ 'imageStyle:contact', 'imageTextAlternative', '|', 'imageStyle:alignLeft', 'imageStyle:full', 'imageStyle:alignRight' ],
+            styles: [
+                { name: 'full', icon: 'right', title: 'aaa' },
+                { name: 'contact', icon: imageIcon, title: 'My contact style', className: 'my-contact' }
+            ]
         },
         table: {
           contentToolbar: ["tableColumn", "tableRow", "mergeTableCells"]
@@ -117,4 +118,10 @@ function customPlugin(editor) {
   });
 }
 </script>
+<style>
+.my-contact {
+  border: 2px solid red;
+  width: 100%;
+}
+</style>
 

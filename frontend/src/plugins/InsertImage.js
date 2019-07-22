@@ -37,6 +37,7 @@ class InsertImage extends Plugin {
             const imageElement = writer.createElement('image', {
                 src: imageUrl,
             });
+            
             editor.model.insertContent(imageElement, editor.model.document.selection);
         });
     }

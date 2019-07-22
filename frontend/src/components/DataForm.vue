@@ -20,10 +20,19 @@
               v-validate="field.validate"
             ></v-textarea>
 
-            <div v-if="field.type=='editor'">
+            <!--<div v-if="field.type=='editor'">
               <label>{{ field.label || field.name }}</label>
               <text-editor
                 :data="data[field.name]"
+                @input="data[field.name] = $event"
+                v-bind="getProps(field)"
+              />
+            </div>-->
+  
+            <div v-if="field.type=='editor'">
+              <label>{{ field.label || field.name }}</label>
+              <quill-editor
+                :value="data[field.name]"
                 @input="data[field.name] = $event"
                 v-bind="getProps(field)"
               />
@@ -110,7 +119,8 @@
 <script>
 import InlineInput from "./InlineInput";
 //import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import TextEditor from "./TextEditor";
+//import TextEditor from "./TextEditor";
+import QuillEditor from './QuillEditor';
 import { mapState, mapActions } from "vuex";
 const moment = require("moment");
 
@@ -149,7 +159,8 @@ export default {
   },
   components: {
     InlineInput,
-    TextEditor
+    //TextEditor,
+    QuillEditor,
   },
   computed: {
     ...mapState("resources", { resources: "data" }),
