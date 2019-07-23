@@ -11,7 +11,7 @@ export default class SelectImage {
     }
 
     modal() {
-        this.quill.getModule('toolbar').addHandler('aaa', () => {
+        this.quill.getModule('toolbar').addHandler('selImage', () => {
             console.log('shoh modal');
         });
     }
