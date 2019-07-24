@@ -10,8 +10,8 @@ import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";
 import SelectImage from "./../plugins/SelectImage.js";
 
-import SelectImageModal from './../components/SelectImageModal.vue';
-import store from './../store'
+import SelectImageModal from "./../components/SelectImageModal.vue";
+import store from "./../store";
 
 Quill.register("modules/selectImage", SelectImage);
 
@@ -26,7 +26,8 @@ export default {
 
   data() {
     return {
-      editor: null
+      editor: null,
+      selectionIndex: null
     };
   },
   mounted() {
@@ -53,10 +54,10 @@ export default {
             ["link", "image", "video"] // link and image, video
           ],
           handlers: {
-            selImage: ChooseImage.bind(this)
+            selImage: this.ChooseImage
           }
         }
-        
+
         //selectImage: true
       },
       theme: "snow",
@@ -84,10 +85,25 @@ export default {
 
     this.editor.root.innerHTML = this.value;
 
-    var toolbar = this.editor.getModule("toolbar");
+    //var toolbar = this.editor.getModule("toolbar");
     //toolbar.addHandler("selImage", () => console.log("xxxx"));
 
     this.editor.on("text-change", () => this.update());
+    let me = this;
+
+    this.editor.on("selection-change", function(range, oldRange, source) {
+      if (range) {
+        me.selectionIndex = range.index;
+        if (range.length == 0) {
+          console.log("User cursor is on", range.index);
+        } else {
+          var text = me.editor.getText(range.index, range.length);
+          console.log("User has highlighted", text);
+        }
+      } else {
+        console.log("Cursor not in the editor");
+      }
+    });
   },
 
   methods: {
@@ -96,25 +112,21 @@ export default {
         "input",
         this.editor.getText() ? this.editor.root.innerHTML : ""
       );
+    },
+
+    ChooseImage() {
+      store.dispatch("modal/show", {
+        title: "Choose file",
+        component: SelectImageModal,
+        close: imageUrl => {
+          imageUrl
+            ? this.editor.insertEmbed(this.selectionIndex, "image", imageUrl)
+            : false;
+        }
+      });
     }
   }
 };
-
-function ChooseImage() {
-  insert = insert.bind(this);
-  let selection = this.editor.getSelection();
-  
-  store.dispatch("modal/show", {
-    title: "Choose file",
-    component: SelectImageModal,
-    close: imageUrl => (imageUrl ? insert(imageUrl, selection) : false)
-  });
-}
-
-function insert(image, selection) {
-  //console.log(selection);
-  this.editor.insertEmbed(selection, 'image', image);
-}
 </script>
 <style>
 .ql-selImage:after {
