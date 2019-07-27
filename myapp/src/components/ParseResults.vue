@@ -10,14 +10,14 @@
               <v-btn color="secondary" @click="upload()">Submit file</v-btn>
             </p>
 
-            
+            <input id="dealCsv" type="file" />
             <br>
             <br>
             <v-card-text>
               <v-data-table
               
-              :headers="headersx"
-              :items="itemsx"
+              :headers="headers"
+              :items="items"
               :items-per-page="10"
               class="elevation-1"
             ></v-data-table>
@@ -41,43 +41,11 @@ export default {
   data() {
     return {
       //file: "",
-      headersx: [
-        { text: "place", value: "place" },
-        { text: "startn", value: "startn" },
-        { text: "name", value: "name" },
-        { text: "team", value: "team" },
-        { text: "category", value: "category" },
-        { text: "finish_time", value: "finish_time" },
-        { text: "born", value: "born" }
+      headers: [
+        
       ],
-      itemsx: [
-        {
-          place: "1",
-          startn: "24",
-          name: "Evin Ondrej",
-          team: "Partizan Bardejov",
-          category: "A",
-          finish_time: "03:02:26",
-          born: "1976"
-        },
-        {
-          place: "2",
-          startn: "1",
-          name: "Bogar Janos",
-          team: "Encs",
-          category: "B",
-          finish_time: "03:07:36",
-          born: "1965"
-        },
-        {
-          place: "3",
-          startn: "23",
-          name: "Lindvai Slavomir ",
-          team: "PBaH Titus Kosice",
-          category: "B",
-          finish_time: "03:08:21",
-          born: "1971"
-        }
+      items: [
+        
       ]
     };
   },
@@ -132,7 +100,7 @@ export default {
         .map(d => ({ text: d, value: d }));
 
       console.log(JSON.stringify(this.headers));
-      this.itemsx = parsedata.map(d => {
+      this.items = parsedata.map(d => {
         //console.log(d);
         let obj = {};
         // keys.forEach((key, idx) => result[key] = values[idx]);
@@ -144,13 +112,13 @@ export default {
         //console.log(obj);
         return obj;
       });
-      console.log(JSON.stringify(this.itemsx));
+      //console.log(JSON.stringify(this.itemsx));
       //console.table(parsedata);
     }
   },
   mounted() {
     //this.fetchFiles();
-    //this.parseCsv();
+    this.parseCsv();
   },
   parse() {
     axios.get(state.apiUrl + "/" + resource).then(

@@ -1,13 +1,11 @@
 import Vue from 'vue'
 import App from './App.vue'
-import Vuetify from 'vuetify'
+import vuetify from './plugins/vuetify';
 import store from './store'
 import VueRouter from 'vue-router'
 import VeeValidate from 'vee-validate'
-import CKEditor from '@ckeditor/ckeditor5-vue';
 
 import Admin from "./components/Admin.vue";
-//import HelloWorld from "./components/HelloWorld.vue";
 import Login from "./components/Login.vue";
 import Register from "./components/Register.vue";
 import Home from "./components/Home.vue";
@@ -17,18 +15,16 @@ import ParseResults from './components/ParseResults.vue';
 
 import {getToken, axiosSetToken} from './functions';
 
-import 'vuetify/dist/vuetify.min.css' // Ensure you are using css-loader
+//import 'vuetify/dist/vuetify.min.css' // Ensure you are using css-loader
 //import '~vuetify/src/stylus/main' // Ensure you are using stylus-loader
 
 Vue.use(require('vue-moment'));
-Vue.use(Vuetify)
 Vue.use(VueRouter)
 Vue.use(VeeValidate, {
   fieldsBagName: 'veeFields',
   events: 'change'
 });
-Vue.use( CKEditor );
-//Vue.config.productionTip = false
+Vue.config.productionTip = false
 
 const routes = [{
     path: '/crud/:resource',
@@ -109,7 +105,7 @@ router.beforeEach((to, from, next) => {
       const roles = to.meta.roles.filter(value => token.roles.includes(value));
       if(roles.length > 0) {
         next();
-      }else {
+      } else {
         next('/login');
       }
     } 
@@ -119,8 +115,8 @@ router.beforeEach((to, from, next) => {
 })
 
 new Vue({
-  el: '#app',
+  vuetify,
   store: store,
   router,
-  render: h => h(App),
-});
+  render: h => h(App)
+}).$mount('#app')
