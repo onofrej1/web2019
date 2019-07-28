@@ -35,6 +35,7 @@ import axios from "axios";
 import { mapActions, mapState } from "vuex";
 
 import { BASE_URL, API_URL } from "./../constants";
+var levenshtein = require("underscore.string/levenshtein");
 
 export default {
   name: 'ParseResults',
@@ -61,7 +62,10 @@ export default {
 
       this.uploadFile(formData);
     },
-
+    check() {
+      console.log('checkxxxxyy');
+      console.log(levenshtein("onofrej", "onoffrexe"));
+    },
     handleFileUpload() {
       this.file = this.$refs.file.files[0];
     },
@@ -118,7 +122,9 @@ export default {
   },
   mounted() {
     //this.fetchFiles();
+    this.check();
     this.parseCsv();
+    
   },
   parse() {
     axios.get(state.apiUrl + "/" + resource).then(

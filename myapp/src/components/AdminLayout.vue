@@ -19,63 +19,80 @@
       </v-btn>
     </v-app-bar>
 
-    <v-card id="menu">
-      <v-list class="pt-0">
-        <v-list-item>
-          <!--<v-list-item-avatar>
-            <img src="https://picsum.photos/200">
-          </v-list-item-avatar>-->
-          <v-list-item-action>
-            <v-icon medium>folder</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Profile</v-list-item-title>
-            <v-list-item-subtitle>User profile settigns</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-divider></v-divider>
-        <v-list-group
-          :prepend-icon="groupIcons[groupName]"
-          :key="groupName"
-          no-action
-          v-for="(group, groupName) in modelNames"
-          value="true"
-        >
-          <template v-slot:activator>
-            <v-list-item-title>{{ groupName }}</v-list-item-title>
-          </template>
-          <template v-for="item in group">
-            <v-list-item :key="item.resource">
-              <v-list-item-content class="list-content-link">
-                <v-list-item-title class @click="setModel(item.resource)">{{ item.title }}</v-list-item-title>
-              </v-list-item-content>
-              <v-list-item-action>
-                <v-btn icon ripple @click="setModel(item.resource)">
-                  <v-icon color="grey lighten-1" large>arrow_right</v-icon>
-                </v-btn>
-              </v-list-item-action>
-            </v-list-item>
-          </template>
-        </v-list-group>
-        <v-divider></v-divider>
-        <v-list-item>
-          <v-list-item-action>
-            <v-icon medium @click="openModal">folder</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Media manager</v-list-item-title>
-            <v-list-item-subtitle>Upload files and images</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-card>
-
     <div class="content">
-      <slot></slot>
-      <router-view></router-view>
-    </div>
+      <v-card id="menu">
+        <div class="pa-3" style="width:80%; margin: 10px auto; border: 0.5px solid lightgray">
+          <v-img src="./../assets/images/user_avatar.png"  dark></v-img>
+        </div>
 
+        <v-list class="pt-0">
+          <v-list-item>
+            <!--<v-list-item-avatar>
+            <img src="https://picsum.photos/200">
+            </v-list-item-avatar>-->
+            <v-list-item-action>
+              <v-icon medium>folder</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Profile</v-list-item-title>
+              <v-list-item-subtitle>User profile settigns</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+
+          <v-divider></v-divider>
+          <v-list-group
+            :prepend-icon="groupIcons[groupName]"
+            :key="groupName"
+            no-action
+            v-for="(group, groupName) in modelNames"
+          >
+            <template v-slot:activator>
+              <v-list-item-title>{{ groupName }}</v-list-item-title>
+            </template>
+            <template v-for="item in group">
+              <v-list-item :key="item.resource">
+                <v-list-item-content class="list-content-link">
+                  <v-list-item-title class @click="setModel(item.resource)">{{ item.title }}</v-list-item-title>
+                </v-list-item-content>
+                <v-list-item-action>
+                  <v-btn icon ripple @click="setModel(item.resource)">
+                    <v-icon color="grey lighten-1" large>arrow_right</v-icon>
+                  </v-btn>
+                </v-list-item-action>
+              </v-list-item>
+            </template>
+          </v-list-group>
+          <v-divider></v-divider>
+
+          <v-list-item to="/parse">
+            <v-list-item-action>
+              <v-icon medium>folder</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Load results</v-list-item-title>
+              <v-list-item-subtitle>Import results from csv</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          
+          <v-list-item>
+            <v-list-item-action>
+              <v-icon medium @click="openModal">folder</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Media manager</v-list-item-title>
+              <v-list-item-subtitle>Upload files and images</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+
+          
+        </v-list>
+      </v-card>
+
+      <div class="main">
+        <slot></slot>
+        <router-view></router-view>
+      </div>
+    </div>
     <v-footer style="border:1px solid lightgray" app></v-footer>
   </div>
 </template>
@@ -146,6 +163,10 @@ export default {
 }
 
 .content {
+  display: flex;
+}
+
+.main {
   margin-left: 300px;
   margin-top: 65px;
   padding: 10px;

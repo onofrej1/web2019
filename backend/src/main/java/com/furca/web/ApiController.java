@@ -1,5 +1,6 @@
 package com.furca.web;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,6 +68,14 @@ public class ApiController {
 		eventRepo.save(event);
 
 		return new ResponseEntity<Object>(HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/checkNames", method = RequestMethod.POST)
+	public void saveUsers(@ModelAttribute("Users") RunnerListContainer runnerList) throws Exception{
+	    List<Runner> runners = runnerList.getRunners();
+	    for(Runner runner : runners) {
+	        System.out.println("First Name- " + runner.getFirstName());
+	    }
 	}
 
 	/*

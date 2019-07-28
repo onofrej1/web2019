@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -23,9 +24,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.furca.storage.StorageFileNotFoundException;
 import com.furca.storage.StorageService;
 
@@ -37,6 +35,14 @@ public class FileController {
     @Autowired
     public FileController(StorageService storageService) {
         this.storageService = storageService;
+    }
+    
+    @GetMapping("/calc")
+    public ResponseEntity<String> calculate(Model model) throws IOException {
+    	LevenshteinDistance dist = new LevenshteinDistance();
+    	Integer num = dist.apply("erik", "erikxxb");
+    	
+    	return ResponseEntity.ok(num.toString());
     }
 
     @GetMapping("/files")

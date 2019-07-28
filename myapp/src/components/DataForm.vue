@@ -44,7 +44,6 @@
               v-model="menu[field.name]"
               :close-on-content-click="false"
               :nudge-right="40"
-              lazy
               transition="scale-transition"
               offset-y
               full-width
@@ -90,7 +89,7 @@
               <template v-slot:selection="data">
                 <v-chip
                   :key="JSON.stringify(data.item)"
-                  :selected="data.selected"
+                  :input-value="data.selected"
                   :disabled="data.disabled"
                   class="v-chip--select-multi"
                   @input="data.parent.selectItem(data.item)"
@@ -176,6 +175,10 @@ export default {
     ...mapActions("resources", ["fetchData"]),
     getOptions: function(resource, field) {
       let emptyOption = { value: null, text: "" };
+
+      if(!this.resources[resource]) {
+        return;
+      }
 
       return [emptyOption].concat(
         this.resources[resource].map(data => ({

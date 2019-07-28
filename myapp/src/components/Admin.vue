@@ -90,11 +90,10 @@
           :headers="list"
           v-model="selected"
           :items="items"
-          item-key="name"
-          :hide-default-header="false"
+          item-key="id"
           class="elevation-1"
-          show-expand
-          show-select
+          :show-expand="resource.expandRow ? true : false"
+          :show-select="resource.bulkActions ? true : false"
         >
           <template v-slot:footer v-if="resource.footer">
             <component v-bind:is="resource.footer"></component>
@@ -115,22 +114,14 @@
           </template>
 
           <template v-slot:item.actions="{ item }">
-            <v-icon @click="editItem(item)">edit</v-icon>
-            <v-icon @click="deleteItem(item)">delete</v-icon>
+            <span class="text-no-wrap">
+              <v-icon @click="editItem(item)">edit</v-icon>
+              <v-icon @click="deleteItem(item)">delete</v-icon>
+            </span>
           </template>
 
           <template v-slot:body="props" v-if="resource.body">
             <component v-bind:is="resource.body" :props="props"></component>
-          </template>
-
-          <template v-slot:bodyxx="props" v-if="false">
-            <tbody>
-              <tr v-for="(item, index) in props.items" :key="item.id">
-                <!--<td @click="props.selected = !props.selected" v-if="resource.bulkActions">
-                  <v-checkbox :input-value="props.selected" primary hide-details></v-checkbox>
-                </td>-->
-              </tr>
-            </tbody>
           </template>
 
           <template v-slot:expanded-item="props">
