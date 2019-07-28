@@ -79,7 +79,7 @@
         <template v-if="resource.listView">
           <component v-bind:is="resource.listView" :items="items" :actions="actions"></component>
         </template>
-        
+
         <v-data-table
           v-if="list && status!='loading' && !resource.listView"
           d-block
@@ -90,44 +90,12 @@
           :headers="list"
           v-model="selected"
           :items="items"
-          item-key="id"
-          :hide-default-header="true"
+          item-key="name"
+          :hide-default-header="false"
           class="elevation-1"
           show-expand
+          show-select
         >
-
-          <template v-slot:header="{ props: { headers }, props}">
-            <component v-if="resource.header" v-bind:is="resource.header" :headers="headers" :props="props"></component>
-            <thead v-else>
-              <tr>
-                <th v-if="resource.bulkActions">
-                  <v-checkbox
-                    :input-value="props.all"
-                    :indeterminate="props.indeterminate"
-                    primary
-                    hide-details
-                    @click.stop="toggleAll"
-                  ></v-checkbox>
-                </th>
-                
-                <th
-                  v-for="header in props.headers"
-                  :key="header.text"
-                  :class="['text-xs-right column sortable', descending ? 'desc' : 'asc', header.value === sortBy ? 'active' : '']"
-                  @click="changeSort(header.value)"
-                >
-                  <v-icon small>arrow_upward</v-icon>
-                   {{ header.text }}
-                </th>
-              
-              </tr>
-            </thead>
-          </template>
-
-          <template v-slot:item.data-table-select="{ on, props }" v-if="resource.bulkActions">
-            <v-checkbox :input-value="props.selected" primary hide-details></v-checkbox>
-          </template>
-
           <template v-slot:footer v-if="resource.footer">
             <component v-bind:is="resource.footer"></component>
           </template>
@@ -136,10 +104,15 @@
             <component v-bind:is="pageText"></component>
           </template>
 
-            <template v-for="field in list" v-slot:[getSlotItemName(field)]="{ item, props, headers }">
-              <span :key="field.name" v-html="field.render ? field.render(item, props) : item[field.value]"></span>
-            </template>
-          
+          <template
+            v-for="field in list"
+            v-slot:[getSlotItemName(field)]="{ item, props, headers }"
+          >
+            <span
+              :key="field.name"
+              v-html="field.render ? field.render(item, props) : item[field.value]"
+            ></span>
+          </template>
 
           <template v-slot:item.actions="{ item }">
             <v-icon @click="editItem(item)">edit</v-icon>
@@ -150,23 +123,18 @@
             <component v-bind:is="resource.body" :props="props"></component>
           </template>
 
-          <template v-slot:bodyxx="props" v-else>
+          <template v-slot:bodyxx="props" v-if="false">
             <tbody>
               <tr v-for="(item, index) in props.items" :key="item.id">
                 <!--<td @click="props.selected = !props.selected" v-if="resource.bulkActions">
                   <v-checkbox :input-value="props.selected" primary hide-details></v-checkbox>
                 </td>-->
-                
-                <td class="text-xs-right" :key="field.value" v-for="field in list">
-                  <span v-html="field.render ? field.render(item, props) : item[field.value]"></span>
-                </td>
-                
               </tr>
             </tbody>
           </template>
 
-          <template v-slot:expanded-item="props" >
-            <component v-bind:is="resource.expandRow" :row="props.items"></component>
+          <template v-slot:expanded-item="props">
+            <component v-bind:is="resource.expandRow" :row="props.item"></component>
           </template>
         </v-data-table>
       </v-card>
@@ -264,10 +232,10 @@ export default {
       this.fetchData(resource);
     },
     getSlotItemName(field) {
-      return 'item.'+field.value;
+      return "item." + field.value;
     },
     expand: function(item, index) {
-      console.log('expand');
+      console.log("expand");
       this.expanded.push(item);
       console.log(this.expanded);
     },
@@ -329,7 +297,7 @@ export default {
           align: "right"
         });
       }
-      this.list.push({'text': 'Actions', value: 'actions'})
+      this.list.push({ text: "Actions", value: "actions" });
     },
     setForm(row) {
       this.form = [

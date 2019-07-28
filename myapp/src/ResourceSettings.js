@@ -1,5 +1,7 @@
 const moment = require('moment');
 import RunnerList from './components/RunnerList.vue';
+import { VIcon } from 'vuetify/lib'
+
 
 var footer = {
   name: 'my-footer',
@@ -340,13 +342,14 @@ const expandRun = (props) => {
   return {
     name: 'my-footer',
     props: ['row'],
+    components: {VIcon},
     template: `
-    <div style="padding:10px">
+    <td :colspan="4">
       <p v-for="run in row.runs">
         <v-icon :key="row.id" small>event</v-icon> {{ run.edition }}. rocnik 
         {{ run.runDate }}
       </p>
-    </div>
+    </td>
     `
   };
 }
@@ -382,6 +385,7 @@ const events = {
       field: 'locality'
     },
   ],
+  bulkActions: [{}],
   expandRow: expandRun(),
   footer: {
     template: '<span>fffoter</span>'
