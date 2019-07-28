@@ -250,7 +250,7 @@ const pages = {
     { type: "editor", label: "Content", name: 'content' },
   ],
   list: [
-    { field: 'title', label: 'Title', render: (row) => `<div>${row.item.title}</div>` }
+    { field: 'title', label: 'Title', render: (item, props) => `<div>${item.title}</div>` }
   ],
 };
 
@@ -281,20 +281,7 @@ const news = {
   ],
 };
 
-const expandRun = (props) => {
-  return {
-    name: 'my-footer',
-    props: ['row'],
-    template: `
-    <div style="padding:10px">
-      <p v-for="run in row.runs">
-        <v-icon :key="row.id" small>event</v-icon> {{ run.edition }}. rocnik 
-        {{ run.runDate }}
-      </p>
-    </div>
-    `
-  };
-}
+
 
 const runs = {
   title: 'Run',
@@ -335,12 +322,12 @@ const runs = {
     {
       field: 'runDate',
       label: 'Date',
-      render: (props) => `${moment(props.item.runDate, 'YYYY-MM-DD').format('DD/MM/YYYY')}`
+      render: (item, props) => `${moment(item.runDate, 'YYYY-MM-DD').format('DD/MM/YYYY')}`
     },
     {
       field: 'event',
       label: 'Event',
-      render: (props) => props.item.event ? props.item.event.name : ''
+      render: (item, props) => item.event ? item.event.name : ''
     },
     {
       field: 'edition'
@@ -348,6 +335,21 @@ const runs = {
   ],
   footer: footer
 };
+
+const expandRun = (props) => {
+  return {
+    name: 'my-footer',
+    props: ['row'],
+    template: `
+    <div style="padding:10px">
+      <p v-for="run in row.runs">
+        <v-icon :key="row.id" small>event</v-icon> {{ run.edition }}. rocnik 
+        {{ run.runDate }}
+      </p>
+    </div>
+    `
+  };
+}
 
 const events = {
   title: 'Event',
@@ -383,8 +385,13 @@ const events = {
   expandRow: expandRun(),
   footer: {
     template: '<span>fffoter</span>'
-  }
+  },
+  /*header: {
+    template: '<span>fffoter</span>'
+  }*/
 };
+
+
 
 const runners = {
   title: 'Runner',
@@ -416,7 +423,7 @@ const runners = {
     {
       field: 'birthday',
       label: 'Date',
-      render: (props) => `${moment(props.item.birthday, 'YYYY-MM-DD').format('DD/MM/YYYY')}`
+      render: (item, props) => `${moment(item.birthday, 'YYYY-MM-DD').format('DD/MM/YYYY')}`
     },
   ],
   //listView: RunnerList,

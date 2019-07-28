@@ -79,43 +79,53 @@
         <template v-if="resource.listView">
           <component v-bind:is="resource.listView" :items="items" :actions="actions"></component>
         </template>
-
+        
         <v-data-table
           v-if="list && status!='loading' && !resource.listView"
           d-block
           :sort-by.sync="sortBy"
+          :sort-desc.sync="descending"
+          :single-expand="false"
+          :expanded.sync="expanded"
           :headers="list"
           v-model="selected"
           :items="items"
+          item-key="id"
+          :hide-default-header="true"
           class="elevation-1"
+          show-expand
         >
-          <template v-slot:header="props" v-if="!resource.header">
-            <tr>
-              <th v-if="resource.bulkActions">
-                <v-checkbox
-                  :input-value="props.all"
-                  :indeterminate="props.indeterminate"
-                  primary
-                  hide-details
-                  @click.stop="toggleAll"
-                ></v-checkbox>
-              </th>
-              <th v-if="resource.expandRow">More</th>
-              <th
-                v-for="header in props.headers"
-                :key="header.text"
-                :class="['text-xs-right column sortable', pagination.descending ? 'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '']"
-                @click="changeSort(header.value)"
-              >
-                <v-icon small>arrow_upward</v-icon>
-                aa{{ header.text }}
-              </th>
-              <th class="text-xs-right">Actions</th>
-            </tr>
+
+          <template v-slot:header="{ props: { headers }, props}">
+            <component v-if="resource.header" v-bind:is="resource.header" :headers="headers" :props="props"></component>
+            <thead v-else>
+              <tr>
+                <th v-if="resource.bulkActions">
+                  <v-checkbox
+                    :input-value="props.all"
+                    :indeterminate="props.indeterminate"
+                    primary
+                    hide-details
+                    @click.stop="toggleAll"
+                  ></v-checkbox>
+                </th>
+                
+                <th
+                  v-for="header in props.headers"
+                  :key="header.text"
+                  :class="['text-xs-right column sortable', descending ? 'desc' : 'asc', header.value === sortBy ? 'active' : '']"
+                  @click="changeSort(header.value)"
+                >
+                  <v-icon small>arrow_upward</v-icon>
+                   {{ header.text }}
+                </th>
+              
+              </tr>
+            </thead>
           </template>
 
-          <template v-slot:header="props" v-if="resource.header">
-            <component v-bind:is="resource.header" :props="props"></component>
+          <template v-slot:item.data-table-select="{ on, props }" v-if="resource.bulkActions">
+            <v-checkbox :input-value="props.selected" primary hide-details></v-checkbox>
           </template>
 
           <template v-slot:footer v-if="resource.footer">
@@ -126,32 +136,37 @@
             <component v-bind:is="pageText"></component>
           </template>
 
+            <template v-for="field in list" v-slot:[getSlotItemName(field)]="{ item, props, headers }">
+              <span :key="field.name" v-html="field.render ? field.render(item, props) : item[field.value]"></span>
+            </template>
+          
+
+          <template v-slot:item.actions="{ item }">
+            <v-icon @click="editItem(item)">edit</v-icon>
+            <v-icon @click="deleteItem(item)">delete</v-icon>
+          </template>
+
           <template v-slot:body="props" v-if="resource.body">
             <component v-bind:is="resource.body" :props="props"></component>
           </template>
 
-          <template v-slot:body="props" v-else>
+          <template v-slot:bodyxx="props" v-else>
             <tbody>
-              <tr v-for="item in props.items" :key="item.id">
-                <td @click="props.selected = !props.selected" v-if="resource.bulkActions">
+              <tr v-for="(item, index) in props.items" :key="item.id">
+                <!--<td @click="props.selected = !props.selected" v-if="resource.bulkActions">
                   <v-checkbox :input-value="props.selected" primary hide-details></v-checkbox>
-                </td>
-                <th v-if="resource.expandRow" @click="props.expanded = !props.expanded">
-                  <v-icon>info</v-icon>
-                </th>
+                </td>-->
+                
                 <td class="text-xs-right" :key="field.value" v-for="field in list">
-                  <span v-html="field.render ? field.render(item) : item[field.value]"></span>
+                  <span v-html="field.render ? field.render(item, props) : item[field.value]"></span>
                 </td>
-                <td class="text-xs-right">
-                  <v-icon @click="editItem(item)">edit</v-icon>
-                  <v-icon @click="deleteItem(item)">delete</v-icon>
-                </td>
+                
               </tr>
             </tbody>
           </template>
 
-          <template v-slot:expand="props" v-if="resource.expandRow">
-            <component v-bind:is="resource.expandRow" :row="props.item"></component>
+          <template v-slot:expanded-item="props" >
+            <component v-bind:is="resource.expandRow" :row="props.items"></component>
           </template>
         </v-data-table>
       </v-card>
@@ -179,6 +194,8 @@ export default {
         delete: this.deleteItem
       },
       sortBy: "name",
+      descending: false,
+      expanded: [],
       selected: []
     };
   },
@@ -246,6 +263,14 @@ export default {
       this.setList();
       this.fetchData(resource);
     },
+    getSlotItemName(field) {
+      return 'item.'+field.value;
+    },
+    expand: function(item, index) {
+      console.log('expand');
+      this.expanded.push(item);
+      console.log(this.expanded);
+    },
     addFilter: function(filter) {
       this.activeFilters.push(filter);
     },
@@ -304,6 +329,7 @@ export default {
           align: "right"
         });
       }
+      this.list.push({'text': 'Actions', value: 'actions'})
     },
     setForm(row) {
       this.form = [
@@ -326,11 +352,11 @@ export default {
       }
     },
     changeSort(column) {
-      if (this.pagination.sortBy === column) {
-        this.pagination.descending = !this.pagination.descending;
+      if (this.sortBy === column) {
+        this.descending = !this.descending;
       } else {
-        this.pagination.sortBy = column;
-        this.pagination.descending = false;
+        this.sortBy = column;
+        this.descending = false;
       }
     }
   }
