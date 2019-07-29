@@ -16,4 +16,11 @@ public class RunnerListContainer {
         this.runners = runners;
     }
 
+	@Override
+	public String toString() {
+		return "RunnerListContainer [runners=" + runners + "]";
+	}
+    
+    
+
 }

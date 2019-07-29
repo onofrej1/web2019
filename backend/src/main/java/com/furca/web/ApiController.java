@@ -1,9 +1,14 @@
 package com.furca.web;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +34,7 @@ public class ApiController {
 	private RunRepository runRepo;
 
 	@Autowired
-	private ArticleRepository authorRepo;	
+	private RunnerRepository runnerRepo;	
 
 	@RequestMapping("/helloworld")
 	public @ResponseBody String greeting() {
@@ -71,11 +76,52 @@ public class ApiController {
 	}
 	
 	@RequestMapping(value = "/checkNames", method = RequestMethod.POST)
-	public void saveUsers(@ModelAttribute("Users") RunnerListContainer runnerList) throws Exception{
+	public ResponseEntity<List> saveUsers(@RequestBody RunnerListContainer runnerList) throws Exception{
+		System.out.println(runnerList);
 	    List<Runner> runners = runnerList.getRunners();
-	    for(Runner runner : runners) {
-	        System.out.println("First Name- " + runner.getFirstName());
+	    
+	    Map found = new HashMap();
+	    Map notFound = new HashMap();
+	    Map mispelled = new HashMap();
+	    
+	    LevenshteinDistance dist = new LevenshteinDistance();
+	    
+	    for(Runner r : runners) {
+	    	Runner runner = runnerRepo.findRunner(r.getLastName(), r.getFirstName(), r.getBirthday());
+	    	if(runner != null) {
+	    		//found.put(runner.getId(), runner);
+		        System.out.println("Found " + r.getLastName());
+	    	} else {
+	    		boolean match = false;
+	    		List matches = new ArrayList();
+	    		for(Runner rn : runnerRepo.findAll()) {
+	    			Integer lname = dist.apply(r.getLastName(), rn.getLastName());
+	    			if(lname > 3) continue;
+	    			System.out.println(lname);
+	    			Integer fname = dist.apply(r.getFirstName(), rn.getFirstName());
+	    			if(fname > 3) continue;
+	    			System.out.println(fname);
+	    			Integer born = dist.apply(r.getBirthday().toString(), rn.getBirthday().toString());
+	    			System.out.println("born"+born);
+	    			System.out.println(r.getBirthday().toString());
+	    			System.out.println(rn.getBirthday().toString());
+	    			if(born > 3) continue;
+	    			
+	    			
+	    			System.out.println("Mispelled " + r.getLastName());
+	    			matches.add(rn.getLastName()+" "+rn.getFirstName());
+	    			match = true;
+	    		}
+	    		if(match) {
+	    			mispelled.put(r.getLastName()+" "+r.getFirstName(), matches);
+	    		} else {
+	    			notFound.put(r.getLastName()+" "+r.getFirstName(), null);
+	    			System.out.println("Not found " + r.getLastName());
+	    		}
+	    	}
+	    	
 	    }
+	    return ResponseEntity.ok(Arrays.asList(found, notFound, mispelled));
 	}
 
 	/*

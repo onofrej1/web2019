@@ -63,7 +63,7 @@ export default {
       this.uploadFile(formData);
     },
     check() {
-      console.log('checkxxxxyy');
+      //console.log('checkxxxxyy');
       console.log(levenshtein("onofrej", "onoffrexe"));
     },
     handleFileUpload() {
@@ -87,6 +87,28 @@ export default {
           reader.readAsText(myFile);
         }
       });
+    },
+    send() {
+      let data = this.items.map(dx => {
+        let d = {};
+        console.log(d.name);
+        let [lastName, firstName] = dx.name.split(/(\s+)/).filter( e => e.trim().length > 0);
+        
+        d.firstName = firstName.trim();
+        d.lastName = lastName.trim();
+        d.birthday = dx.born+"-01-01";
+        return d;
+      });
+      console.log(data);
+      axios.post(BASE_URL + '/checkNames',
+                    {runners: data, meno: 'eee'},
+                ).then(function () {
+                    //dispatch('fetchFiles');
+                    console.log('SUCCESS!!');
+                })
+                .catch(function () {
+                    console.log('FAILURE!!');
+                });
     },
     getParseData(data) {
       let parsedata = [];
@@ -116,6 +138,7 @@ export default {
         //console.log(obj);
         return obj;
       });
+      this.send();
       //console.log(JSON.stringify(this.itemsx));
       //console.table(parsedata);
     }

@@ -69,4 +69,12 @@ public class Runner{
 		this.results = results;
 	}
 
+	@Override
+	public String toString() {
+		return "Runner [Id=" + Id + ", firstName=" + firstName + ", lastName=" + lastName + ", birthday=" + birthday
+				+ ", results=" + results + "]";
+	}
+	
+	
+
 }
