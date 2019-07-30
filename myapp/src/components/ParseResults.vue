@@ -6,23 +6,21 @@
           <v-card-text>
             <p>
               Choose file
-              <input type="file" id="file" ref="file" @change="handleFileUpload()">
+              <input type="file" id="file" ref="file" @change="handleFileUpload()" />
               <v-btn color="secondary" @click="upload()">Submit file</v-btn>
             </p>
 
             <input id="dealCsv" type="file" />
-            <br>
-            <br>
+            <br />
+            <br />
             <v-card-text>
               <v-data-table
-              
-              :headers="headers"
-              :items="items"
-              :items-per-page="10"
-              class="elevation-1"
-            ></v-data-table>
+                :headers="headers"
+                :items="items"
+                :items-per-page="10"
+                class="elevation-1"
+              ></v-data-table>
             </v-card-text>
-            
           </v-card-text>
         </v-card>
       </v-flex>
@@ -38,16 +36,15 @@ import { BASE_URL, API_URL } from "./../constants";
 var levenshtein = require("underscore.string/levenshtein");
 
 export default {
-  name: 'ParseResults',
+  name: "ParseResults",
   data() {
     return {
       //file: "",
-      headers: [
-        
-      ],
-      items: [
-        
-      ]
+      headers: [],
+      items: [],
+      found: [],
+      notFound: [],
+      misspelled: []
     };
   },
   computed: {
@@ -88,66 +85,63 @@ export default {
         }
       });
     },
-    send() {
-      let data = this.items.map(dx => {
-        let d = {};
-        console.log(d.name);
-        let [lastName, firstName] = dx.name.split(/(\s+)/).filter( e => e.trim().length > 0);
-        
-        d.firstName = firstName.trim();
-        d.lastName = lastName.trim();
-        d.birthday = dx.born+"-01-01";
-        return d;
+    sendData() {
+      let data = this.items.map(item => {
+        let obj = {};
+        //console.log(d.name);
+        let [lastName, firstName] = item.name
+          .split(/(\s+)/)
+          .filter(e => e.trim().length > 0);
+        //console.log(lastName);
+        //console.log(firstName);
+        ob.firstName = firstName.trim();
+        obj.lastName = lastName.trim();
+        obj.birthday = item.birthday + "-01-01";
+        return obj;
       });
       console.log(data);
-      axios.post(BASE_URL + '/checkNames',
-                    {runners: data, meno: 'eee'},
-                ).then(function () {
-                    //dispatch('fetchFiles');
-                    console.log('SUCCESS!!');
-                })
-                .catch(function () {
-                    console.log('FAILURE!!');
-                });
+      axios
+        .post(BASE_URL + "/checkNames", { runners: data, meno: "eee" })
+        .then(function(res) {
+          //dispatch('fetchFiles');
+
+          console.log("SUCCESS!!");
+        })
+        .catch(function() {
+          console.log("FAILURE!!");
+        });
     },
     getParseData(data) {
       let parsedata = [];
-
       let newLinebrk = data.split("\n");
+
       for (let i = 0; i < newLinebrk.length; i++) {
         parsedata.push(newLinebrk[i].split(","));
       }
-      //console.log(parsedata);
-      let head = parsedata[0];
-      //console.log(head);
+      
+      let dataHeader = parsedata[0];      
       this.headers = parsedata
         .shift()
         .filter(d => d.trim().length > 0)
         .map(d => ({ text: d, value: d }));
 
       console.log(JSON.stringify(this.headers));
-      this.items = parsedata.map(d => {
-        //console.log(d);
-        let obj = {};
-        // keys.forEach((key, idx) => result[key] = values[idx]);
-        head.forEach((h, i) => {
+      this.items = parsedata.map(d => {        
+        let obj = {};        
+        dataHeader.forEach((h, i) => {
           if (h.trim().length > 0) {
             obj[h] = d[i];
           }
         });
-        //console.log(obj);
         return obj;
       });
-      this.send();
-      //console.log(JSON.stringify(this.itemsx));
-      //console.table(parsedata);
+      this.sendData();      
     }
   },
   mounted() {
     //this.fetchFiles();
     this.check();
     this.parseCsv();
-    
   },
   parse() {
     axios.get(state.apiUrl + "/" + resource).then(

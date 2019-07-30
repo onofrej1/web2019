@@ -2,10 +2,12 @@ package com.furca.web;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import org.apache.commons.text.similarity.LevenshteinDistance;
@@ -82,7 +84,7 @@ public class ApiController {
 	    
 	    Map found = new HashMap();
 	    Map notFound = new HashMap();
-	    Map mispelled = new HashMap();
+	    Map misspelled = new HashMap();
 	    
 	    LevenshteinDistance dist = new LevenshteinDistance();
 	    
@@ -90,33 +92,40 @@ public class ApiController {
 	    	Runner runner = runnerRepo.findRunner(r.getLastName(), r.getFirstName(), r.getBirthday());
 	    	if(runner != null) {
 	    		//found.put(runner.getId(), runner);
-		        System.out.println("Found " + r.getLastName());
+		        //System.out.println("Found " + r.getLastName());
 	    	} else {
 	    		boolean match = false;
 	    		List matches = new ArrayList();
 	    		for(Runner rn : runnerRepo.findAll()) {
-	    			Integer lname = dist.apply(r.getLastName(), rn.getLastName());
-	    			if(lname > 3) continue;
-	    			System.out.println(lname);
-	    			Integer fname = dist.apply(r.getFirstName(), rn.getFirstName());
-	    			if(fname > 3) continue;
-	    			System.out.println(fname);
-	    			Integer born = dist.apply(r.getBirthday().toString(), rn.getBirthday().toString());
+	    			Integer lnameMispell = dist.apply(r.getLastName(), rn.getLastName());
+	    			if(lnameMispell > 2) continue;
+	    			
+	    			Integer fnameMispell = dist.apply(r.getFirstName(), rn.getFirstName());
+	    			if(fnameMispell > 2) continue;
+	    			
+	    			Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"));
+	    			cal.setTime(r.getBirthday());
+	    			int year1 = cal.get(Calendar.YEAR);
+	    			
+	    			cal.setTime(rn.getBirthday());
+	    			int year2 = cal.get(Calendar.YEAR);
+	    			
+	    			Integer born = dist.apply(String.valueOf(year1), String.valueOf(year2));
 	    			System.out.println("born"+born);
-	    			System.out.println(r.getBirthday().toString());
-	    			System.out.println(rn.getBirthday().toString());
-	    			if(born > 3) continue;
+	    			System.out.println(year1);
+	    			System.out.println(year2);
 	    			
-	    			
-	    			System.out.println("Mispelled " + r.getLastName());
-	    			matches.add(rn.getLastName()+" "+rn.getFirstName());
+	    			if(born > 2) continue;
+	    				    			
+	    			System.out.println("Mispelled " + r.getLastName()+ " "+r.getFirstName()+ " "+r.getBirthday().toString());
+	    			matches.add(rn.getLastName()+" "+rn.getFirstName()+ " "+year2);
 	    			match = true;
 	    		}
 	    		if(match) {
-	    			mispelled.put(r.getLastName()+" "+r.getFirstName(), matches);
+	    			misspelled.put(r.getLastName()+" "+r.getFirstName(), matches);
 	    		} else {
 	    			notFound.put(r.getLastName()+" "+r.getFirstName(), null);
-	    			System.out.println("Not found " + r.getLastName());
+	    			//System.out.println("Not found " + r.getLastName());
 	    		}
 	    	}
 	    	
