@@ -19,7 +19,15 @@
                 :items="items"
                 :items-per-page="10"
                 class="elevation-1"
-              ></v-data-table>
+              >
+              <template v-slot:item.name="{ item, props, headers }">
+                {{ item.name }} 
+                <span v-if="true">
+                  {{ misspelled[45].join(',') }}
+                </span>
+               
+              </template>
+              </v-data-table>
             </v-card-text>
           </v-card-text>
         </v-card>
@@ -85,16 +93,23 @@ export default {
         }
       });
     },
+    guid() {
+        function _p8(s) {
+            var p = (Math.random().toString(16)+"000000000").substr(2,8);
+            return s ? "-" + p.substr(0,4) + "-" + p.substr(4,4) : p ;
+        }
+        return _p8() + _p8(true) + _p8(true) + _p8();
+    },
     sendData() {
-      let data = this.items.map(item => {
+      let me = this;
+      let data = this.items.map((item, i) => {
         let obj = {};
-        //console.log(d.name);
         let [lastName, firstName] = item.name
           .split(/(\s+)/)
           .filter(e => e.trim().length > 0);
-        //console.log(lastName);
-        //console.log(firstName);
-        ob.firstName = firstName.trim();
+
+        obj.id = i;
+        obj.firstName = firstName.trim();
         obj.lastName = lastName.trim();
         obj.birthday = item.birthday + "-01-01";
         return obj;
@@ -104,10 +119,12 @@ export default {
         .post(BASE_URL + "/checkNames", { runners: data, meno: "eee" })
         .then(function(res) {
           //dispatch('fetchFiles');
-
+          me.misspelled = res.data[2];
+          console.log(me.misspelled);
           console.log("SUCCESS!!");
         })
-        .catch(function() {
+        .catch(function(e) {
+          console.log(e);
           console.log("FAILURE!!");
         });
     },

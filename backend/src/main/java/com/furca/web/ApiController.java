@@ -89,13 +89,15 @@ public class ApiController {
 	    LevenshteinDistance dist = new LevenshteinDistance();
 	    
 	    for(Runner r : runners) {
-	    	Runner runner = runnerRepo.findRunner(r.getLastName(), r.getFirstName(), r.getBirthday());
+	    	Runner runner = runnerRepo.findRunner(r.getLastName().trim(), r.getFirstName().trim(), r.getBirthday());
+	    	System.out.println(runner);
 	    	if(runner != null) {
 	    		//found.put(runner.getId(), runner);
 		        //System.out.println("Found " + r.getLastName());
 	    	} else {
 	    		boolean match = false;
 	    		List matches = new ArrayList();
+	    		System.out.println("Not Found:"+ r.getLastName()+"-"+r.getFirstName()+"-"+r.getBirthday());
 	    		for(Runner rn : runnerRepo.findAll()) {
 	    			Integer lnameMispell = dist.apply(r.getLastName(), rn.getLastName());
 	    			if(lnameMispell > 2) continue;
@@ -117,20 +119,20 @@ public class ApiController {
 	    			
 	    			if(born > 2) continue;
 	    				    			
-	    			System.out.println("Mispelled " + r.getLastName()+ " "+r.getFirstName()+ " "+r.getBirthday().toString());
+	    			System.out.println("Misspelled " + r.getLastName()+ " "+r.getFirstName()+ " "+r.getBirthday().toString());
 	    			matches.add(rn.getLastName()+" "+rn.getFirstName()+ " "+year2);
 	    			match = true;
 	    		}
 	    		if(match) {
-	    			misspelled.put(r.getLastName()+" "+r.getFirstName(), matches);
+	    			misspelled.put(r.getId(), matches);
 	    		} else {
-	    			notFound.put(r.getLastName()+" "+r.getFirstName(), null);
+	    			notFound.put(r.getId(), null);
 	    			//System.out.println("Not found " + r.getLastName());
 	    		}
 	    	}
 	    	
 	    }
-	    return ResponseEntity.ok(Arrays.asList(found, notFound, mispelled));
+	    return ResponseEntity.ok(Arrays.asList(found, notFound, misspelled));
 	}
 
 	/*
