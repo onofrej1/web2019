@@ -3,6 +3,8 @@ package com.furca.model;
 import java.sql.Time;
 import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 public class Result{
@@ -18,6 +20,7 @@ public class Result{
     
     @ManyToOne
     @JoinColumn(name="runner_id", nullable=false)
+    @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
     private Runner runner;
     
     @Column(name="place")

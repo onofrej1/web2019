@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.furca.dto.RunnerDto;
 import com.furca.model.*;
 import com.furca.repository.*;
 
@@ -80,24 +82,17 @@ public class ApiController {
 	@RequestMapping(value = "/checkNames", method = RequestMethod.POST)
 	public ResponseEntity<List> saveUsers(@RequestBody RunnerListContainer runnerList) throws Exception{
 		System.out.println(runnerList);
-	    List<Runner> runners = runnerList.getRunners();
-	    
-	    Map found = new HashMap();
-	    Map notFound = new HashMap();
-	    Map misspelled = new HashMap();
+		
+	    List<RunnerDto> runners = runnerList.getRunners();
 	    
 	    LevenshteinDistance dist = new LevenshteinDistance();
 	    
-	    for(Runner r : runners) {
+	    for(RunnerDto r : runners) {
 	    	Runner runner = runnerRepo.findRunner(r.getLastName().trim(), r.getFirstName().trim(), r.getBirthday());
-	    	System.out.println(runner);
+	    	
 	    	if(runner != null) {
-	    		//found.put(runner.getId(), runner);
-		        //System.out.println("Found " + r.getLastName());
+	    		r.setRunnerId(runner.getId());
 	    	} else {
-	    		boolean match = false;
-	    		List matches = new ArrayList();
-	    		System.out.println("Not Found:"+ r.getLastName()+"-"+r.getFirstName()+"-"+r.getBirthday());
 	    		for(Runner rn : runnerRepo.findAll()) {
 	    			Integer lnameMispell = dist.apply(r.getLastName(), rn.getLastName());
 	    			if(lnameMispell > 2) continue;
@@ -113,26 +108,19 @@ public class ApiController {
 	    			int year2 = cal.get(Calendar.YEAR);
 	    			
 	    			Integer born = dist.apply(String.valueOf(year1), String.valueOf(year2));
-	    			System.out.println("born"+born);
-	    			System.out.println(year1);
-	    			System.out.println(year2);
 	    			
 	    			if(born > 2) continue;
 	    				    			
-	    			System.out.println("Misspelled " + r.getLastName()+ " "+r.getFirstName()+ " "+r.getBirthday().toString());
-	    			matches.add(rn.getLastName()+" "+rn.getFirstName()+ " "+year2);
-	    			match = true;
+	    			//System.out.println("Misspelled " + r.getLastName()+ " "+r.getFirstName()+ " "+r.getBirthday().toString());
+	    			System.out.println(rn);
+	    			r.addName(rn);
+	    			
 	    		}
-	    		if(match) {
-	    			misspelled.put(r.getId(), matches);
-	    		} else {
-	    			notFound.put(r.getId(), null);
-	    			//System.out.println("Not found " + r.getLastName());
-	    		}
+	    		
 	    	}
 	    	
 	    }
-	    return ResponseEntity.ok(Arrays.asList(found, notFound, misspelled));
+	    return ResponseEntity.ok(runners);
 	}
 
 	/*

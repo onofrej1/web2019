@@ -6,13 +6,13 @@
           <v-card-text>
             <p>
               Choose file
-              <input type="file" id="file" ref="file" @change="handleFileUpload()" />
+              <input type="file" id="file" ref="file" @change="handleFileUpload()">
               <v-btn color="secondary" @click="upload()">Submit file</v-btn>
             </p>
 
-            <input id="dealCsv" type="file" />
-            <br />
-            <br />
+            <input id="dealCsv" type="file">
+            <br>
+            <br>
             <v-card-text>
               <v-data-table
                 :headers="headers"
@@ -20,13 +20,25 @@
                 :items-per-page="10"
                 class="elevation-1"
               >
-              <template v-slot:item.name="{ item, props, headers }">
-                {{ item.name }} 
-                <span v-if="true">
-                  {{ misspelled[45].join(',') }}
-                </span>
-               
-              </template>
+                <template v-slot:item.name="{ item, props, headers }">
+                  <span v-if="item.runner">
+                    <span v-if="item.runner.runnerId">OK {{ item.name }}</span>
+
+                    <span v-if="item.runner.names.length > 0" class="text-no-wrap">
+                      {{ item.name }}<br>
+                      <v-select
+                        :items="getRunnerOptions(item.runner.names)"
+                        label=""
+                        outlined
+                      ></v-select>
+                    </span>
+
+                    <span
+                      v-if="!item.runner.runnerId && !item.runner.names.length"
+                    >Not found {{ item.name }}</span>
+                  </span>
+                  <span v-else>{{ item.name }}</span>
+                </template>
               </v-data-table>
             </v-card-text>
           </v-card-text>
@@ -41,6 +53,8 @@ import axios from "axios";
 import { mapActions, mapState } from "vuex";
 
 import { BASE_URL, API_URL } from "./../constants";
+import { VIcon } from 'vuetify/lib'
+
 var levenshtein = require("underscore.string/levenshtein");
 
 export default {
@@ -50,14 +64,15 @@ export default {
       //file: "",
       headers: [],
       items: [],
-      found: [],
-      notFound: [],
-      misspelled: []
+      results: [],
+      show: {},
+      showx: false,
     };
   },
   computed: {
     ...mapState("files", ["files"])
   },
+  components: {VIcon},
   methods: {
     ...mapActions("files", ["uploadFile", "fetchFiles"]),
     upload() {
@@ -66,6 +81,14 @@ export default {
       formData.append("path", "images");
 
       this.uploadFile(formData);
+    },
+    getRunnerOptions(names) {
+      return names.map(n => { 
+        let option = {};
+        option.text = n.lastName+' '+ n.firstName+' ,'+ n.birthday;
+        option.value = n.id;
+        return option;
+      });
     },
     check() {
       //console.log('checkxxxxyy');
@@ -94,33 +117,41 @@ export default {
       });
     },
     guid() {
-        function _p8(s) {
-            var p = (Math.random().toString(16)+"000000000").substr(2,8);
-            return s ? "-" + p.substr(0,4) + "-" + p.substr(4,4) : p ;
-        }
-        return _p8() + _p8(true) + _p8(true) + _p8();
+      function _p8(s) {
+        var p = (Math.random().toString(16) + "000000000").substr(2, 8);
+        return s ? "-" + p.substr(0, 4) + "-" + p.substr(4, 4) : p;
+      }
+      return _p8() + _p8(true) + _p8(true) + _p8();
     },
     sendData() {
       let me = this;
+      console.log(this.items);
+
       let data = this.items.map((item, i) => {
         let obj = {};
         let [lastName, firstName] = item.name
           .split(/(\s+)/)
           .filter(e => e.trim().length > 0);
-
-        obj.id = i;
+        obj.guid = item.guid;
         obj.firstName = firstName.trim();
         obj.lastName = lastName.trim();
         obj.birthday = item.birthday + "-01-01";
         return obj;
       });
+
       console.log(data);
       axios
-        .post(BASE_URL + "/checkNames", { runners: data, meno: "eee" })
+        .post(BASE_URL + "/checkNames", { runners: data })
         .then(function(res) {
-          //dispatch('fetchFiles');
-          me.misspelled = res.data[2];
-          console.log(me.misspelled);
+          me.results = res.data;
+          //console.log(me.results);
+          me.items = me.items.map(i => {
+            i.runner = me.results.find(r => r.guid == i.guid);
+            return i;
+          });
+
+          console.log(me.items);
+
           console.log("SUCCESS!!");
         })
         .catch(function(e) {
@@ -129,22 +160,24 @@ export default {
         });
     },
     getParseData(data) {
+      let me = this;
       let parsedata = [];
       let newLinebrk = data.split("\n");
 
       for (let i = 0; i < newLinebrk.length; i++) {
         parsedata.push(newLinebrk[i].split(","));
       }
-      
-      let dataHeader = parsedata[0];      
+
+      let dataHeader = parsedata[0];
       this.headers = parsedata
         .shift()
         .filter(d => d.trim().length > 0)
         .map(d => ({ text: d, value: d }));
 
       console.log(JSON.stringify(this.headers));
-      this.items = parsedata.map(d => {        
-        let obj = {};        
+      this.items = parsedata.map(d => {
+        let obj = { guid: this.guid(), runner: null };
+        me.show[obj.guid] = false;
         dataHeader.forEach((h, i) => {
           if (h.trim().length > 0) {
             obj[h] = d[i];
@@ -152,7 +185,7 @@ export default {
         });
         return obj;
       });
-      this.sendData();      
+      this.sendData();
     }
   },
   mounted() {
