@@ -5,40 +5,67 @@
         <v-card>
           <v-card-text>
             <p>
-              Choose file
-              <input type="file" id="file" ref="file" @change="handleFileUpload()">
-              <v-btn color="secondary" @click="upload()">Submit file</v-btn>
+              Choose CSV file:
+              <input id="dealCsv" type="file">
             </p>
 
-            <input id="dealCsv" type="file">
-            <br>
-            <br>
             <v-card-text>
+              <div v-if="step == 'check-names'">
+                <v-layout mb-3 border-b-2>
+                  <v-flex xs4 class="font-weight-bold">Status</v-flex>
+                  <v-flex xs8 class="font-weight-bold">Similar names - choose</v-flex>
+                </v-layout>
+                <hr>
+
+                <v-layout
+                  align-content-space-around
+                  fill-height
+                  :key="item.id"
+                  v-for="item in items"
+                  mb-3
+                  mt-3
+                >
+                  <v-flex xs2>
+                    <template v-if="item.runner.runnerId">
+                      <v-chip small color="green" text-color="white" class="mr-2">
+                        <v-icon left>mdi-account-check</v-icon>OK
+                      </v-chip>
+                    </template>
+
+                    <v-chip v-else small color="orange" text-color="white" class="mr-2">
+                      <v-icon left>mdi-account-plus</v-icon>NEW
+                    </v-chip>
+                  </v-flex>
+
+                  <v-flex xs4 mr-3 class="text-no-wrap">
+                    <template v-if="edit[item.guid]" >
+                      <v-text-field class="d-inline-block" v-model="item.name" style="width: 75%; margin-top: -7px; padding-top: 0px"></v-text-field>
+                       <v-icon left>check</v-icon>
+                       <v-icon left pr-2>clear</v-icon>
+                    </template>
+                    <span ml-3 v-else >
+                      {{ item.name }} <v-icon left @click="editItem(item.guid)">create</v-icon>
+                    </span>
+                  </v-flex>
+
+                  <v-flex xs6 v-if="item.runner">
+                    <v-chip small mr-2 outlined :key="r.id" v-for="r in item.runner.names">
+                      <v-icon left>mdi-account</v-icon>
+                      {{ r.lastName }} {{ r.firstName }}, {{ moment(r.birthday).format('YYYY') }}
+                    </v-chip>
+                  </v-flex>
+                  <br>
+                </v-layout>
+              </div>
+
               <v-data-table
                 :headers="headers"
                 :items="items"
                 :items-per-page="10"
                 class="elevation-1"
+                v-if="step == 'load-data'"
               >
-                <template v-slot:item.name="{ item, props, headers }">
-                  <span v-if="item.runner">
-                    <span v-if="item.runner.runnerId">OK {{ item.name }}</span>
-
-                    <span v-if="item.runner.names.length > 0" class="text-no-wrap">
-                      {{ item.name }}<br>
-                      <v-select
-                        :items="getRunnerOptions(item.runner.names)"
-                        label=""
-                        outlined
-                      ></v-select>
-                    </span>
-
-                    <span
-                      v-if="!item.runner.runnerId && !item.runner.names.length"
-                    >Not found {{ item.name }}</span>
-                  </span>
-                  <span v-else>{{ item.name }}</span>
-                </template>
+                <template v-slot:item.name="{ item, props, headers }">{{ item.name }}</template>
               </v-data-table>
             </v-card-text>
           </v-card-text>
@@ -53,7 +80,8 @@ import axios from "axios";
 import { mapActions, mapState } from "vuex";
 
 import { BASE_URL, API_URL } from "./../constants";
-import { VIcon } from 'vuetify/lib'
+import { VIcon } from "vuetify/lib";
+const moment = require("moment");
 
 var levenshtein = require("underscore.string/levenshtein");
 
@@ -65,16 +93,21 @@ export default {
       headers: [],
       items: [],
       results: [],
-      show: {},
-      showx: false,
+      edit: {},
+      step: "",
+      moment: moment
     };
   },
   computed: {
     ...mapState("files", ["files"])
   },
-  components: {VIcon},
+  components: { VIcon },
   methods: {
     ...mapActions("files", ["uploadFile", "fetchFiles"]),
+    editItem(itemGuid) {
+      this.edit = {...this.edit, [itemGuid]: true};
+      console.log(this.edit);
+    },
     upload() {
       let formData = new FormData();
       formData.append("file", this.file);
@@ -83,9 +116,9 @@ export default {
       this.uploadFile(formData);
     },
     getRunnerOptions(names) {
-      return names.map(n => { 
+      return names.map(n => {
         let option = {};
-        option.text = n.lastName+' '+ n.firstName+' ,'+ n.birthday;
+        option.text = n.lastName + " " + n.firstName + " ," + n.birthday;
         option.value = n.id;
         return option;
       });
@@ -151,6 +184,7 @@ export default {
           });
 
           console.log(me.items);
+          me.step = "check-names";
 
           console.log("SUCCESS!!");
         })
@@ -175,9 +209,10 @@ export default {
         .map(d => ({ text: d, value: d }));
 
       console.log(JSON.stringify(this.headers));
+
       this.items = parsedata.map(d => {
         let obj = { guid: this.guid(), runner: null };
-        me.show[obj.guid] = false;
+        me.edit[obj.guid] = false;
         dataHeader.forEach((h, i) => {
           if (h.trim().length > 0) {
             obj[h] = d[i];
@@ -192,23 +227,6 @@ export default {
     //this.fetchFiles();
     this.check();
     this.parseCsv();
-  },
-  parse() {
-    axios.get(state.apiUrl + "/" + resource).then(
-      response => {
-        var data = response.data._embedded[resource];
-        commit("setData", {
-          resource,
-          data: data
-        });
-        commit("setStatus", "success");
-        return { ...response, data: data };
-      },
-      error => {
-        commit("setStatus", "error");
-        console.log(error);
-      }
-    );
   }
 };
 </script>
