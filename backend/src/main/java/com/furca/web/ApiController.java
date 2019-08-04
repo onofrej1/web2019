@@ -11,6 +11,7 @@ import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import org.apache.commons.text.similarity.LevenshteinDistance;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +39,10 @@ public class ApiController {
 	private RunRepository runRepo;
 
 	@Autowired
-	private RunnerRepository runnerRepo;	
+	private RunnerRepository runnerRepo;
+
+	@Autowired
+	private ModelMapper modelMapper;
 
 	@RequestMapping("/helloworld")
 	public @ResponseBody String greeting() {
@@ -47,7 +51,7 @@ public class ApiController {
 
 	@InitBinder
 	public void initBinder(ServletRequestDataBinder binder) {
-		//binder.registerCustomEditor(Book.class, new BookEditor(bookRepo));		
+		// binder.registerCustomEditor(Book.class, new BookEditor(bookRepo));
 	}
 
 	@RequestMapping(value = "/events/{id}/", method = RequestMethod.PUT)
@@ -78,49 +82,77 @@ public class ApiController {
 
 		return new ResponseEntity<Object>(HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(value = "/checkNames", method = RequestMethod.POST)
-	public ResponseEntity<List> saveUsers(@RequestBody RunnerListContainer runnerList) throws Exception{
+	public ResponseEntity<List> saveUsers(@RequestBody RunnerListContainer runnerList) throws Exception {
 		System.out.println(runnerList);
-		
-	    List<RunnerDto> runners = runnerList.getRunners();
-	    
-	    LevenshteinDistance dist = new LevenshteinDistance();
-	    
-	    for(RunnerDto r : runners) {
-	    	Runner runner = runnerRepo.findRunner(r.getLastName().trim(), r.getFirstName().trim(), r.getBirthday());
-	    	
-	    	if(runner != null) {
-	    		r.setRunnerId(runner.getId());
-	    	} else {
-	    		for(Runner rn : runnerRepo.findAll()) {
-	    			Integer lnameMispell = dist.apply(r.getLastName(), rn.getLastName());
-	    			if(lnameMispell > 2) continue;
-	    			
-	    			Integer fnameMispell = dist.apply(r.getFirstName(), rn.getFirstName());
-	    			if(fnameMispell > 2) continue;
-	    			
-	    			Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"));
-	    			cal.setTime(r.getBirthday());
-	    			int year1 = cal.get(Calendar.YEAR);
-	    			
-	    			cal.setTime(rn.getBirthday());
-	    			int year2 = cal.get(Calendar.YEAR);
-	    			
-	    			Integer born = dist.apply(String.valueOf(year1), String.valueOf(year2));
-	    			
-	    			if(born > 2) continue;
-	    				    			
-	    			//System.out.println("Misspelled " + r.getLastName()+ " "+r.getFirstName()+ " "+r.getBirthday().toString());
-	    			System.out.println(rn);
-	    			r.addName(rn);
-	    			
-	    		}
-	    		
-	    	}
-	    	
-	    }
-	    return ResponseEntity.ok(runners);
+
+		List<RunnerDto> runners = runnerList.getRunners();
+
+		LevenshteinDistance dist = new LevenshteinDistance();
+
+		for (RunnerDto r : runners) {
+			Runner runner = runnerRepo.findRunner(r.getLastName().trim(), r.getFirstName().trim(), r.getBirthdate());
+
+			if (runner != null) {
+				r.setRunnerId(runner.getId());
+			} else {
+				for (Runner rn : runnerRepo.findAll()) {
+					Integer lnameMispell = dist.apply(r.getLastName(), rn.getLastName());
+					if (lnameMispell > 2)
+						continue;
+
+					Integer fnameMispell = dist.apply(r.getFirstName(), rn.getFirstName());
+					if (fnameMispell > 2)
+						continue;
+
+					Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"));
+					cal.setTime(r.getBirthdate());
+					int year1 = cal.get(Calendar.YEAR);
+
+					cal.setTime(rn.getBirthdate());
+					int year2 = cal.get(Calendar.YEAR);
+
+					Integer born = dist.apply(String.valueOf(year1), String.valueOf(year2));
+
+					if (born > 2)
+						continue;
+
+					// System.out.println("Misspelled " + r.getLastName()+ " "+r.getFirstName()+ "
+					// "+r.getBirthday().toString());
+					System.out.println(rn);
+					RunnerDto runnerDto = modelMapper.map(rn, RunnerDto.class);
+					System.out.println(runnerDto);
+					r.addName(runnerDto);
+				}
+
+			}
+
+		}
+		return ResponseEntity.ok(runners);
+	}
+
+	@RequestMapping(value = "/createRunners", method = RequestMethod.POST)
+	public ResponseEntity<List> createUsers(@RequestBody RunnerListContainer runnerList) throws Exception {
+		System.out.println(runnerList);
+
+		List<RunnerDto> runners = runnerList.getRunners();
+
+		for (RunnerDto runnerDto : runners) {
+			
+			Runner runner = modelMapper.map(runnerDto, Runner.class);
+			/*Runner runner = new Runner();
+			runner.setFirstName(runnerDto.getFirstName());
+			runner.setLastName(runnerDto.getLastName());
+			runner.setBirthdate(runnerDto.getBirthdate());
+			System.out.println(runner);*/
+			runnerRepo.save(runner);
+			Long id = runnerRepo.save(runner).getId();
+			runnerDto.setRunnerId(id);
+			
+			System.out.println(id);
+		}
+		return ResponseEntity.ok(runners);
 	}
 
 	/*

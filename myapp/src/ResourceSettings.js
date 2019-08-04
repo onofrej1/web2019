@@ -414,7 +414,7 @@ const runners = {
       type: 'text'
     },
     {
-      name: 'birthday',
+      name: 'birthdate',
       type: 'date'
     },
   ],
@@ -425,9 +425,9 @@ const runners = {
       field: 'firstName'
     },
     {
-      field: 'birthday',
+      field: 'birthdate',
       label: 'Date',
-      render: (item, props) => `${moment(item.birthday, 'YYYY-MM-DD').format('DD/MM/YYYY')}`
+      render: (item, props) => `${moment(item.birthdate, 'YYYY-MM-DD').format('DD/MM/YYYY')}`
     },
   ],
   //listView: RunnerList,

@@ -10,10 +10,10 @@ import org.springframework.data.repository.query.Param;
 
 public interface RunnerRepository extends PagingAndSortingRepository<Runner, Long> {
 	
-	@Query("SELECT r FROM Runner r WHERE r.lastName = :lastName and r.firstName = :firstName and r.birthday = :birthday")
+	@Query("SELECT r FROM Runner r WHERE r.lastName = :lastName and r.firstName = :firstName and r.birthdate = :birthdate")
 	Runner findRunner(
 	  @Param("lastName") String lastName,
 	  @Param("firstName") String firstName,
-	  @Param("birthday") Date birthday
+	  @Param("birthdate") Date birthdate
 	 );
 }

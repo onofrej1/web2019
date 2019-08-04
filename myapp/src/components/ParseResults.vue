@@ -11,51 +11,69 @@
 
             <v-card-text>
               <div v-if="step == 'check-names'">
-                <v-layout mb-3 border-b-2>
-                  <v-flex xs4 class="font-weight-bold">Status</v-flex>
-                  <v-flex xs8 class="font-weight-bold">Similar names - choose</v-flex>
-                </v-layout>
-                <hr>
-
-                <v-layout
-                  align-content-space-around
-                  fill-height
-                  :key="item.id"
-                  v-for="item in items"
-                  mb-3
-                  mt-3
+                <v-data-table
+                  :headers="runnersHeader"
+                  :items="editRunners"
+                  :disable-pagination="true"
+                  class="elevation-1"
                 >
-                  <v-flex xs2>
-                    <template v-if="item.runner.runnerId">
-                      <v-chip small color="green" text-color="white" class="mr-2">
-                        <v-icon left>mdi-account-check</v-icon>OK
-                      </v-chip>
-                    </template>
-
-                    <v-chip v-else small color="orange" text-color="white" class="mr-2">
-                      <v-icon left>mdi-account-plus</v-icon>NEW
-                    </v-chip>
-                  </v-flex>
-
-                  <v-flex xs4 mr-3 class="text-no-wrap">
-                    <template v-if="edit[item.guid]" >
-                      <v-text-field class="d-inline-block" v-model="item.name" style="width: 75%; margin-top: -7px; padding-top: 0px"></v-text-field>
-                       <v-icon left>check</v-icon>
-                       <v-icon left pr-2>clear</v-icon>
-                    </template>
-                    <span ml-3 v-else >
-                      {{ item.name }} <v-icon left @click="editItem(item.guid)">create</v-icon>
-                    </span>
-                  </v-flex>
-
-                  <v-flex xs6 v-if="item.runner">
-                    <v-chip small mr-2 outlined :key="r.id" v-for="r in item.runner.names">
+                  <template v-slot:item.names="{ item }">
+                    <v-chip
+                      @click="replaceItem(item, r)"
+                      small
+                      mr-2
+                      outlined
+                      :key="r.id"
+                      v-for="r in item.names"
+                    >
                       <v-icon left>mdi-account</v-icon>
-                      {{ r.lastName }} {{ r.firstName }}, {{ moment(r.birthday).format('YYYY') }}
+                      {{ r.lastName }} {{ r.firstName }}, {{ moment(r.birthdate).format('YYYY') }}
                     </v-chip>
-                  </v-flex>
-                  <br>
-                </v-layout>
+                  </template>
+                  <template
+                    v-for="field in runnersHeader.filter(i => i.editable)"
+                    v-slot:[getSlotItemName(field.value)]="{ item, props, headers }"
+                  >
+                    <template v-if="editItem[item.guid]">
+                      <v-text-field
+                        :key="field.name"
+                        class="d-inline-block"
+                        v-model="item[field.value]"
+                        style="width: 75%; margin-top: -7px; padding-top: 0px"
+                      ></v-text-field>
+                    </template>
+
+                    <span
+                      :key="field.name"
+                      ml-3
+                      v-else
+                    >{{ item[field.value] }}</span>
+                  </template>
+
+                  <template v-slot:item.status="{ item }">
+                    <v-flex xs2>
+                      <template v-if="item.runnerId">
+                        <v-chip small color="green" text-color="white" class="mr-2">
+                          <v-icon left>mdi-account-check</v-icon>OK
+                        </v-chip>
+                      </template>
+
+                      <v-chip v-else small color="orange" text-color="white" class="mr-2">
+                        <v-icon left>mdi-account-plus</v-icon>NEW
+                      </v-chip>
+                    </v-flex>
+                  </template>
+
+                  <template v-slot:item.actions="{ item }">
+                    <span v-if="editItem[item.guid]" class="text-no-wrap">
+                      <v-icon left @click="confirmEdit(item)">check</v-icon>
+                      <v-icon left pr-2 @click="cancelEdit(item)">clear</v-icon>
+                    </span>
+                    <v-icon v-else left @click="edit(item)">create</v-icon>
+                  </template>
+                </v-data-table>
+
+                <v-btn @click="createRunners()">Next</v-btn>
               </div>
 
               <v-data-table
@@ -63,7 +81,7 @@
                 :items="items"
                 :items-per-page="10"
                 class="elevation-1"
-                v-if="step == 'load-data'"
+                v-if="step == 'check-results'"
               >
                 <template v-slot:item.name="{ item, props, headers }">{{ item.name }}</template>
               </v-data-table>
@@ -92,44 +110,60 @@ export default {
       //file: "",
       headers: [],
       items: [],
-      results: [],
-      edit: {},
+      editItem: {},
+      editRunners: [],
+      runners: [],
+      runnersHeader: [
+        { text: "status", value: "status" },
+        { text: "lastName", value: "lastName", editable: true },
+        { text: "firstName", value: "firstName", editable: true },
+        { text: "birthdate", value: "birthdate", editable: true },
+        { text: "names", value: "names" },
+        { text: "actions", value: "actions" }
+      ],
       step: "",
       moment: moment
     };
   },
   computed: {
     ...mapState("files", ["files"])
+    //sortedEditItems: function() {
+    //return this.editItems; //.sort((a, b) => a.result.place - b.result.place);
+    //}
   },
   components: { VIcon },
   methods: {
     ...mapActions("files", ["uploadFile", "fetchFiles"]),
-    editItem(itemGuid) {
-      this.edit = {...this.edit, [itemGuid]: true};
-      console.log(this.edit);
+    getSlotItemName(field) {
+      return "item." + field;
     },
-    upload() {
-      let formData = new FormData();
-      formData.append("file", this.file);
-      formData.append("path", "images");
+    edit(item) {
+      this.editItem = { ...this.editItem, [item.guid]: true };
+    },
+    confirmEdit(item) {
+      this.runners = this.runners.map(i =>
+        i.guid == item.guid ? { ...item } : i
+      );
+      this.editItem = { ...this.editItem, [item.guid]: false };
+    },
+    cancelEdit(item) {
+      this.editItem = { ...this.editItem, [item.guid]: false };
 
-      this.uploadFile(formData);
+      let origItem = this.runners.find(i => i.guid == item.guid);
+      this.editRunners = this.editRunners.map(i =>
+        i.guid == item.guid ? { ...origItem } : i
+      );
     },
-    getRunnerOptions(names) {
-      return names.map(n => {
-        let option = {};
-        option.text = n.lastName + " " + n.firstName + " ," + n.birthday;
-        option.value = n.id;
-        return option;
-      });
+    replaceItem(item, replace) {
+      console.log(replace);
+      this.runners = this.runners.map(i =>
+        i.guid == item.guid ? { ...replace } : i
+      );
+      this.editRunners = this.editRunners.map(i =>
+        i.guid == item.guid ? { ...replace } : i
+      );
     },
-    check() {
-      //console.log('checkxxxxyy');
-      console.log(levenshtein("onofrej", "onoffrexe"));
-    },
-    handleFileUpload() {
-      this.file = this.$refs.file.files[0];
-    },
+    
     parseCsv(e) {
       let input = document.getElementById("dealCsv");
       let me = this;
@@ -141,7 +175,7 @@ export default {
 
           reader.addEventListener("load", function(e) {
             let csvdata = e.target.result;
-            me.getParseData(csvdata); // calling function for parse csv data
+            me.getParseData(csvdata);
           });
 
           //reader.readAsBinaryString(myFile);
@@ -158,35 +192,51 @@ export default {
     },
     sendData() {
       let me = this;
-      console.log(this.items);
 
       let data = this.items.map((item, i) => {
         let obj = {};
         let [lastName, firstName] = item.name
           .split(/(\s+)/)
           .filter(e => e.trim().length > 0);
+
         obj.guid = item.guid;
         obj.firstName = firstName.trim();
         obj.lastName = lastName.trim();
-        obj.birthday = item.birthday + "-01-01";
+        obj.birthdate = item.birthdate + "-01-01";
         return obj;
       });
 
-      console.log(data);
       axios
         .post(BASE_URL + "/checkNames", { runners: data })
         .then(function(res) {
-          me.results = res.data;
-          //console.log(me.results);
-          me.items = me.items.map(i => {
-            i.runner = me.results.find(r => r.guid == i.guid);
-            return i;
-          });
-
-          console.log(me.items);
+          me.parseNamesData(res.data);
           me.step = "check-names";
-
-          console.log("SUCCESS!!");
+        })
+        .catch(function(e) {
+          console.log(e);
+          console.log("FAILURE!!");
+        });
+    },
+    parseNamesData(data) {
+        this.runners = JSON.parse(JSON.stringify(data));
+        this.editRunners = data.map(d => {
+          d.birthdate = moment(d.birthdate).format("YYYY-MM-DD");
+          return d;
+        });
+    },
+    createRunners() {
+      let data = this.runners.filter(r => !r.runnerId);
+      let me = this;
+      console.log(data);
+      axios
+        .post(BASE_URL + "/createRunners", { runners: data })
+        .then(function(res) {
+          me.runners = data.map((item, i) => {
+            item.runnerId = res.data[i];
+            return item;
+          });
+          console.log(me.runners);
+          me.step = "check-results";
         })
         .catch(function(e) {
           console.log(e);
@@ -211,8 +261,7 @@ export default {
       console.log(JSON.stringify(this.headers));
 
       this.items = parsedata.map(d => {
-        let obj = { guid: this.guid(), runner: null };
-        me.edit[obj.guid] = false;
+        let obj = { guid: this.guid() };
         dataHeader.forEach((h, i) => {
           if (h.trim().length > 0) {
             obj[h] = d[i];
@@ -225,7 +274,7 @@ export default {
   },
   mounted() {
     //this.fetchFiles();
-    this.check();
+    //this.check();
     this.parseCsv();
   }
 };

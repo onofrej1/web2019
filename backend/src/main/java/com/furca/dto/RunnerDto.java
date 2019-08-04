@@ -16,9 +16,9 @@ public class RunnerDto {
     
     private String lastName;
     
-    private Date birthday;
+    private Date birthdate;
     
-    private List<Runner> names = new ArrayList<Runner>();
+    private List<RunnerDto> names = new ArrayList<RunnerDto>();
 
 	public String getGuid() {
 		return guid;
@@ -53,24 +53,24 @@ public class RunnerDto {
 		this.lastName = lastName;
 	}
 
-	public Date getBirthday() {
-		return birthday;
+	public Date getBirthdate() {
+		return birthdate;
 	}
 
-	public void setBirthday(Date birthday) {
-		this.birthday = birthday;
+	public void setBirthdate(Date birthdate) {
+		this.birthdate = birthdate;
 	}
 
-	public List<Runner> getNames() {
+	public List<RunnerDto> getNames() {
 		return names;
 	}
 	
-	public void addName(Runner name) {
+	public void addName(RunnerDto name) {
 		System.out.println("ad name");
 		this.names.add(name);
 	}
 
-	public void setNames(List<Runner> names) {
+	public void setNames(List<RunnerDto> names) {
 		this.names = names;
 	}
 
