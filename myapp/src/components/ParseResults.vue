@@ -13,7 +13,7 @@
               <div v-if="step == 'check-names'">
                 <v-data-table
                   :headers="runnersHeader"
-                  :items="editRunners"
+                  :items="runnersCopy"
                   :disable-pagination="true"
                   class="elevation-1"
                 >
@@ -39,15 +39,11 @@
                         :key="field.name"
                         class="d-inline-block"
                         v-model="item[field.value]"
-                        style="width: 75%; margin-top: -7px; padding-top: 0px"
+                        style="width: 75%; padding-top: 0px"
                       ></v-text-field>
                     </template>
 
-                    <span
-                      :key="field.name"
-                      ml-3
-                      v-else
-                    >{{ item[field.value] }}</span>
+                    <span :key="field.name" ml-3 v-else>{{ item[field.value] }}</span>
                   </template>
 
                   <template v-slot:item.status="{ item }">
@@ -76,15 +72,24 @@
                 <v-btn @click="createRunners()">Next</v-btn>
               </div>
 
-              <v-data-table
-                :headers="headers"
-                :items="items"
-                :items-per-page="10"
-                class="elevation-1"
-                v-if="step == 'check-results'"
-              >
-                <template v-slot:item.name="{ item, props, headers }">{{ item.name }}</template>
-              </v-data-table>
+              <div v-if="step=='check-results'">
+                <v-data-table
+                  :headers="resultsHeader"
+                  :items="results"
+                  :items-per-page="10"
+                  class="elevation-1"
+                >
+                  <template
+                    v-slot:item.name="{ item, props, headers }"
+                  >{{ item.runner.lastName }} {{ item.runner.firstName }}</template>
+                  <template
+                    v-slot:item.year="{ item, props, headers }"
+                  >{{ moment(item.runner.birthdate).format('YYYY') }}</template>
+                </v-data-table>
+                <v-btn @click="createResults()">Next</v-btn>
+              </div>
+
+              <div v-if="step=='done'">Done.</div>
             </v-card-text>
           </v-card-text>
         </v-card>
@@ -94,24 +99,32 @@
 </template>
 
 <script>
+var _ = require("underscore");
 import axios from "axios";
 import { mapActions, mapState } from "vuex";
 
 import { BASE_URL, API_URL } from "./../constants";
+import { guid } from "./../functions";
 import { VIcon } from "vuetify/lib";
 const moment = require("moment");
 
-var levenshtein = require("underscore.string/levenshtein");
+//var levenshtein = require("underscore.string/levenshtein");
 
 export default {
   name: "ParseResults",
   data() {
     return {
-      //file: "",
-      headers: [],
-      items: [],
+      results: [],
+      resultsHeader: [
+        { text: "Place", value: "place" },
+        { text: "category", value: "category" },
+        { text: "Name", value: "name" },
+        { text: "Date/Year", value: "year" },
+        { text: "team", value: "team" },
+        { text: "finish_time", value: "finish_time" }
+      ],
       editItem: {},
-      editRunners: [],
+      runnersCopy: [],
       runners: [],
       runnersHeader: [
         { text: "status", value: "status" },
@@ -127,44 +140,12 @@ export default {
   },
   computed: {
     ...mapState("files", ["files"])
-    //sortedEditItems: function() {
-    //return this.editItems; //.sort((a, b) => a.result.place - b.result.place);
-    //}
   },
   components: { VIcon },
   methods: {
     ...mapActions("files", ["uploadFile", "fetchFiles"]),
-    getSlotItemName(field) {
-      return "item." + field;
-    },
-    edit(item) {
-      this.editItem = { ...this.editItem, [item.guid]: true };
-    },
-    confirmEdit(item) {
-      this.runners = this.runners.map(i =>
-        i.guid == item.guid ? { ...item } : i
-      );
-      this.editItem = { ...this.editItem, [item.guid]: false };
-    },
-    cancelEdit(item) {
-      this.editItem = { ...this.editItem, [item.guid]: false };
 
-      let origItem = this.runners.find(i => i.guid == item.guid);
-      this.editRunners = this.editRunners.map(i =>
-        i.guid == item.guid ? { ...origItem } : i
-      );
-    },
-    replaceItem(item, replace) {
-      console.log(replace);
-      this.runners = this.runners.map(i =>
-        i.guid == item.guid ? { ...replace } : i
-      );
-      this.editRunners = this.editRunners.map(i =>
-        i.guid == item.guid ? { ...replace } : i
-      );
-    },
-    
-    parseCsv(e) {
+    init() {
       let input = document.getElementById("dealCsv");
       let me = this;
 
@@ -174,108 +155,143 @@ export default {
           var reader = new FileReader();
 
           reader.addEventListener("load", function(e) {
-            let csvdata = e.target.result;
-            me.getParseData(csvdata);
+            let csvData = e.target.result;
+            me.parseCsvData(csvData);
           });
-
           //reader.readAsBinaryString(myFile);
           reader.readAsText(myFile);
         }
       });
     },
-    guid() {
-      function _p8(s) {
-        var p = (Math.random().toString(16) + "000000000").substr(2, 8);
-        return s ? "-" + p.substr(0, 4) + "-" + p.substr(4, 4) : p;
-      }
-      return _p8() + _p8(true) + _p8(true) + _p8();
-    },
-    sendData() {
-      let me = this;
 
-      let data = this.items.map((item, i) => {
-        let obj = {};
+    parseCsvData(csvData) {
+      let data = [];
+      let newLinebrk = csvData.split("\n");
+
+      for (let i = 0; i < newLinebrk.length; i++) {
+        data.push(newLinebrk[i].split(","));
+      }
+
+      let header = data.shift();
+
+      data.forEach(d => {
+        let item = { guid: guid() };
+        header.forEach((h, i) => {
+          item[h] = h.trim().length > 0 ? d[i] : ''; 
+        });
+
+        let runner = { guid: item.guid};
         let [lastName, firstName] = item.name
           .split(/(\s+)/)
           .filter(e => e.trim().length > 0);
 
-        obj.guid = item.guid;
-        obj.firstName = firstName.trim();
-        obj.lastName = lastName.trim();
-        obj.birthdate = item.birthdate + "-01-01";
-        return obj;
+        runner.firstName = firstName.trim();
+        runner.lastName = lastName.trim();
+        runner.birthdate = item.birthdate + "-01-01";
+        
+        this.results.push(item);
+        this.runners.push(runner);
       });
 
+      this.checkNames();
+    },
+
+    checkNames() {
       axios
-        .post(BASE_URL + "/checkNames", { runners: data })
-        .then(function(res) {
-          me.parseNamesData(res.data);
-          me.step = "check-names";
+        .post(BASE_URL + "/checkNames", { runners: this.runners })
+        .then(res => {
+          this.runners = res.data;
+          this.runnersCopy = JSON.parse(JSON.stringify(res.data));
+          //me.parseNamesData(res.data);
+          this.step = "check-names";
         })
         .catch(function(e) {
           console.log(e);
           console.log("FAILURE!!");
         });
     },
-    parseNamesData(data) {
+
+    createRunners() {
+      let [hasId, hasNotId] = _.partition(this.runners, r => r.runnerId);
+      console.log(this.results);
+      axios
+        .post(BASE_URL + "/createRunners", { runners: hasNotId })
+        .then(res => {
+          this.results = this.results.map(i => {
+            i.runner = res.data.concat(hasId).find(d => d.guid == i.guid);
+            i.runnerId = i.runner.runnerId;
+            i = _.omit(i, "name", "birthdate");
+
+            return i;
+          });
+          //console.log(me.results);
+          this.step = "check-results";
+        })
+        .catch(function(e) {
+          console.log(e);
+          console.log("FAILURE!!");
+        });
+    },
+
+    createResults() {
+      let results = this.results.map(r => _.omit(r, 'runner', 'guid'));
+
+      axios
+        .post(BASE_URL + "/createResults", { results: results })
+        .then(res => {
+          console.log(res.data);
+          this.step = "done";
+        })
+        .catch(function(e) {
+          console.log(e);
+        });
+    },
+
+    getSlotItemName(field) {
+      return "item." + field;
+    },
+    setEditItem(item, edit = false) {
+      this.editItem = { ...this.editItem, [item.guid]: edit };
+    },
+    edit(item) {
+      this.setEditItem(item, true);
+    },
+    confirmEdit(item) {
+      this.runners = this.runners.map(i =>
+        i.guid == item.guid ? { ...item } : i
+      );
+      this.setEditItem(item, false);
+    },
+    cancelEdit(item) {
+      this.setEditItem(item, false);
+
+      let origItem = this.runners.find(i => i.guid == item.guid);
+      this.runnersCopy = this.runnersCopy.map(i =>
+        i.guid == item.guid ? { ...origItem } : i
+      );
+    },
+    replaceItem(item, replace) {
+      this.runners = this.runners.map(i =>
+        i.guid == item.guid ? { ...replace } : i
+      );
+      this.runnersCopy = this.runnersCopy.map(i =>
+        i.guid == item.guid ? { ...replace } : i
+      );
+    },
+
+    /*parseNamesData(data) {
         this.runners = JSON.parse(JSON.stringify(data));
-        this.editRunners = data.map(d => {
+        this.runnersCopy = data.map(d => {
           d.birthdate = moment(d.birthdate).format("YYYY-MM-DD");
           return d;
         });
-    },
-    createRunners() {
-      let data = this.runners.filter(r => !r.runnerId);
-      let me = this;
-      console.log(data);
-      axios
-        .post(BASE_URL + "/createRunners", { runners: data })
-        .then(function(res) {
-          me.runners = data.map((item, i) => {
-            item.runnerId = res.data[i];
-            return item;
-          });
-          console.log(me.runners);
-          me.step = "check-results";
-        })
-        .catch(function(e) {
-          console.log(e);
-          console.log("FAILURE!!");
-        });
-    },
-    getParseData(data) {
-      let me = this;
-      let parsedata = [];
-      let newLinebrk = data.split("\n");
-
-      for (let i = 0; i < newLinebrk.length; i++) {
-        parsedata.push(newLinebrk[i].split(","));
-      }
-
-      let dataHeader = parsedata[0];
-      this.headers = parsedata
-        .shift()
-        .filter(d => d.trim().length > 0)
-        .map(d => ({ text: d, value: d }));
-
-      console.log(JSON.stringify(this.headers));
-
-      this.items = parsedata.map(d => {
-        let obj = { guid: this.guid() };
-        dataHeader.forEach((h, i) => {
-          if (h.trim().length > 0) {
-            obj[h] = d[i];
-          }
-        });
-        return obj;
-      });
-      this.sendData();
-    }
+    },*/
+    
   },
   mounted() {
     //this.fetchFiles();
     //this.check();
-    this.parseCsv();
+    this.init();
   }
 };
 </script>

@@ -11,22 +11,30 @@ export const getToken = function () {
     return token ? jwt_decode(token) : null;
 }
 
-export const axiosSetToken = function() {
+export const axiosSetToken = function () {
     axios.interceptors.request.use(
         (config) => {
-          let token = localStorage.getItem('token');
-          if (token) {
-            config.headers['Authorization'] = `Bearer ${ token }`;
-          }
-      
-          return config;
-        }, 
-      
+            let token = localStorage.getItem('token');
+            if (token) {
+                config.headers['Authorization'] = `Bearer ${ token }`;
+            }
+
+            return config;
+        },
+
         (error) => {
-          return Promise.reject(error);
+            return Promise.reject(error);
         }
-      );
+    );
 };
+
+export const guid = function () {
+    function _p8(s) {
+        var p = (Math.random().toString(16) + "000000000").substr(2, 8);
+        return s ? "-" + p.substr(0, 4) + "-" + p.substr(4, 4) : p;
+    }
+    return _p8() + _p8(true) + _p8(true) + _p8();
+}
 
 /*
     zmaz

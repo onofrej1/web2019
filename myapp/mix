@@ -1,0 +1,7 @@
+delete from runner where id not in (select runner_id from result);
+
+
+this.resultsHeader = parsedata
+        .shift()
+        .filter(d => d.trim().length > 0)
+        .map(d => ({ text: d, value: d }));
