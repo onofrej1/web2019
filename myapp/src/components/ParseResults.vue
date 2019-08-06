@@ -125,22 +125,23 @@ export default {
       results: [],
       resultsHeader: [
         { text: "Place", value: "place" },
-        { text: "category", value: "category" },
+        { text: "Category", value: "category" },
+        { text: "Start number", value: "runningNumber" },
         { text: "Name", value: "name" },
         { text: "Date/Year", value: "year" },
         { text: "team", value: "team" },
-        { text: "finish_time", value: "finish_time" }
+        { text: "finish_time", value: "finishTime" }
       ],
       editItem: {},
       runnersEditCopy: [],
       runners: [],
       runnersHeader: [
-        { text: "status", value: "status" },
-        { text: "lastName", value: "lastName", editable: true },
-        { text: "firstName", value: "firstName", editable: true },
-        { text: "birthdate", value: "birthdate", editable: true },
-        { text: "names", value: "names" },
-        { text: "actions", value: "actions" }
+        { text: "Status", value: "status" },
+        { text: "Last name", value: "lastName", editable: true },
+        { text: "First name", value: "firstName", editable: true },
+        { text: "Birthdate", value: "birthdate", editable: true },
+        { text: "Similar names", value: "names" },
+        { text: "Actions", value: "actions" }
       ],
       step: "",
       moment: moment,
@@ -182,6 +183,12 @@ export default {
       }
 
       let header = data.shift();
+      let diff = _.difference(_.pluck(this.resultsHeader, 'value'), header);
+
+      if(diff.length > 0) {
+        alert('Missing data: '+ diff.join(', '));
+        return;
+      }
 
       data.forEach(d => {
         let item = { guid: guid() };
@@ -196,7 +203,7 @@ export default {
 
         runner.firstName = firstName.trim();
         runner.lastName = lastName.trim();
-        runner.birthdate = item.birthdate + "-01-01";
+        runner.birthdate = item.year + "-01-01";
 
         this.results.push(item);
         this.runners.push(runner);
@@ -232,7 +239,7 @@ export default {
     createResults() {
       let results = this.results.map(r => _.omit(r, "runner", "guid"));
       axios
-        .post(BASE_URL + "/createResults", { results: results })
+        .post(BASE_URL + "/createResults", results)
         .then(res => {
           this.step = "done";
         });

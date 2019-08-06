@@ -40,7 +40,7 @@ public class FileController {
     @GetMapping("/calc")
     public ResponseEntity<String> calculate(Model model) throws IOException {
     	LevenshteinDistance dist = new LevenshteinDistance();
-    	Integer num = dist.apply("erik", "erikxxb");
+    	Integer num = dist.apply("aaa", "bbb");
     	
     	return ResponseEntity.ok(num.toString());
     }

@@ -101,5 +101,13 @@ public class Result{
 	public void setRunningNumber(String runningNumber) {
 		this.runningNumber = runningNumber;
 	}
+
+	@Override
+	public String toString() {
+		return "Result [Id=" + Id + ", run=" + run + ", runner=" + runner + ", place=" + place + ", finishTime="
+				+ finishTime + ", category=" + category + ", team=" + team + ", runningNumber=" + runningNumber + "]";
+	}
+	
+	
     
 }
