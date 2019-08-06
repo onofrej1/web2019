@@ -13,7 +13,7 @@
               <div v-if="step == 'check-names'">
                 <v-data-table
                   :headers="runnersHeader"
-                  :items="runnersCopy"
+                  :items="runnersEditCopy"
                   :disable-pagination="true"
                   class="elevation-1"
                 >
@@ -69,7 +69,15 @@
                   </template>
                 </v-data-table>
 
-                <v-btn @click="createRunners()">Next</v-btn>
+                <div>
+                  <br>
+                  <v-btn color="primary" class="mr-2" :disabled="!isDirty" @click="checkNames()">
+                    <v-icon left>refresh</v-icon> Refresh
+                  </v-btn>
+                  <v-btn color="primary" :disabled="isDirty" @click="createRunners()">
+                    Next <v-icon >navigate_next</v-icon> 
+                  </v-btn>
+                </div>
               </div>
 
               <div v-if="step=='check-results'">
@@ -124,7 +132,7 @@ export default {
         { text: "finish_time", value: "finish_time" }
       ],
       editItem: {},
-      runnersCopy: [],
+      runnersEditCopy: [],
       runners: [],
       runnersHeader: [
         { text: "status", value: "status" },
@@ -135,15 +143,16 @@ export default {
         { text: "actions", value: "actions" }
       ],
       step: "",
-      moment: moment
+      moment: moment,
+      isDirty: false,
     };
   },
   computed: {
-    ...mapState("files", ["files"])
+    //...mapState("files", ["files"])
   },
   components: { VIcon },
   methods: {
-    ...mapActions("files", ["uploadFile", "fetchFiles"]),
+    //...mapActions("files", ["uploadFile", "fetchFiles"]),
 
     init() {
       let input = document.getElementById("dealCsv");
@@ -177,10 +186,10 @@ export default {
       data.forEach(d => {
         let item = { guid: guid() };
         header.forEach((h, i) => {
-          item[h] = h.trim().length > 0 ? d[i] : ''; 
+          item[h] = h.trim().length > 0 ? d[i] : "";
         });
 
-        let runner = { guid: item.guid};
+        let runner = { guid: item.guid };
         let [lastName, firstName] = item.name
           .split(/(\s+)/)
           .filter(e => e.trim().length > 0);
@@ -188,7 +197,7 @@ export default {
         runner.firstName = firstName.trim();
         runner.lastName = lastName.trim();
         runner.birthdate = item.birthdate + "-01-01";
-        
+
         this.results.push(item);
         this.runners.push(runner);
       });
@@ -200,20 +209,14 @@ export default {
       axios
         .post(BASE_URL + "/checkNames", { runners: this.runners })
         .then(res => {
-          this.runners = res.data;
-          this.runnersCopy = JSON.parse(JSON.stringify(res.data));
-          //me.parseNamesData(res.data);
+          this.runners =  res.data;
+          this.runnersEditCopy = JSON.parse(JSON.stringify(res.data));
           this.step = "check-names";
-        })
-        .catch(function(e) {
-          console.log(e);
-          console.log("FAILURE!!");
+          this.isDirty = false;
         });
     },
-
     createRunners() {
       let [hasId, hasNotId] = _.partition(this.runners, r => r.runnerId);
-      console.log(this.results);
       axios
         .post(BASE_URL + "/createRunners", { runners: hasNotId })
         .then(res => {
@@ -221,76 +224,48 @@ export default {
             i.runner = res.data.concat(hasId).find(d => d.guid == i.guid);
             i.runnerId = i.runner.runnerId;
             i = _.omit(i, "name", "birthdate");
-
             return i;
           });
-          //console.log(me.results);
           this.step = "check-results";
-        })
-        .catch(function(e) {
-          console.log(e);
-          console.log("FAILURE!!");
         });
     },
-
     createResults() {
-      let results = this.results.map(r => _.omit(r, 'runner', 'guid'));
-
+      let results = this.results.map(r => _.omit(r, "runner", "guid"));
       axios
         .post(BASE_URL + "/createResults", { results: results })
         .then(res => {
-          console.log(res.data);
           this.step = "done";
-        })
-        .catch(function(e) {
-          console.log(e);
         });
     },
-
     getSlotItemName(field) {
       return "item." + field;
-    },
-    setEditItem(item, edit = false) {
-      this.editItem = { ...this.editItem, [item.guid]: edit };
     },
     edit(item) {
       this.setEditItem(item, true);
     },
     confirmEdit(item) {
-      this.runners = this.runners.map(i =>
-        i.guid == item.guid ? { ...item } : i
-      );
+      this.update('runners', item);
       this.setEditItem(item, false);
     },
     cancelEdit(item) {
-      this.setEditItem(item, false);
-
       let origItem = this.runners.find(i => i.guid == item.guid);
-      this.runnersCopy = this.runnersCopy.map(i =>
-        i.guid == item.guid ? { ...origItem } : i
-      );
+      this.update('runnersEditCopy', origItem);
+      this.setEditItem(item, false);
     },
-    replaceItem(item, replace) {
-      this.runners = this.runners.map(i =>
-        i.guid == item.guid ? { ...replace } : i
-      );
-      this.runnersCopy = this.runnersCopy.map(i =>
-        i.guid == item.guid ? { ...replace } : i
-      );
+    replaceItem(item, newItem) {
+      newItem.guid = item.guid;
+      this.update('runners', newItem);
+      this.update('runnersEditCopy', newItem);
     },
-
-    /*parseNamesData(data) {
-        this.runners = JSON.parse(JSON.stringify(data));
-        this.runnersCopy = data.map(d => {
-          d.birthdate = moment(d.birthdate).format("YYYY-MM-DD");
-          return d;
-        });
-    },*/
-    
+    update(key, item) {
+      this.isDirty = true;
+      this[key] = this[key].map(i => i.guid == item.guid ? {...item} : i);
+    },
+    setEditItem(item, edit = false) {
+      this.editItem = { ...this.editItem, [item.guid]: edit };
+    },
   },
   mounted() {
-    //this.fetchFiles();
-    //this.check();
     this.init();
   }
 };

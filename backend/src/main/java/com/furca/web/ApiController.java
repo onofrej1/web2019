@@ -93,10 +93,13 @@ public class ApiController {
 
 		for (RunnerDto r : runners) {
 			Runner runner = runnerRepo.findRunner(r.getLastName().trim(), r.getFirstName().trim(), r.getBirthdate());
-
+			r.setRunnerId(null);
+			r.setNames(new ArrayList());
+			
 			if (runner != null) {
 				r.setRunnerId(runner.getId());
 			} else {
+				
 				for (Runner rn : runnerRepo.findAll()) {
 					Integer lnameMispell = dist.apply(r.getLastName(), rn.getLastName());
 					if (lnameMispell > 2)
@@ -118,9 +121,6 @@ public class ApiController {
 					if (born > 2)
 						continue;
 
-					// System.out.println("Misspelled " + r.getLastName()+ " "+r.getFirstName()+ "
-					// "+r.getBirthday().toString());
-					System.out.println(rn);
 					RunnerDto runnerDto = modelMapper.map(rn, RunnerDto.class);
 					System.out.println(runnerDto);
 					r.addName(runnerDto);
@@ -141,11 +141,6 @@ public class ApiController {
 		for (RunnerDto runnerDto : runners) {
 			
 			Runner runner = modelMapper.map(runnerDto, Runner.class);
-			/*Runner runner = new Runner();
-			runner.setFirstName(runnerDto.getFirstName());
-			runner.setLastName(runnerDto.getLastName());
-			runner.setBirthdate(runnerDto.getBirthdate());
-			System.out.println(runner);*/
 			runnerRepo.save(runner);
 			Long id = runnerRepo.save(runner).getId();
 			runnerDto.setRunnerId(id);

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.furca.model.Runner;
 
 public class RunnerDto {
@@ -16,6 +17,7 @@ public class RunnerDto {
     
     private String lastName;
     
+    @JsonFormat(pattern="yyyy-MM-dd")
     private Date birthdate;
     
     private List<RunnerDto> names = new ArrayList<RunnerDto>();
@@ -66,7 +68,7 @@ public class RunnerDto {
 	}
 	
 	public void addName(RunnerDto name) {
-		System.out.println("ad name");
+		System.out.println("add name");
 		this.names.add(name);
 	}
 

@@ -11,7 +11,7 @@ export const getToken = function () {
     return token ? jwt_decode(token) : null;
 }
 
-export const axiosSetToken = function () {
+export const axiosSetInterceptors = function () {
     axios.interceptors.request.use(
         (config) => {
             let token = localStorage.getItem('token');
@@ -26,6 +26,10 @@ export const axiosSetToken = function () {
             return Promise.reject(error);
         }
     );
+    axios.interceptors.response.use(undefined, function (error) {
+        console.log(error);
+        return Promise.reject(error);
+    });
 };
 
 export const guid = function () {

@@ -13,7 +13,7 @@ import Page from "./components/Page.vue";
 import Upload from './components/Upload.vue';
 import ParseResults from './components/ParseResults.vue';
 
-import {getToken, axiosSetToken} from './functions';
+import {getToken, axiosSetInterceptors} from './functions';
 
 //import 'vuetify/dist/vuetify.min.css' // Ensure you are using css-loader
 //import '~vuetify/src/stylus/main' // Ensure you are using stylus-loader
@@ -89,7 +89,7 @@ const routes = [{
   },
 ];
 
-axiosSetToken();
+axiosSetInterceptors();
 export const router = new VueRouter({routes, mode:'history'})  
 
 router.beforeEach((to, from, next) => {
