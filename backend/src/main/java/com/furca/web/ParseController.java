@@ -8,7 +8,9 @@ import java.util.TimeZone;
 
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.modelmapper.TypeMap;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -92,25 +94,56 @@ public class ParseController {
 			throw new Exception("Run not found");
 		}
 		
-		TypeMap<ResultDto, Result> mapper = modelMapper.createTypeMap(ResultDto.class, Result.class);
-		mapper.addMappings(m -> m.skip(Result::setId));
-		mapper.addMappings(m -> m.skip(Result::setRunner));
+		//modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+		//TypeMap<ResultDto, Result> mapper = modelMapper.createTypeMap(ResultDto.class, Result.class);
+		//if (mapper == null) {
+			/*System.out.println("add mapping");
+			mapper.addMappings(m -> {
+				  m.map(src -> src.getCategory(),
+				      Result::setCategory);
+			});*/
+			//mapper.addMappings(m -> m.skip(Result::setRunner));
+			//mapper.addMappings(m -> m.skip(Result::setId));
+		//}
+		/*TypeMap<ResultDto, Result> mapper = modelMapper.createTypeMap(ResultDto.class, Result.class);
+		mapper.addMappings(m -> {
+			m.skip(Result::setId);
+			m.skip(Result::setRunner);
+		});*/
+		modelMapper.addMappings(new ResultPropertyMap());
 		
 		for (ResultDto resultDto : results) {
-			Result result = new Result();
-			mapper.map(resultDto, result);
-			
-			System.out.println(result);
+			//Result result = new Result();
 			Optional<Runner> runner = runnerRepo.findById(resultDto.getRunnerId());
+			
+			Result result = modelMapper.map(resultDto, Result.class);
+			//mapper.addMapping(resultDto, result);
+			System.out.println("ressult");
+			System.out.println(result);
+			
 			if(!runner.isPresent()) {
 				throw new Exception("Runner not found");
 			}
 			result.setRunner(runner.get());
 			result.setRun(run.get());
-			
+			System.out.println(result);
 			resultRepo.save(result);
 		}
 		return ResponseEntity.ok(results);
+	}
+	
+	class ResultPropertyMap
+	    extends PropertyMap<ResultDto, Result> {
+			@Override
+			protected void configure() {
+			    map(source.getPlace(), destination.getPlace());
+			    map(source.getCategory(), destination.getCategory());
+			    map(source.getTeam(), destination.getTeam());
+			    map(source.getFinishTime(), destination.getFinishTime()); 
+			    map(source.getRunningNumber(), destination.getRunningNumber());	
+			    skip(source.getRunnerId(), destination.getRunner());
+			    skip(source.getRunnerId(), destination.getId());
+			}
 	}
 	
 	@RequestMapping(value = "/createRunners", method = RequestMethod.POST)
