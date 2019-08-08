@@ -9,7 +9,7 @@ public class Run{
 	
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long Id;
+    private Long id;
 	
 	@Column(name="name")
     private String name;
@@ -27,7 +27,7 @@ public class Run{
     
     @Override
 	public String toString() {
-		return "Run [Id=" + Id + ", name=" + name + ", runDate=" + runDate + ", edition=" + edition + ", event=" + event
+		return "Run [Id=" + id + ", name=" + name + ", runDate=" + runDate + ", edition=" + edition + ", event=" + event
 				+ ", results=" + results + "]";
 	}       
 
@@ -35,11 +35,11 @@ public class Run{
     private Set<Result> results;
 
 	public Long getId() {
-		return Id;
+		return id;
 	}
 	
-	public void setId(Long Id) {
-		this.Id = Id;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getName() {

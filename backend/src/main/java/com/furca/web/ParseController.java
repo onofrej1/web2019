@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.modelmapper.TypeMap;
 import org.modelmapper.convention.MatchingStrategies;
+import org.modelmapper.spi.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -93,32 +94,17 @@ public class ParseController {
 		if(!run.isPresent()) {
 			throw new Exception("Run not found");
 		}
-		
-		//modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		//TypeMap<ResultDto, Result> mapper = modelMapper.createTypeMap(ResultDto.class, Result.class);
-		//if (mapper == null) {
-			/*System.out.println("add mapping");
-			mapper.addMappings(m -> {
-				  m.map(src -> src.getCategory(),
-				      Result::setCategory);
-			});*/
-			//mapper.addMappings(m -> m.skip(Result::setRunner));
-			//mapper.addMappings(m -> m.skip(Result::setId));
-		//}
-		/*TypeMap<ResultDto, Result> mapper = modelMapper.createTypeMap(ResultDto.class, Result.class);
-		mapper.addMappings(m -> {
-			m.skip(Result::setId);
-			m.skip(Result::setRunner);
-		});*/
-		modelMapper.addMappings(new ResultPropertyMap());
+
+		TypeMap<ResultDto, Result> typeMap = modelMapper.getTypeMap(ResultDto.class, Result.class);
+		if(typeMap == null) {
+			typeMap = modelMapper.createTypeMap(ResultDto.class, Result.class);
+			modelMapper.addMappings(new ResultPropertyMap());
+		}
 		
 		for (ResultDto resultDto : results) {
-			//Result result = new Result();
-			Optional<Runner> runner = runnerRepo.findById(resultDto.getRunnerId());
-			
+			Optional<Runner> runner = runnerRepo.findById(resultDto.getRunnerId());			
 			Result result = modelMapper.map(resultDto, Result.class);
-			//mapper.addMapping(resultDto, result);
-			System.out.println("ressult");
+			
 			System.out.println(result);
 			
 			if(!runner.isPresent()) {
@@ -126,7 +112,9 @@ public class ParseController {
 			}
 			result.setRunner(runner.get());
 			result.setRun(run.get());
-			System.out.println(result);
+			
+			System.out.println(result.getRunner().getId());
+			System.out.println(result.getRun().getId());
 			resultRepo.save(result);
 		}
 		return ResponseEntity.ok(results);
@@ -140,9 +128,9 @@ public class ParseController {
 			    map(source.getCategory(), destination.getCategory());
 			    map(source.getTeam(), destination.getTeam());
 			    map(source.getFinishTime(), destination.getFinishTime()); 
-			    map(source.getRunningNumber(), destination.getRunningNumber());	
-			    skip(source.getRunnerId(), destination.getRunner());
-			    skip(source.getRunnerId(), destination.getId());
+			    map(source.getRunningNumber(), destination.getRunningNumber());
+			    map().setRunner(null);
+			    map().setId(null); 
 			}
 	}
 	
@@ -152,14 +140,11 @@ public class ParseController {
 
 		List<RunnerDto> runners = runnerList.getRunners();
 
-		for (RunnerDto runnerDto : runners) {
-			
+		for (RunnerDto runnerDto : runners) {		
 			Runner runner = modelMapper.map(runnerDto, Runner.class);
 			runnerRepo.save(runner);
 			Long id = runnerRepo.save(runner).getId();
-			runnerDto.setRunnerId(id);
-			
-			System.out.println(id);
+			runnerDto.setRunnerId(id);			
 		}
 		return ResponseEntity.ok(runners);
 	}
