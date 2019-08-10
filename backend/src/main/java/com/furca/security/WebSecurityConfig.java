@@ -88,12 +88,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.GET, "/api/categories").permitAll()
             .antMatchers(HttpMethod.GET, "/api/tags").permitAll()
             .antMatchers(HttpMethod.GET, "/api/menuItems").permitAll()
-            .antMatchers("/files/**").hasAnyRole("ADMIN")
+            .antMatchers(HttpMethod.GET, "/api/**").permitAll()
+            .antMatchers("/files/**").hasAnyRole("ADMIN");
             
             //.antMatchers("/auth/**").permitAll()
-            .antMatchers(HttpMethod.GET, "/api/**").hasAnyRole("EDITOR")
-            .antMatchers("/api/**").hasAnyRole("ADMIN")
-            .anyRequest().authenticated();
+            //.antMatchers(HttpMethod.GET, "/api/**").hasAnyRole("EDITOR");
+            //.antMatchers("/api/**").hasAnyRole("ADMIN")
+            //.anyRequest().authenticated();
 
        httpSecurity
             .addFilterBefore(authorizationTokenFilter, UsernamePasswordAuthenticationFilter.class);

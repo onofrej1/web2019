@@ -21,9 +21,9 @@
 
     <div class="content">
       <v-card id="menu">
-        <div class="pa-3" style="width:80%; margin: 10px auto; border: 0.5px solid lightgray">
+        <!--<div class="pa-3" style="width:80%; margin: 10px auto; border: 0.5px solid lightgray">
           <v-img src="./../assets/images/user_avatar.png"  dark></v-img>
-        </div>
+        </div>-->
 
         <v-list class="pt-0">
           <v-list-item>

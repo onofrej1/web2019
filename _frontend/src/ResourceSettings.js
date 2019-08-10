@@ -206,6 +206,23 @@ const menuItems = {
   ],
 }
 
+const results = {
+  title: 'Results',
+  filter: [],
+  //apiUrl: 'results?category=A',
+  group: 'Runs',
+  form: [
+    { label: 'Place', name: 'place', type: 'text' },
+    { label: 'Category', name: 'category', type: 'text' },
+    { label: 'Runner', name: 'runner', validate: 'required', type: 'relation', resourceTable: 'runners', show: 'lastName' },    
+  ],
+  list: [
+    { field: 'place', label: 'Place' },
+    { field: 'finishTime', label: 'Finish time' },
+    { field: 'runner', label: 'Name', render: (item, props) => `<div>${item.runner.lastName} ${item.runner.firstName}</div>`}
+  ],
+};
+
 const hamburg = {
   title: "Pages",
   form: [
@@ -447,5 +464,6 @@ export default {
   pages,
   //menus,
   menuItems,
+  results,
   news,
 };
