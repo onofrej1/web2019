@@ -6,7 +6,7 @@
           <v-card-title class="box-heading">
             <slot name="content-header"></slot>
           </v-card-title>
-          <v-card-text>
+          <v-card-text class="pt-5">
             <slot name="content"></slot>
           </v-card-text>    
         </v-card>
@@ -16,7 +16,7 @@
           <v-card-title class="box-heading">
             <slot name="sidebar-header"></slot>
           </v-card-title>
-          <v-card-text>
+          <v-card-text class="pt-5">
             <slot name="sidebar-content">
               <div :key="item.id" v-for="item in news">
                 <v-icon>date_range</v-icon>

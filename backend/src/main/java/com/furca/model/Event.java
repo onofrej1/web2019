@@ -12,7 +12,7 @@ public class Event{
 	
 	@Override
 	public String toString() {
-		return "Event [Id=" + Id + ", name=" + name + ", locality=" + locality + ", runs=" + runs + "]";
+		return "Event [Id=" + id + ", name=" + name + ", locality=" + locality + ", runs=" + runs + "]";
 	}
 
 	@Id

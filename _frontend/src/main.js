@@ -10,6 +10,7 @@ import Login from "./components/Login.vue";
 import Register from "./components/Register.vue";
 import Home from "./components/Home.vue";
 import Page from "./components/Page.vue";
+import Article from "./components/Article.vue";
 import Upload from './components/Upload.vue';
 import ParseResults from './components/ParseResults.vue';
 
@@ -67,9 +68,14 @@ const routes = [{
     component: HelloWorld
   },*/
   {
-    path: '/page/:id',
+    path: '/pages/:id',
     component: Page,
     name: 'page',
+  },
+  {
+    path: '/articles/:id?',
+    component: Article,
+    name: 'article',
   },
   {
     path: '',

@@ -10,16 +10,31 @@
           @change="getRuns()"
         ></v-select>
       </v-flex>
-      <v-flex xs4>
-        <v-select v-model="run" class="ma-4" label="Edition" :items="event ? runOptions : []" @change="getResults()"></v-select>
+      <v-flex v-if="event" xs4>
+        <v-select
+          v-model="run"
+          class="ma-4"
+          label="Edition"
+          :items="runOptions"
+          @change="getResults()"
+        ></v-select>
+      </v-flex>
+      <v-flex v-if="run">
+        <p class="text-right ma-4">
+          <v-chip class="ma-2">
+            <v-icon left>sort</v-icon>
+            {{ myItems.length }} items
+          </v-chip>
+        </p>
       </v-flex>
     </v-layout>
 
     <v-data-table
+      v-if="event && run"
       d-block
       :single-expand="false"
       :headers="header"
-      :items="run ? myItems : []"
+      :items="myItems"
       item-key="id"
       class="elevation-1"
     >
@@ -54,16 +69,20 @@ export default {
   },
   methods: {
     getResults: function() {
+      localStorage.run = this.run;
+      if (!this.run) return;
+
       this.fetch({
         resource: "results",
         url: "api/results/search/run?id=" + this.run
       });
     },
     getRuns: function() {
-      if(!this.event) {
-        this.run = null;
-        return;
-      } 
+      localStorage.event = this.event;
+      this.run = null;
+
+      if (!this.event) return;
+
       this.fetch({
         resource: "runs",
         url: "api/runs/search/event?id=" + this.event
@@ -118,7 +137,12 @@ export default {
     }
   },
   mounted() {
-    this.fetch({ resource: "events", url: "api/events" });
+    this.event = parseInt(localStorage.event);
+    this.run = parseInt(localStorage.run);
+
+    if (!this.data.events.length) {
+      this.fetch({ resource: "events", url: "api/events" });
+    }
   }
 };
 </script>

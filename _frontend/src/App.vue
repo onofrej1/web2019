@@ -58,11 +58,8 @@ export default {
   background-color: #222;
   font-weight: bold;
   font-size: 1.2em;
-  height: 40px;
-  padding: 16px 30px 30px 16px !important;
+  line-height: 1.2em;
+  height: 45px;
 }
-
-
-
 
 </style>
