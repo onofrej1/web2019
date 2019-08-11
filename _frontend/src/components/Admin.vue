@@ -184,7 +184,7 @@ export default {
             return true;
           }
           let value = item[filter.field];
-          console.log(value);
+          
           if (filter.op === "contains") {
             return value.includes(searchValue);
           }
@@ -209,6 +209,7 @@ export default {
     }
   },
   methods: {
+    capitalize: capitalize,
     ...mapActions("resources", [
       "setResource",
       "fetchData",
@@ -228,16 +229,12 @@ export default {
     getSlotItemName(field) {
       return "item." + field.value;
     },
-    expand: function(item, index) {
-      this.expanded.push(item);
-    },
     addFilter: function(filter) {
       this.activeFilters.push(filter);
     },
     removeFilter: function(index) {
       this.activeFilters.splice(index, 1);
     },
-    capitalize: capitalize,
     getFilterOptions: function(field) {
       let emptyOption = { value: null, text: "" };
 
@@ -252,11 +249,17 @@ export default {
     },
     createItem: function() {
       this.formData = {};
-      this.setForm(null);
+      this.setForm();
     },
     editItem: function(item) {
-      this.formData = item;
-      this.setForm(item);
+      this.setForm();
+
+      let data = {};
+      this.form.forEach(field => {
+        data[field.name] = item[field.name];
+      });
+      
+      this.formData = data;
     },
     deleteItem: function(item) {
       if (window.confirm("Realy delete ?")) {
@@ -291,7 +294,7 @@ export default {
       }
       this.list.push({ text: "Actions", value: "actions" });
     },
-    setForm(row) {
+    setForm() {
       this.form = [
         {
           name: "id",

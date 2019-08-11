@@ -73,7 +73,7 @@
               v-model="data[field.name]"
               v-bind="getProps(field)"
               v-validate="field.validate"
-              :items="getOptions(field.resourceTable, field.show)"
+              :items="getOptions(field)"
             ></v-select>
 
             <v-combobox
@@ -81,7 +81,7 @@
               v-model="data[field.name]"
               v-bind="getProps(field)"
               v-validate="field.validate"
-              :items="getOptions(field.resourceTable, field.show)"
+              :items="getOptions(field)"
               item-text="text"
               item-value="text"
               multiple
@@ -173,17 +173,17 @@ export default {
   },
   methods: {
     ...mapActions("resources", ["fetchData"]),
-    getOptions: function(resource, field) {
+    getOptions: function(field) {
       let emptyOption = { value: null, text: "" };
 
-      if(!this.resources[resource]) {
+      if(!this.resources[field.resourceTable]) {
         return;
       }
 
       return [emptyOption].concat(
-        this.resources[resource].map(data => ({
+        this.resources[field.resourceTable].map(data => ({
           value: data.id,
-          text: data[field]
+          text: field.show ? data[field.show] : field.render(data)
         }))
       );
     },
@@ -205,7 +205,6 @@ export default {
     submit: function(e) {
       let data = this.data;
       console.log(data);
-      delete data["_links"];
 
       this.$validator.validateAll().then(valid => {
         if (valid) {

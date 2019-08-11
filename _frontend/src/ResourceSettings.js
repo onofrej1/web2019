@@ -214,12 +214,12 @@ const results = {
   form: [
     { label: 'Place', name: 'place', type: 'text' },
     { label: 'Category', name: 'category', type: 'text' },
-    { label: 'Runner', name: 'runner', validate: 'required', type: 'relation', resourceTable: 'runners', show: 'lastName' },    
+    { label: 'Runner', name: 'runner', validate: 'required', type: 'relation', resourceTable: 'runners', render: (item) => `${item.lastName} ${item.firstName}`},    
   ],
   list: [
     { field: 'place', label: 'Place' },
     { field: 'finishTime', label: 'Finish time' },
-    { field: 'name', label: 'Name', render: (item, props) => `<div>${item.runner.lastName} ${item.runner.firstName}</div>`}
+    { field: 'name', label: 'Name', /*render: (item, props) => `<div>${item.runner} ${item.runner.firstName}</div>`*/}
   ],
   listView: ResultList,
   fetch: false,
