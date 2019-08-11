@@ -17,7 +17,7 @@ public class Event{
 
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long Id;
+    private Long id;
 	
 	@Column(name="name", nullable=false, unique=true)
 	@NotNull
@@ -32,11 +32,11 @@ public class Event{
     private Set<Run> runs;
 
 	public Long getId() {
-		return Id;
+		return id;
 	}
 
 	public void setId(Long id) {
-		Id = id;
+		id = id;
 	}
 
 	public String getName() {

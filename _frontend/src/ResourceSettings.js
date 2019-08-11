@@ -218,8 +218,10 @@ const results = {
   ],
   list: [
     { field: 'place', label: 'Place' },
+    { field: 'name', label: 'Name'},
+    { field: 'category', label: 'Category' },
+    { field: 'runningNumber', label: 'Running number' },
     { field: 'finishTime', label: 'Finish time' },
-    { field: 'name', label: 'Name', /*render: (item, props) => `<div>${item.runner} ${item.runner.firstName}</div>`*/}
   ],
   listView: ResultList,
   fetch: false,

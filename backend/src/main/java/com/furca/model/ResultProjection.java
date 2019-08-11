@@ -10,6 +10,7 @@ public interface ResultProjection {
   int getPlace();  
   String getCategory();
   String getTeam();
+  String getRunningNumber();
   Time getFinishTime();
   Runner getRunner();
   Run getRun();

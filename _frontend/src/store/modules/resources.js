@@ -5,12 +5,6 @@ import {
     API_URL
 } from './../../constants';
 
-/*const uriListHeader = {
-    headers: {
-        'Content-Type': 'text/uri-list'
-    }
-};*/
-
 const getSaveUrl = (id, state) => {
     let modelSettings = state.settings[state.resource];
     let apiUrl = modelSettings.apiUrl !== undefined ? state.baseUrl + modelSettings.apiUrl : state.apiUrl;
@@ -101,8 +95,6 @@ export default {
             dispatch,
             state
         }, data) {
-            //console.log('save resource');
-            console.log(data);
             state.relations.forEach(relation =>  {
                 if(data[relation.name]) {
                     data[relation.name] = state.apiUrl + "/" + relation.resourceTable + '/' + data[relation.name];

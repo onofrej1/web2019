@@ -2,7 +2,16 @@
   <v-card>
     <v-layout>
       <v-flex xs4>
-        <v-select v-model="run" class="ma-2" label="run" :items="runOptions" @change="getResults()"></v-select>
+        <v-select
+          v-model="event"
+          class="ma-4"
+          label="Event"
+          :items="eventOptions"
+          @change="getRuns()"
+        ></v-select>
+      </v-flex>
+      <v-flex xs4>
+        <v-select v-model="run" class="ma-4" label="Edition" :items="event ? runOptions : []" @change="getResults()"></v-select>
       </v-flex>
     </v-layout>
 
@@ -10,7 +19,7 @@
       d-block
       :single-expand="false"
       :headers="header"
-      :items="myItems"
+      :items="run ? myItems : []"
       item-key="id"
       class="elevation-1"
     >
@@ -39,7 +48,8 @@ export default {
   },
   data: function() {
     return {
-      run: ""
+      event: null,
+      run: null
     };
   },
   methods: {
@@ -47,6 +57,16 @@ export default {
       this.fetch({
         resource: "results",
         url: "api/results/search/run?id=" + this.run
+      });
+    },
+    getRuns: function() {
+      if(!this.event) {
+        this.run = null;
+        return;
+      } 
+      this.fetch({
+        resource: "runs",
+        url: "api/runs/search/event?id=" + this.event
       });
     }
   },
@@ -59,6 +79,18 @@ export default {
     myItems: function() {
       return this.resourceData;
     },
+    eventOptions: function() {
+      let emptyOption = { value: null, text: "" };
+
+      return [emptyOption].concat(
+        this.data.events.map(row => {
+          return {
+            value: row.id,
+            text: row.name
+          };
+        })
+      );
+    },
     runOptions: function() {
       let emptyOption = { value: null, text: "" };
 
@@ -66,7 +98,7 @@ export default {
         this.data.runs.map(row => {
           return {
             value: row.id,
-            text: row.name
+            text: row.edition + ". rocnik"
           };
         })
       );
@@ -86,7 +118,7 @@ export default {
     }
   },
   mounted() {
-    this.fetch({ resource: "runs", url: "api/runs" });
+    this.fetch({ resource: "events", url: "api/events" });
   }
 };
 </script>
