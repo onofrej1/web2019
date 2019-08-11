@@ -5,17 +5,28 @@ import {
     API_URL
 } from './../../constants';
 
-const uriListHeader = {
+/*const uriListHeader = {
     headers: {
         'Content-Type': 'text/uri-list'
     }
-};
+};*/
 
 const getSaveUrl = (id, state) => {
     let modelSettings = state.settings[state.resource];
     let apiUrl = modelSettings.apiUrl !== undefined ? state.baseUrl + modelSettings.apiUrl : state.apiUrl;
 
     return apiUrl + "/" + state.resource + (id ? "/" + id + '/' : '/');
+}
+
+const settings = {};
+for(name in ResourceSettings) {
+    let resource = ResourceSettings[name];
+    resource.filter = resource.filter ? resource.filter : [];
+    resource.title = resource.title ? resource.title : name;
+    resource.fetch = resource.fetch !== undefined ? resource.fetch : true;
+    resource.actions = resource.actions ? resource.actions : ['create', 'filter', 'refresh'];
+    
+    settings[name] = resource;
 }
 
 const initData = Object.keys(ResourceSettings).reduce((map, key) => {
@@ -29,14 +40,16 @@ export default {
         baseUrl: BASE_URL,
         apiUrl: API_URL,
         resource: "users",
-        settings: ResourceSettings,
+        settings: settings,
         relations: [],
         pivotRelations: [],
         data: initData,
         status: null,
     },
     getters: {
-        getResourceData: state => state.data[state.resource],
+        getResourceData: state => {
+            return state.data[state.resource];
+        },
         getResourceSettings: state => state.settings[state.resource]
     },
     mutations: {
@@ -114,6 +127,28 @@ export default {
                 dispatch('fetchData', state.resource);
                 console.log(error)
             });
+        },
+        fetchCustomData({
+            commit,
+            dispatch,
+            state
+        }, payload) {
+            commit("setStatus", 'loading');
+            return axios.get(state.baseUrl + "/" + payload.url).then(
+                response => {
+                    var data = response.data._embedded[payload.resource];
+                    commit("setData", {
+                        resource: payload.resource,
+                        data: data
+                    });
+                    commit("setStatus", 'success');                    
+                    return {...response, data:data};
+                },
+                error => {
+                    commit("setStatus", 'error');
+                    console.log(error);
+                }
+            );
         },
         fetchData({
             commit,

@@ -1,5 +1,5 @@
 const moment = require('moment');
-import RunnerList from './components/RunnerList.vue';
+import ResultList from './components/ResultList.vue';
 import { VIcon } from 'vuetify/lib'
 
 
@@ -16,7 +16,6 @@ var header = {
         <th
           v-for="header in props.headers"
           :key="header.text"
-      
         >
           <v-icon small>arrow_upward</v-icon>
           {{ header.text }}
@@ -209,6 +208,7 @@ const menuItems = {
 const results = {
   title: 'Results',
   filter: [],
+  actions: ['create'],
   //apiUrl: 'results?category=A',
   group: 'Runs',
   form: [
@@ -219,8 +219,10 @@ const results = {
   list: [
     { field: 'place', label: 'Place' },
     { field: 'finishTime', label: 'Finish time' },
-    { field: 'runner', label: 'Name', render: (item, props) => `<div>${item.runner.lastName} ${item.runner.firstName}</div>`}
+    { field: 'name', label: 'Name', render: (item, props) => `<div>${item.runner.lastName} ${item.runner.firstName}</div>`}
   ],
+  listView: ResultList,
+  fetch: false,
 };
 
 const hamburg = {
@@ -299,8 +301,6 @@ const news = {
     }
   ],
 };
-
-
 
 const runs = {
   title: 'Run',
@@ -412,8 +412,6 @@ const events = {
   }*/
 };
 
-
-
 const runners = {
   title: 'Runner',
   group: "Runs",
@@ -449,7 +447,7 @@ const runners = {
   ],
   //listView: RunnerList,
   //header: header,
-  items: items
+  //items: items
 };
 
 export default {

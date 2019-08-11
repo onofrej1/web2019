@@ -18,10 +18,10 @@
         <v-card-title>
           <h4>{{ capitalize(resource.title) }} list</h4>
           <v-layout row justify-end>
-            <v-btn small color="primary" @click="createItem({})">
+            <v-btn v-if="resource.actions.includes('create')" small color="primary" @click="createItem({})">
               <v-icon>add</v-icon>Create
             </v-btn>
-            <v-menu offset-y>
+            <v-menu v-if="resource.actions.includes('filter')" offset-y>
               <template v-slot:activator="{ on }">
                 <v-btn small color="primary" v-on="on" :disabled="filter.length == 0">
                   <v-icon>filter_list</v-icon>Add filter
@@ -33,7 +33,7 @@
                 </v-list-item>
               </v-list>
             </v-menu>
-            <v-btn small color="primary" @click="createItem({})">
+            <v-btn v-if="resource.actions.includes('refresh')" small color="primary" @click="createItem({})">
               <v-icon>refresh</v-icon>Refresh
             </v-btn>
           </v-layout>
@@ -77,7 +77,7 @@
         </v-card-title>
 
         <template v-if="resource.listView">
-          <component v-bind:is="resource.listView" :items="items" :actions="actions"></component>
+          <component v-bind:is="resource.listView" :fetch="fetchCustomData" :items="items" :actions="actions"></component>
         </template>
 
         <v-data-table
@@ -212,6 +212,7 @@ export default {
     ...mapActions("resources", [
       "setResource",
       "fetchData",
+      "fetchCustomData",
       "saveResource",
       "deleteResource"
     ]),
@@ -220,15 +221,15 @@ export default {
       this.showForm = false;
       this.setResource(resource);
       this.setList();
-      this.fetchData(resource);
+      if(this.resource.fetch) {
+        this.fetchData(resource);
+      }
     },
     getSlotItemName(field) {
       return "item." + field.value;
     },
     expand: function(item, index) {
-      console.log("expand");
       this.expanded.push(item);
-      console.log(this.expanded);
     },
     addFilter: function(filter) {
       this.activeFilters.push(filter);
@@ -303,21 +304,7 @@ export default {
       }
       this.showForm = true;
     },
-    toggleAll() {
-      if (this.selected.length) {
-        this.selected = [];
-      } else {
-        this.selected = this.items.slice();
-      }
-    },
-    changeSort(column) {
-      if (this.sortBy === column) {
-        this.descending = !this.descending;
-      } else {
-        this.sortBy = column;
-        this.descending = false;
-      }
-    }
+    
   }
 };
 </script>
