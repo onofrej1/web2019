@@ -14,7 +14,7 @@
     </div>
     
     <div class="page-toolbar">
-      <v-container fluid class="page-toolbar">
+      <v-container class="page-toolbar">
         <v-layout  justify-space-around>
           <v-flex offset-xs1 mt-1 mb-1>
             <div>O5 bežecký klub FURČA</div>

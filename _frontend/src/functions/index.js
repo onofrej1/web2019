@@ -1,9 +1,18 @@
 import jwt_decode from 'jwt-decode';
 import axios from "axios";
+const moment = require("moment");
 
 export const capitalize = (s) => {
     if (typeof s !== 'string') return ''
     return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
+export const truncate = (source, size = 150) => {
+    return source.length > size ? source.slice(0, size - 1) + "…" : source;
+}
+
+export const formatDate = (date) => {
+    return moment(date).format("DD/MM/YYYY");
 }
 
 export const getToken = function () {
