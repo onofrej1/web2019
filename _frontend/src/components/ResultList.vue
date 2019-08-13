@@ -37,6 +37,8 @@
       :items="myItems"
       item-key="id"
       class="elevation-1"
+      :page.sync="page"
+      @page-count="pageCount = $event"
     >
       <template v-slot:item.name="{ item, props }">
         <span>{{ item.runner.lastName }} {{ item.runner.firstName }}</span>
@@ -48,6 +50,7 @@
         </span>
       </template>
     </v-data-table>
+    <v-pagination v-model="page" :length="pageCount"></v-pagination>
   </v-card>
 </template>
 
@@ -64,18 +67,21 @@ export default {
   data: function() {
     return {
       event: null,
-      run: null
+      run: null,
+      page: 1,
+      pageCount: 0,
     };
   },
   methods: {
-    getResults: function() {
+    getResults: async function() {
       localStorage.run = this.run;
       if (!this.run) return;
 
-      this.fetch({
+      let page = await this.fetch({
         resource: "results",
-        url: "api/results/search/run?id=" + this.run
+        url: `api/results/search/run?id=${this.run}&page=${this.page}&size=4`
       });
+      console.log(page);
     },
     getRuns: function() {
       localStorage.event = this.event;

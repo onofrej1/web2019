@@ -151,12 +151,13 @@ export default {
             return axios.get(state.apiUrl + "/" + resource).then(
                 response => {
                     var data = response.data._embedded[resource];
+                    console.log(response.data.page);
                     commit("setData", {
                         resource,
                         data: data
                     });
                     commit("setStatus", 'success');                    
-                    return {...response, data:data};
+                    return {...response, data:data, page: response.data.page};
                 },
                 error => {
                     commit("setStatus", 'error');
