@@ -137,6 +137,8 @@ export default {
     };
   },
   mounted() {
+    console.log(this.data);
+
     this.pivotRelations.forEach(relation => {
       this.fetchData(relation.resourceTable);
       if (!this.data[relation.name]) return;

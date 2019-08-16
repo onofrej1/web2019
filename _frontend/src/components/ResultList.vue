@@ -35,9 +35,10 @@
       :single-expand="false"
       :headers="header"
       :items="myItems"
+      :itemsPerPage="itemsPerPage"
       item-key="id"
       class="elevation-1"
-      :page.sync="page"
+      hide-default-footer
       @page-count="pageCount = $event"
     >
       <template v-slot:item.name="{ item, props }">
@@ -50,7 +51,17 @@
         </span>
       </template>
     </v-data-table>
-    <v-pagination v-model="page" :length="pageCount"></v-pagination>
+    <p>
+      <v-select
+        style="width:100px"
+        class="d-inline-block pl-4"
+        v-model="itemsPerPage"
+        label="Items per page"
+        :items="[10, 20, 30].map(v => ({text: v, value: v}))"
+      ></v-select>
+
+      <v-pagination class="float-right" v-model="page" :length="pageCount"></v-pagination>
+    </p>
   </v-card>
 </template>
 
@@ -69,19 +80,25 @@ export default {
       event: null,
       run: null,
       page: 1,
-      pageCount: 0,
+      pageCount: 4,
+      itemsPerPage: 10
     };
   },
   methods: {
     getResults: async function() {
       localStorage.run = this.run;
       if (!this.run) return;
-
-      let page = await this.fetch({
+      await this.fetchResults();
+      this.page = 1;
+    },
+    fetchResults: function() {
+      console.log(this.page);
+      this.fetch({
         resource: "results",
-        url: `api/results/search/run?id=${this.run}&page=${this.page}&size=4`
+        name: "paginatedResults",
+        url: `api/results/search/run?id=${this.run}&page=${this.page -
+          1}&size=${this.itemsPerPage}`
       });
-      console.log(page);
     },
     getRuns: function() {
       localStorage.event = this.event;
@@ -102,7 +119,7 @@ export default {
     }),
     ...mapState("resources", ["data"]),
     myItems: function() {
-      return this.resourceData;
+      return this.data.paginatedResults || [];
     },
     eventOptions: function() {
       let emptyOption = { value: null, text: "" };
@@ -148,6 +165,14 @@ export default {
 
     if (!this.data.events.length) {
       this.fetch({ resource: "events", url: "api/events" });
+    }
+  },
+  watch: {
+    page: function(val) {
+      this.fetchResults();
+    },
+    itemsPerPage: function(val) {
+      this.fetchResults();
     }
   }
 };

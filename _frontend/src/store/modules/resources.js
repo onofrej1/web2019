@@ -13,7 +13,7 @@ const getSaveUrl = (id, state) => {
 }
 
 const settings = {};
-for(name in ResourceSettings) {
+for(let name in ResourceSettings) {
     let resource = ResourceSettings[name];
     resource.filter = resource.filter ? resource.filter : [];
     resource.title = resource.title ? resource.title : name;
@@ -64,7 +64,7 @@ export default {
         setData(state, payload) {
             state.data = {
                 ...state.data,
-                [payload.resource]: payload.data
+                [payload.name || payload.resource]: payload.data
             };
         },
         setStatus(state, status) {
@@ -129,8 +129,13 @@ export default {
             return axios.get(state.baseUrl + "/" + payload.url).then(
                 response => {
                     var data = response.data._embedded[payload.resource];
+
+                    data.length = 40;
+                    console.log(data.length);
+                    
                     commit("setData", {
                         resource: payload.resource,
+                        name: payload.name,
                         data: data
                     });
                     commit("setStatus", 'success');                    
@@ -150,7 +155,7 @@ export default {
             commit("setStatus", 'loading');
             return axios.get(state.apiUrl + "/" + resource).then(
                 response => {
-                    var data = response.data._embedded[resource];
+                    var data = response.data._embedded[resource];                    
                     console.log(response.data.page);
                     commit("setData", {
                         resource,

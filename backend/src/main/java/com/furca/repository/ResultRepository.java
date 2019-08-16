@@ -16,5 +16,5 @@ import org.springframework.data.rest.core.annotation.RestResource;
 public interface ResultRepository extends PagingAndSortingRepository<Result, Long> {
 	
 	@RestResource(path = "run", rel = "run")
-	public Page<Result> findByRunId(@Param("id") Long id, Pageable pageable);
+	public Page<Result> findByRunIdOrderByPlace(@Param("id") Long id, Pageable pageable);
 }
