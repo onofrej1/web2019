@@ -2,6 +2,9 @@ package com.furca.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import java.util.Set;
 
 @Entity
@@ -14,6 +17,7 @@ public class Role {
     @NotNull
     private String name;
     
+    @JsonBackReference
     private Set<User> users;
 
     @Id

@@ -1,9 +1,15 @@
 package com.furca.web;
 
+import java.util.List;
 import java.util.Set;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -16,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.furca.model.*;
+import org.springframework.data.domain.Page;
 import com.furca.repository.*;
 
 @RestController
@@ -26,7 +33,9 @@ public class ApiController {
 
 	@Autowired
 	private RunRepository runRepo;
-
+	
+	@Autowired
+	private ApplicationContext context;
 
 	@InitBinder
 	public void initBinder(ServletRequestDataBinder binder) {
@@ -60,6 +69,21 @@ public class ApiController {
 		eventRepo.save(event);
 
 		return new ResponseEntity<Object>(HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/apix/{model}", method = RequestMethod.GET)
+	public ResponseEntity<Object> aaa(@PathVariable("model") String model, Pageable pageable) throws ClassNotFoundException {
+		System.out.println(pageable);
+		
+		String modelName = model.substring(0, 1).toUpperCase() + model.substring(1);
+		String clsName = "com.furca.repository."+modelName+"Repository";
+		Class<?> cls = Class.forName(clsName);
+		
+		PagingAndSortingRepository repo = (PagingAndSortingRepository)context.getBean(cls);
+		Page data = repo.findAll(PageRequest.of(0, 3));
+		//System.out.println(repo.findAll());
+						
+		return ResponseEntity.ok(data);
 	}
 
 	
