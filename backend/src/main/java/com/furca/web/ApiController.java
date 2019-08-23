@@ -6,6 +6,9 @@ import java.util.Set;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.rest.webmvc.support.RepositoryEntityLinks;
+import org.springframework.hateoas.Link;
+
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +39,10 @@ public class ApiController {
 	
 	@Autowired
 	private ApplicationContext context;
+	
+	@Autowired
+	private RepositoryEntityLinks entityLinks;
+		
 
 	@InitBinder
 	public void initBinder(ServletRequestDataBinder binder) {
@@ -71,12 +78,17 @@ public class ApiController {
 		return new ResponseEntity<Object>(HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/apix/{model}", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/{model}", method = RequestMethod.GET)
 	public ResponseEntity<Object> aaa(@PathVariable("model") String model, Pageable pageable) throws ClassNotFoundException {
-		System.out.println(pageable);
+		//System.out.println(pageable);
+		
+		Link link = entityLinks.linkToCollectionResource(Event.class);
+		String rel = link.getRel();
+		System.out.println(rel);
+		System.out.println(link.getHref());
 		
 		String modelName = model.substring(0, 1).toUpperCase() + model.substring(1);
-		String clsName = "com.furca.repository."+modelName+"Repository";
+		String clsName = "com.furca.repository.RunRepository";
 		Class<?> cls = Class.forName(clsName);
 		
 		PagingAndSortingRepository repo = (PagingAndSortingRepository)context.getBean(cls);
