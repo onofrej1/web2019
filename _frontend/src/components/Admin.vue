@@ -255,13 +255,14 @@ export default {
       this.setForm();
 
       let data = {};
-      console.log(item);
+      //console.log(item);
       this.form.forEach(field => {
-        console.log(item[field.name]);
-        data[field.name] = item[field.name];
+        //console.log(item[field.name]);
+        //data[field.name] = item[field.name];
       });
-      console.log(data);
-      this.formData = data;
+      //console.log(data);
+      //return;
+      this.formData = item;
     },
     deleteItem: function(item) {
       if (window.confirm("Realy delete ?")) {

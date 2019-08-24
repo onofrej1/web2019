@@ -67,7 +67,9 @@
                 @input="menu[field.name] = false"
               ></v-date-picker>
             </v-menu>
-
+            <template v-if="field.type == 'relation'">
+              {{ data[field.name] }}
+            </template>
             <v-select
               v-if="field.type=='relation'"
               v-model="data[field.name]"
@@ -137,7 +139,7 @@ export default {
     };
   },
   mounted() {
-    console.log(this.data);
+    //console.log(this.data);
 
     this.pivotRelations.forEach(relation => {
       this.fetchData(relation.resourceTable);
@@ -151,6 +153,7 @@ export default {
     this.relations.forEach(relation => {
       this.fetchData(relation.resourceTable);
       if (!this.data[relation.name]) return;
+      console.log(relation);
 
       this.data[relation.name] = {
         value: this.data[relation.name].id,

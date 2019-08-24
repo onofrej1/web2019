@@ -17,4 +17,6 @@ public interface ResultRepository extends PagingAndSortingRepository<Result, Lon
 	
 	@RestResource(path = "run", rel = "run")
 	public Page<Result> findByRunIdOrderByPlace(@Param("id") Long id, Pageable pageable);
+	
+	
 }

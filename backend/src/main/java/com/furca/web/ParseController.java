@@ -113,8 +113,6 @@ public class ParseController {
 			result.setRunner(runner.get());
 			result.setRun(run.get());
 			
-			System.out.println(result.getRunner().getId());
-			System.out.println(result.getRun().getId());
 			resultRepo.save(result);
 		}
 		return ResponseEntity.ok(results);
