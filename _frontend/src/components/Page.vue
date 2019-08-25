@@ -30,7 +30,7 @@ export default {
     }
   },
   mounted() {
-    this.fetchData("pages");
+    this.fetchData({resource: "pages"});
   },
   methods: {
     ...mapActions("resources", ["fetchData"])

@@ -39,7 +39,6 @@
       item-key="id"
       class="elevation-1"
       hide-default-footer
-      @page-count="pageCount = $event"
     >
       <template v-slot:item.name="{ item, props }">
         <span>{{ item.runner.lastName }} {{ item.runner.firstName }}</span>
@@ -60,7 +59,7 @@
         :items="[10, 20, 30].map(v => ({text: v, value: v}))"
       ></v-select>
 
-      <v-pagination class="float-right" v-model="page" :length="pageCount"></v-pagination>
+      <v-pagination class="float-right" v-model="page" :length="totalPages"></v-pagination>
     </p>
   </v-card>
 </template>
@@ -80,7 +79,6 @@ export default {
       event: null,
       run: null,
       page: 1,
-      pageCount: 4,
       itemsPerPage: 10
     };
   },
@@ -92,12 +90,12 @@ export default {
       this.page = 1;
     },
     fetchResults: function() {
-      console.log(this.page);
       this.fetch({
-        resource: "results",
+        resource: 'results',
         name: "paginatedResults",
-        url: `api/results/search/run?id=${this.run}&page=${this.page -
-          1}&size=${this.itemsPerPage}`
+        url: `api/results/search/run?id=${this.run}`,
+        page: this.page,
+        size: this.itemsPerPage
       });
     },
     getRuns: function() {
@@ -108,6 +106,7 @@ export default {
 
       this.fetch({
         resource: "runs",
+        name: "run_options",
         url: "api/runs/search/event?id=" + this.event
       });
     }
@@ -119,13 +118,16 @@ export default {
     }),
     ...mapState("resources", ["data"]),
     myItems: function() {
-      return this.data.paginatedResults || [];
+      return this.data.paginatedResults ? this.data.paginatedResults.rows : [];
+    },
+    totalPages: function() {
+      return this.data.paginatedResults ? this.data.paginatedResults.totalPages : 1;
     },
     eventOptions: function() {
       let emptyOption = { value: null, text: "" };
 
       return [emptyOption].concat(
-        this.data.events.map(row => {
+        this.data.event_options && this.data.event_options.rows.map(row => {
           return {
             value: row.id,
             text: row.name
@@ -135,14 +137,14 @@ export default {
     },
     runOptions: function() {
       let emptyOption = { value: null, text: "" };
-
+      
       return [emptyOption].concat(
-        this.data.runs.map(row => {
+        this.data.run_options ? this.data.run_options.rows.map(row => {
           return {
             value: row.id,
             text: row.edition + ". rocnik"
           };
-        })
+        }) : []
       );
     },
     header() {
@@ -163,9 +165,7 @@ export default {
     this.event = parseInt(localStorage.event);
     this.run = parseInt(localStorage.run);
 
-    if (!this.data.events.length) {
-      this.fetch({ resource: "events", url: "api/events" });
-    }
+    this.fetch({ resource: "events", name: "event_options", url: "api/events" });
   },
   watch: {
     page: function(val) {

@@ -13,13 +13,12 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-<<<<<<< HEAD
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.PagingAndSortingRepository;
-=======
->>>>>>> 8644869c673c5c68e5a8544365c9ec08dd59a71b
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -47,19 +46,14 @@ public class ApiController {
 	private RunRepository runRepo;
 	
 	@Autowired
-<<<<<<< HEAD
 	private RunnerRepository runnerRepo;
 
 	@Autowired
 	private ApplicationContext context;
-=======
-	private ApplicationContext context;
-	
+
 	@Autowired
 	private RepositoryEntityLinks entityLinks;
 		
->>>>>>> 8644869c673c5c68e5a8544365c9ec08dd59a71b
-
 	@InitBinder
 	public void initBinder(ServletRequestDataBinder binder) {
 		// binder.registerCustomEditor(Book.class, new BookEditor(bookRepo));
@@ -94,7 +88,7 @@ public class ApiController {
 		return new ResponseEntity<Object>(HttpStatus.OK);
 	}
 	
-	@RequestMapping(value="/apixx/{model}", method=RequestMethod.GET)
+	/*@RequestMapping(value="/apixx/{model}", method=RequestMethod.GET)
 	@ResponseBody 
 	public Page<Runner> contactsPagesxx(@PathVariable(value="model") String model, Pageable pageable) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		//Pageable pageable = size != null ? PageRequest.of(page, size) : Pageable.unpaged();
@@ -110,7 +104,7 @@ public class ApiController {
 	    return pageResult;
 	} 
 	
-	@RequestMapping(value = "/api/{model}", method = RequestMethod.GET)
+	@RequestMapping(value = "/apix/{model}", method = RequestMethod.GET)
 	public ResponseEntity<Object> aaa(@PathVariable("model") String model, Pageable pageable) throws ClassNotFoundException {
 		//System.out.println(pageable);
 		
@@ -128,7 +122,7 @@ public class ApiController {
 		//System.out.println(repo.findAll());
 						
 		return ResponseEntity.ok(data);
-	}
+	}*/
 
 	
 }

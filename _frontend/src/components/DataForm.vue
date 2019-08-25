@@ -28,7 +28,7 @@
                 v-bind="getProps(field)"
               />
             </div>-->
-  
+
             <div v-if="field.type=='editor'">
               <label>{{ field.label || field.name }}</label>
               <quill-editor
@@ -67,9 +67,7 @@
                 @input="menu[field.name] = false"
               ></v-date-picker>
             </v-menu>
-            <template v-if="field.type == 'relation'">
-              {{ data[field.name] }}
-            </template>
+            
             <v-select
               v-if="field.type=='relation'"
               v-model="data[field.name]"
@@ -121,7 +119,7 @@
 import InlineInput from "./InlineInput";
 //import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 //import TextEditor from "./TextEditor";
-import QuillEditor from './QuillEditor';
+import QuillEditor from "./QuillEditor";
 import { mapState, mapActions } from "vuex";
 const moment = require("moment");
 
@@ -142,7 +140,10 @@ export default {
     //console.log(this.data);
 
     this.pivotRelations.forEach(relation => {
-      this.fetchData(relation.resourceTable);
+      this.fetchData({
+        resource: relation.resourceTable,
+        name: relation.resourceTable + "_options"
+      });
       if (!this.data[relation.name]) return;
 
       this.data[relation.name] = this.data[relation.name].map(v => ({
@@ -151,7 +152,10 @@ export default {
       }));
     });
     this.relations.forEach(relation => {
-      this.fetchData(relation.resourceTable);
+      this.fetchData({
+        resource: relation.resourceTable,
+        name: relation.resourceTable + "_options"
+      });
       if (!this.data[relation.name]) return;
       console.log(relation);
 
@@ -164,7 +168,7 @@ export default {
   components: {
     InlineInput,
     //TextEditor,
-    QuillEditor,
+    QuillEditor
   },
   computed: {
     ...mapState("resources", { resources: "data" }),
@@ -181,12 +185,12 @@ export default {
     getOptions: function(field) {
       let emptyOption = { value: null, text: "" };
 
-      if(!this.resources[field.resourceTable]) {
+      if (!this.resources[field.resourceTable + "_options"]) {
         return;
       }
 
       return [emptyOption].concat(
-        this.resources[field.resourceTable].map(data => ({
+        this.resources[field.resourceTable + "_options"].rows.map(data => ({
           value: data.id,
           text: field.show ? data[field.show] : field.render(data)
         }))

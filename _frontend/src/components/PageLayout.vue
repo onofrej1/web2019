@@ -60,7 +60,7 @@ export default {
     ...mapState("resources", { resources: "data" }),
     menuItems: function() {
       let tree = [];
-      this.resources.menuItems
+      this.resources.menuItems.data
         .filter(i => !i.parent)
         .forEach(m => {
           let items = this.resources.menuItems
@@ -101,7 +101,7 @@ export default {
   },
 
   mounted() {
-    this.fetchData("menuItems");
+    this.fetchData({resource: "menuItems"});
   }
 };
 </script>

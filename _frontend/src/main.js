@@ -50,17 +50,11 @@ const routes = [{
   {
     path: '/login',
     component: Login,
-    /*meta: {
-      layout: 'none',
-    },*/
     name: 'login'
   },
   {
     path: '/register',
     component: Register,
-    /*meta: {
-      layout: 'none',
-    },*/
     name: 'register'
   },
   /*{

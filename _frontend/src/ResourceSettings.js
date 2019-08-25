@@ -214,7 +214,7 @@ const results = {
   form: [
     { label: 'Place', name: 'place', type: 'text' },
     { label: 'Category', name: 'category', type: 'text' },
-    { label: 'Runner', name: 'runner', validate: 'required', type: 'relation', resourceTable: 'runners', show: 'lastName', xrender: (item) => `${item.lastName} ${item.firstName}`},    
+    { label: 'Runner', name: 'runner', validate: 'required', type: 'relation', resourceTable: 'runners', render: (item) => `${item.lastName} ${item.firstName}`},    
   ],
   list: [
     { field: 'place', label: 'Place' },
@@ -354,7 +354,7 @@ const runs = {
       field: 'edition'
     },
   ],
-  footer: footer
+  //footer: footer
 };
 
 const expandRun = (props) => {

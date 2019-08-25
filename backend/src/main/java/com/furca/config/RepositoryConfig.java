@@ -28,16 +28,16 @@ public class RepositoryConfig implements RepositoryRestConfigurer {
     
     
     
-    @Bean
+    /*@Bean
     public HateoasPageableHandlerMethodArgumentResolver customResolver(
         HateoasPageableHandlerMethodArgumentResolver pageableResolver) {
         //pageableResolver.setOneIndexedParameters(true);
-    	
-        pageableResolver.setFallbackPageable(null);
+    	pageableResolver.setOneIndexedParameters(true);
+        pageableResolver.setFallbackPageable(PageRequest.of(1, 100000));
         
         
         //pageableResolver.isFallbackPageable(Pageable.unpaged());
         return pageableResolver;
-    }
+    }*/
     
 }

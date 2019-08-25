@@ -55,7 +55,7 @@ export default {
     ...mapActions("resources", ["fetchData"]),
   },
   mounted() {
-    this.fetchData('news');
+    this.fetchData({resource: 'news'});
   }
 };
 </script>

@@ -24,7 +24,7 @@ for(let name in ResourceSettings) {
 }
 
 const initData = Object.keys(ResourceSettings).reduce((map, key) => {
-    map[key] = [];
+    map[key] = { page: 0, size: 10, data: [], totalPages: 1, name: key};
     return map;
 }, {});
 
@@ -62,9 +62,18 @@ export default {
             };
         },
         setData(state, payload) {
+            let dataObj = {
+                name: payload.name,
+                resource: payload.resource,
+                page: payload.page,
+                size: payload.size,
+                totalPages: payload.totalPages,
+                rows: payload.rows
+            };
+
             state.data = {
                 ...state.data,
-                [payload.name || payload.resource]: payload.data
+                [payload.name || payload.resource]: dataObj
             };
         },
         setStatus(state, status) {
@@ -113,56 +122,39 @@ export default {
                 getSaveUrl(data.id, state),
                 data
             ).then(response => {
-                dispatch('fetchData', state.resource)
+                console.log(state.resource);
+                //dispatch('fetchData', state.resource)
                 console.log(response);
             }).catch(error => {
                 dispatch('fetchData', state.resource);
                 console.log(error)
             });
         },
-        fetchCustomData({
-            commit,
-            dispatch,
-            state
-        }, payload) {
-            commit("setStatus", 'loading');
-            return axios.get(state.baseUrl + "/" + payload.url).then(
-                response => {
-                    var data = response.data._embedded[payload.resource];
-
-                    data.length = 40;
-                    console.log(data.length);
-                    
-                    commit("setData", {
-                        resource: payload.resource,
-                        name: payload.name,
-                        data: data
-                    });
-                    commit("setStatus", 'success');                    
-                    return {...response, data:data};
-                },
-                error => {
-                    commit("setStatus", 'error');
-                    console.log(error);
-                }
-            );
-        },
         fetchData({
             commit,
             dispatch,
             state
-        }, resource) {
+        }, payload) {
+            //console.log(payload);
             commit("setStatus", 'loading');
-            return axios.get(state.apiUrl + "/" + resource).then(
+            let url = payload.url ? state.baseUrl + "/" + payload.url : state.apiUrl + "/" + payload.resource;
+            let sep = url.includes('?') ? '&' : '?';
+            let paginateParams = payload.page !== undefined ? sep+'page='+(payload.page - 1)+'&size='+payload.size : '';
+
+            return axios.get(url + paginateParams).then(
                 response => {
-                    var data = response.data._embedded[resource];                    
-                    console.log(response.data.page);
+                    var data = response.data._embedded[payload.resource];  
+                                   
                     commit("setData", {
-                        resource,
-                        data: data
+                        resource: payload.resource,
+                        name: payload.name || payload.resource,
+                        rows: data,
+                        page: payload.page || 0,
+                        size: payload.size || 10000,
+                        totalPages: response.data.page ? response.data.page.totalPages : 1,
                     });
                     commit("setStatus", 'success');                    
-                    return {...response, data:data, page: response.data.page};
+                    //return {...response, data:data, page: response.data.page};
                 },
                 error => {
                     commit("setStatus", 'error');

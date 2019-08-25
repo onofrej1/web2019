@@ -18,7 +18,12 @@
         <v-card-title>
           <h4>{{ capitalize(resource.title) }} list</h4>
           <v-layout row justify-end>
-            <v-btn v-if="resource.actions.includes('create')" small color="primary" @click="createItem({})">
+            <v-btn
+              v-if="resource.actions.includes('create')"
+              small
+              color="primary"
+              @click="createItem({})"
+            >
               <v-icon>add</v-icon>Create
             </v-btn>
             <v-menu v-if="resource.actions.includes('filter')" offset-y>
@@ -33,7 +38,12 @@
                 </v-list-item>
               </v-list>
             </v-menu>
-            <v-btn v-if="resource.actions.includes('refresh')" small color="primary" @click="createItem({})">
+            <v-btn
+              v-if="resource.actions.includes('refresh')"
+              small
+              color="primary"
+              @click="createItem({})"
+            >
               <v-icon>refresh</v-icon>Refresh
             </v-btn>
           </v-layout>
@@ -77,57 +87,75 @@
         </v-card-title>
 
         <template v-if="resource.listView">
-          <component v-bind:is="resource.listView" :fetch="fetchCustomData" :items="items" :actions="actions"></component>
+          <component
+            v-bind:is="resource.listView"
+            :fetch="fetchData"
+            :items="items"
+            :actions="actions"
+          ></component>
         </template>
-
-        <v-data-table
-          v-if="list && status!='loading' && !resource.listView"
-          d-block
-          :sort-by.sync="sortBy"
-          :sort-desc.sync="descending"
-          :single-expand="false"
-          :expanded.sync="expanded"
-          :headers="list"
-          v-model="selected"
-          :items="items"
-          item-key="id"
-          class="elevation-1"
-          :show-expand="resource.expandRow ? true : false"
-          :show-select="resource.bulkActions ? true : false"
-        >
-          <template v-slot:footer v-if="resource.footer">
-            <component v-bind:is="resource.footer"></component>
-          </template>
-
-          <template v-slot:top v-if="pageText">
-            <component v-bind:is="pageText"></component>
-          </template>
-
-          <template
-            v-for="field in list"
-            v-slot:[getSlotItemName(field)]="{ item, props, headers }"
+        <template v-else>
+          <v-data-table
+            v-if="list && !resource.listView"
+            d-block
+            :sort-by.sync="sortBy"
+            :itemsPerPage="itemsPerPage"
+            :sort-desc.sync="descending"
+            :single-expand="false"
+            :expanded.sync="expanded"
+            :headers="list"
+            v-model="selected"
+            :items="items"
+            item-key="id"
+            class="elevation-1"
+            hide-default-footer
+            :show-expand="resource.expandRow ? true : false"
+            :show-select="resource.bulkActions ? true : false"
           >
-            <span
-              :key="field.name"
-              v-html="field.render ? field.render(item, props) : item[field.value]"
-            ></span>
-          </template>
+            <template v-slot:footer v-if="resource.footer">
+              <component v-bind:is="resource.footer"></component>
+            </template>
 
-          <template v-slot:item.actions="{ item }">
-            <span class="text-no-wrap">
-              <v-icon @click="editItem(item)">edit</v-icon>
-              <v-icon @click="deleteItem(item)">delete</v-icon>
-            </span>
-          </template>
+            <template v-slot:top v-if="pageText">
+              <component v-bind:is="pageText"></component>
+            </template>
 
-          <template v-slot:body="props" v-if="resource.body">
-            <component v-bind:is="resource.body" :props="props"></component>
-          </template>
+            <template
+              v-for="field in list"
+              v-slot:[getSlotItemName(field)]="{ item, props, headers }"
+            >
+              <span
+                :key="field.name"
+                v-html="field.render ? field.render(item, props) : item[field.value]"
+              ></span>
+            </template>
 
-          <template v-slot:expanded-item="props">
-            <component v-bind:is="resource.expandRow" :row="props.item"></component>
-          </template>
-        </v-data-table>
+            <template v-slot:item.actions="{ item }">
+              <span class="text-no-wrap">
+                <v-icon @click="editItem(item)">edit</v-icon>
+                <v-icon @click="deleteItem(item)">delete</v-icon>
+              </span>
+            </template>
+
+            <template v-slot:body="props" v-if="resource.body">
+              <component v-bind:is="resource.body" :props="props"></component>
+            </template>
+
+            <template v-slot:expanded-item="props">
+              <component v-bind:is="resource.expandRow" :row="props.item"></component>
+            </template>
+          </v-data-table>
+
+          <v-select
+            style="width:100px"
+            class="d-inline-block pl-4"
+            v-model="itemsPerPage"
+            label="Items per page"
+            :items="[10, 20, 30].map(v => ({text: v, value: v}))"
+          ></v-select>
+
+          <v-pagination class="float-right" v-model="page" :length="resourceData.totalPages"></v-pagination>
+        </template>
       </v-card>
     </v-flex>
   </v-container>
@@ -148,6 +176,8 @@ export default {
       formData: {},
       activeFilters: [],
       search: {},
+      page: 1,
+      itemsPerPage: 10,
       actions: {
         edit: this.editItem,
         delete: this.deleteItem
@@ -171,8 +201,8 @@ export default {
       resource: "getResourceSettings"
     }),
     items: function() {
-      let data = this.resourceData;
-      //console.log(data);
+      let data = this.resourceData.rows;
+
       let search = this.search;
       if (!data) {
         return [];
@@ -184,7 +214,7 @@ export default {
             return true;
           }
           let value = item[filter.field];
-          
+
           if (filter.op === "contains") {
             return value.includes(searchValue);
           }
@@ -192,8 +222,10 @@ export default {
           return value === searchValue;
         });
       });
+
       return data;
     },
+
     filter: function() {
       return this.resource.filter.filter(f => !this.activeFilters.includes(f));
     },
@@ -202,28 +234,28 @@ export default {
       return this.resource.pageText || false;
     }
   },
-  watch: {
-    //$route(to, from) {
-    $route() {
-      this.init();
-    }
-  },
+
   methods: {
     capitalize: capitalize,
     ...mapActions("resources", [
       "setResource",
       "fetchData",
-      "fetchCustomData",
       "saveResource",
       "deleteResource"
     ]),
     init: function() {
       let resource = this.$route.params.resource;
+      this.resourceName = resource;
       this.showForm = false;
       this.setResource(resource);
       this.setList();
-      if(this.resource.fetch) {
-        this.fetchData(resource);
+      //console.log(resource);
+      if (this.resource.fetch) {
+        this.fetchData({
+          resource: resource,
+          page: this.page,
+          size: this.itemsPerPage
+        });
       }
     },
     getSlotItemName(field) {
@@ -253,16 +285,15 @@ export default {
     },
     editItem: function(item) {
       this.setForm();
-
       let data = {};
-      //console.log(item);
+
       this.form.forEach(field => {
         //console.log(item[field.name]);
-        //data[field.name] = item[field.name];
+        data[field.name] = item[field.name];
       });
       //console.log(data);
-      //return;
-      this.formData = item;
+
+      this.formData = data;
     },
     deleteItem: function(item) {
       if (window.confirm("Realy delete ?")) {
@@ -309,8 +340,27 @@ export default {
         this.form.push({ ...prop });
       }
       this.showForm = true;
+    }
+  },
+  watch: {
+    page: function(val) {
+      this.fetchData({
+        resource: this.resourceData.resource,
+        page: this.page,
+        size: this.itemsPerPage
+      });
     },
-    
+    itemsPerPage: function(val) {
+      this.fetchData({
+        resource: this.resourceData.resource,
+        page: this.page,
+        size: this.itemsPerPage
+      });
+    },
+    $route() {
+      this.page = 1;
+      this.init();
+    }
   }
 };
 </script>
