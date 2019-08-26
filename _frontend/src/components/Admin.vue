@@ -89,7 +89,7 @@
         <template v-if="resource.listView">
           <component
             v-bind:is="resource.listView"
-            :fetch="fetchData"
+            :fetch="getResource"
             :items="items"
             :actions="actions"
           ></component>
@@ -239,19 +239,19 @@ export default {
     capitalize: capitalize,
     ...mapActions("resources", [
       "setResource",
-      "fetchData",
+      "getResource",
       "saveResource",
       "deleteResource"
     ]),
     init: function() {
       let resource = this.$route.params.resource;
-      this.resourceName = resource;
       this.showForm = false;
+
       this.setResource(resource);
       this.setList();
-      //console.log(resource);
+
       if (this.resource.fetch) {
-        this.fetchData({
+        this.getResource({
           resource: resource,
           page: this.page,
           size: this.itemsPerPage
@@ -288,10 +288,8 @@ export default {
       let data = {};
 
       this.form.forEach(field => {
-        //console.log(item[field.name]);
         data[field.name] = item[field.name];
       });
-      //console.log(data);
 
       this.formData = data;
     },
@@ -300,10 +298,11 @@ export default {
         this.deleteResource(item.id);
       }
     },
-    submit(e) {
+    async submit(e) {
       e.originalEvent.preventDefault();
 
-      this.saveResource(e.data);
+      await this.saveResource(e.data);
+      this.getResourceData();
       this.formData = {};
       this.showForm = false;
     },
@@ -340,22 +339,21 @@ export default {
         this.form.push({ ...prop });
       }
       this.showForm = true;
+    },
+    getResourceData() {
+      this.getResource({
+        resource: this.resourceData.resource,
+        page: this.page,
+        size: this.itemsPerPage
+      });
     }
   },
   watch: {
     page: function(val) {
-      this.fetchData({
-        resource: this.resourceData.resource,
-        page: this.page,
-        size: this.itemsPerPage
-      });
+      this.getResourceData();
     },
     itemsPerPage: function(val) {
-      this.fetchData({
-        resource: this.resourceData.resource,
-        page: this.page,
-        size: this.itemsPerPage
-      });
+      this.getResourceData();
     },
     $route() {
       this.page = 1;

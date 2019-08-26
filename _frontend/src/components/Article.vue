@@ -83,10 +83,10 @@ export default {
     }
   },
   mounted() {
-    this.fetchData("articles");
+    this.getResource("articles");
   },
   methods: {
-    ...mapActions("resources", ["fetchData"]),
+    ...mapActions("resources", ["getResource"]),
     formatDate: formatDate,
     truncate: truncate
   }

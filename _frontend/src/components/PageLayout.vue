@@ -73,7 +73,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("resources", ["fetchData"]),
+    ...mapActions("resources", ["getResource"]),
     createMenuItem: function(menuItem) {
       let item = { title: menuItem.title };
       if (menuItem.page) {
@@ -101,7 +101,7 @@ export default {
   },
 
   mounted() {
-    this.fetchData({resource: "menuItems"});
+    this.getResource({resource: "menuItems"});
   }
 };
 </script>

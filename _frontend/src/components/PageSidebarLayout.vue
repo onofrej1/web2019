@@ -52,10 +52,10 @@ export default {
     }
   },
   methods: {
-    ...mapActions("resources", ["fetchData"]),
+    ...mapActions("resources", ["getResource"]),
   },
   mounted() {
-    this.fetchData({resource: 'news'});
+    this.getResource({resource: 'news'});
   }
 };
 </script>

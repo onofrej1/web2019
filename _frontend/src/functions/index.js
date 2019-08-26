@@ -1,5 +1,8 @@
 import jwt_decode from 'jwt-decode';
 import axios from "axios";
+import Vue from 'vue'
+
+import { fail } from 'assert';
 const moment = require("moment");
 
 export const capitalize = (s) => {
@@ -32,14 +35,31 @@ export const axiosSetInterceptors = function () {
         },
 
         (error) => {
-            return Promise.reject(error);
+            //console.log('error occured.');
+            //return Promise.reject(error);
         }
     );
-    axios.interceptors.response.use(undefined, function (error) {
-        console.log(error);
+    /*axios.interceptors.response.use(undefined, function (error) {
         return Promise.reject(error);
-    });
+    });*/
 };
+
+export const handleError = function(err, msg = null) {
+    //console.error(err);
+    console.error(msg);
+
+    throw new Error("Stop script");
+}
+
+export const catchUnhandledRejection = function() {
+   /* window.addEventListener('unhandledrejection', function(event) {
+        console.error('Unhandled rejection (promise: ', event.promise, ', reason: ', event.reason, ').');
+    });*/
+    console.log('add listener');
+    
+
+    
+}
 
 export const guid = function () {
     function _p8(s) {

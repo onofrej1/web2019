@@ -137,10 +137,8 @@ export default {
     };
   },
   mounted() {
-    //console.log(this.data);
-
     this.pivotRelations.forEach(relation => {
-      this.fetchData({
+      this.getResource({
         resource: relation.resourceTable,
         name: relation.resourceTable + "_options"
       });
@@ -152,7 +150,7 @@ export default {
       }));
     });
     this.relations.forEach(relation => {
-      this.fetchData({
+      this.getResource({
         resource: relation.resourceTable,
         name: relation.resourceTable + "_options"
       });
@@ -181,7 +179,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("resources", ["fetchData"]),
+    ...mapActions("resources", ["getResource"]),
     getOptions: function(field) {
       let emptyOption = { value: null, text: "" };
 

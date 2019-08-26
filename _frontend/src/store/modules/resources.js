@@ -1,9 +1,11 @@
 import axios from "axios";
 import ResourceSettings from "./../../ResourceSettings";
+import to from 'await-to-js';
 import {
     BASE_URL,
     API_URL
 } from './../../constants';
+import {handleError} from './../../functions';
 
 const getSaveUrl = (id, state) => {
     let modelSettings = state.settings[state.resource];
@@ -13,18 +15,25 @@ const getSaveUrl = (id, state) => {
 }
 
 const settings = {};
-for(let name in ResourceSettings) {
+for (let name in ResourceSettings) {
     let resource = ResourceSettings[name];
     resource.filter = resource.filter ? resource.filter : [];
     resource.title = resource.title ? resource.title : name;
     resource.fetch = resource.fetch !== undefined ? resource.fetch : true;
     resource.actions = resource.actions ? resource.actions : ['create', 'filter', 'refresh'];
-    
+
     settings[name] = resource;
 }
 
 const initData = Object.keys(ResourceSettings).reduce((map, key) => {
-    map[key] = { page: 0, size: 10, data: [], totalPages: 1, name: key};
+    map[key] = {
+        page: 0,
+        size: 10,
+        data: [],
+        totalPages: 1,
+        name: key,
+        resource: key
+    };
     return map;
 }, {});
 
@@ -41,9 +50,7 @@ export default {
         status: null,
     },
     getters: {
-        getResourceData: state => {
-            return state.data[state.resource];
-        },
+        getResourceData: state => state.data[state.resource],
         getResourceSettings: state => state.settings[state.resource]
     },
     mutations: {
@@ -58,7 +65,7 @@ export default {
         clearData(state, resource) {
             state.data = {
                 ...state.data,
-                [resource]: []
+                [resource]: {}
             };
         },
         setData(state, payload) {
@@ -87,80 +94,69 @@ export default {
             commit("setResource", resource);
             commit("setRelations", resource);
         },
-        deleteResource({
+        async deleteResource({
             dispatch,
             state
         }, id) {
-            axios.delete(
-                state.apiUrl + '/' + state.resource + '/'+id
-            ).then(response => {
-                dispatch('fetchData', state.resource)
-            }).catch(error => {
-                dispatch('fetchData', state.resource);
-                console.log(error)
-            });
+            let [err, response] = await to(axios.delete(state.apiUrl + '/' + state.resource + '/' + id));
+            if (err) {
+                console.error('Error occured while removing data.');
+                return;
+            }
+            dispatch('getResource', state.resource);
         },
-        saveResource({
+        async saveResource({
             dispatch,
             state
         }, data) {
-            state.relations.forEach(relation =>  {
-                if(data[relation.name]) {
+            state.relations.forEach(relation => {
+                if (data[relation.name]) {
                     data[relation.name] = state.apiUrl + "/" + relation.resourceTable + '/' + data[relation.name];
-                }  
+                }
             });
 
             let links = [];
-            state.pivotRelations.forEach(relation =>  {  
+            state.pivotRelations.forEach(relation => {
                 data[relation.name].forEach(d => {
                     links.push(state.apiUrl + "/" + relation.resourceTable + '/' + d);
                 });
                 data[relation.name] = links;
             });
-            
-            axios[data.id ? "patch" : "post"](
+
+            let method = data.id ? "patch" : "post";
+            let [err, response] = await to(axios[method](
                 getSaveUrl(data.id, state),
                 data
-            ).then(response => {
-                console.log(state.resource);
-                //dispatch('fetchData', state.resource)
-                console.log(response);
-            }).catch(error => {
-                dispatch('fetchData', state.resource);
-                console.log(error)
-            });
+            ));
+            if (err) {
+                console.error('Error occured while saving data.');
+                return;
+            }
         },
-        fetchData({
+        async getResource({
             commit,
             dispatch,
             state
         }, payload) {
-            //console.log(payload);
             commit("setStatus", 'loading');
-            let url = payload.url ? state.baseUrl + "/" + payload.url : state.apiUrl + "/" + payload.resource;
+            let url = payload.url ? state.baseUrl + "/" + payload.url : state.apiUrl + "/x" + payload.resource;
             let sep = url.includes('?') ? '&' : '?';
-            let paginateParams = payload.page !== undefined ? sep+'page='+(payload.page - 1)+'&size='+payload.size : '';
+            let paginateParams = payload.page !== undefined ? sep + 'page=' + (payload.page - 1) + '&size=' + payload.size : '';
 
-            return axios.get(url + paginateParams).then(
-                response => {
-                    var data = response.data._embedded[payload.resource];  
-                                   
-                    commit("setData", {
-                        resource: payload.resource,
-                        name: payload.name || payload.resource,
-                        rows: data,
-                        page: payload.page || 0,
-                        size: payload.size || 10000,
-                        totalPages: response.data.page ? response.data.page.totalPages : 1,
-                    });
-                    commit("setStatus", 'success');                    
-                    //return {...response, data:data, page: response.data.page};
-                },
-                error => {
-                    commit("setStatus", 'error');
-                    console.log(error);
-                }
-            );
+            let [err, response] = await to(axios.get(url + paginateParams));
+            if (err) handleError(err, 'Error occured while fetching data.');
+
+            var data = response.data._embedded[payload.resource];
+
+            commit("setData", {
+                resource: payload.resource,
+                name: payload.name || payload.resource,
+                rows: data,
+                page: payload.page || 0,
+                size: payload.size || 10000,
+                totalPages: response.data.page ? response.data.page.totalPages : 1,
+            });
+            commit("setStatus", 'success');
         }
     }
 }
