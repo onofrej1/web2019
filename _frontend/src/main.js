@@ -14,19 +14,10 @@ import Article from "./components/Article.vue";
 import Upload from './components/Upload.vue';
 import ParseResults from './components/ParseResults.vue';
 
-import {getToken, axiosSetInterceptors, catchUnhandledRejection} from './functions';
+import {getToken, axiosSetInterceptors} from './functions';
 
 //import 'vuetify/dist/vuetify.min.css' // Ensure you are using css-loader
 //import '~vuetify/src/stylus/main' // Ensure you are using stylus-loader
-
-window.addEventListener('unhandledrejection', event => {
-  console.log('eeeettt');
-  // can prevent error output on the console:
-  event.preventDefault();
-
-  // send error to log server
-  console.log('Reason: ' + event.reason);
-});
 
 Vue.use(require('vue-moment'));
 Vue.use(VueRouter)
@@ -35,25 +26,6 @@ Vue.use(VeeValidate, {
   events: 'change'
 });
 Vue.config.productionTip = false;
-
-Vue.config.errorHandler = (err, vm, info) => {
-  console.log('ttttt');
-  // err: error trace
-  // vm: component in which error occured
-  // info: Vue specific error information such as lifecycle hooks, events etc.
-  
-  // TODO: Perform any custom logic or log to server
-
-};
-
-window.addEventListener('unhandledrejection', event => {
-        console.log('eeeettt');
-        // can prevent error output on the console:
-        event.preventDefault();
-    
-        // send error to log server
-        console.log('Reason: ' + event.reason);
-    });
 
 const routes = [{
     path: '/crud/:resource',
@@ -115,7 +87,6 @@ const routes = [{
 ];
 
 axiosSetInterceptors();
-catchUnhandledRejection();
 
 export const router = new VueRouter({routes, mode:'history'})  
 

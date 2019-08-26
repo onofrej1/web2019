@@ -5,11 +5,13 @@ import {
     BASE_URL,
     API_URL
 } from './../../constants';
-import {handleError} from './../../functions';
+import {
+    handleError
+} from './../../functions';
 
-const getSaveUrl = (id, state) => {
-    let modelSettings = state.settings[state.resource];
-    let apiUrl = modelSettings.apiUrl !== undefined ? state.baseUrl + modelSettings.apiUrl : state.apiUrl;
+const getSaveResourceUrl = (id, state) => {
+    let resourceSettings = state.settings[state.resource];
+    let apiUrl = resourceSettings.apiUrl !== undefined ? state.baseUrl + resourceSettings.apiUrl : state.apiUrl;
 
     return apiUrl + "/" + state.resource + (id ? "/" + id + '/' : '/');
 }
@@ -25,7 +27,7 @@ for (let name in ResourceSettings) {
     settings[name] = resource;
 }
 
-const initData = Object.keys(ResourceSettings).reduce((map, key) => {
+const defaultResourceData = Object.keys(ResourceSettings).reduce((map, key) => {
     map[key] = {
         page: 0,
         size: 10,
@@ -46,7 +48,7 @@ export default {
         settings: settings,
         relations: [],
         pivotRelations: [],
-        data: initData,
+        data: defaultResourceData,
         status: null,
     },
     getters: {
@@ -94,17 +96,33 @@ export default {
             commit("setResource", resource);
             commit("setRelations", resource);
         },
-        async deleteResource({
-            dispatch,
+
+        async getResource({
+            commit,
             state
-        }, id) {
-            let [err, response] = await to(axios.delete(state.apiUrl + '/' + state.resource + '/' + id));
-            if (err) {
-                console.error('Error occured while removing data.');
-                return;
-            }
-            dispatch('getResource', state.resource);
+        }, payload) {
+            commit("setStatus", 'loading');
+            let url = payload.url ? state.baseUrl + "/" + payload.url : state.apiUrl + "/" + payload.resource;
+            let sep = url.includes('?') ? '&' : '?';
+            let pagination = payload.page !== undefined ? sep + 'page=' + (payload.page - 1) + '&size=' + payload.size : '';
+
+            let [err, response] = await to(axios.get(url + pagination));
+            if (err) return handleError(err, 'Error occurred while fetching resource data.');
+
+            var data = response.data._embedded[payload.resource];
+
+            commit("setData", {
+                resource: payload.resource,
+                name: payload.name || payload.resource,
+                rows: data,
+                fetch: url + pagination,
+                page: payload.page || 0,
+                size: payload.size || 10000,
+                totalPages: response.data.page ? response.data.page.totalPages : 1,
+            });
+            commit("setStatus", 'success');
         },
+
         async saveResource({
             dispatch,
             state
@@ -123,40 +141,18 @@ export default {
                 data[relation.name] = links;
             });
 
-            let method = data.id ? "patch" : "post";
-            let [err, response] = await to(axios[method](
-                getSaveUrl(data.id, state),
-                data
-            ));
-            if (err) {
-                console.error('Error occured while saving data.');
-                return;
-            }
+            let url = getSaveResourceUrl(data.id, state);
+
+            let [err, response] = await to(axios[data.id ? "patch" : "post"](url, data));
+            if (err) return handleError(err, 'Error occurred while saving resource data.');
         },
-        async getResource({
-            commit,
+
+        async deleteResource({
             dispatch,
             state
-        }, payload) {
-            commit("setStatus", 'loading');
-            let url = payload.url ? state.baseUrl + "/" + payload.url : state.apiUrl + "/x" + payload.resource;
-            let sep = url.includes('?') ? '&' : '?';
-            let paginateParams = payload.page !== undefined ? sep + 'page=' + (payload.page - 1) + '&size=' + payload.size : '';
-
-            let [err, response] = await to(axios.get(url + paginateParams));
-            if (err) handleError(err, 'Error occured while fetching data.');
-
-            var data = response.data._embedded[payload.resource];
-
-            commit("setData", {
-                resource: payload.resource,
-                name: payload.name || payload.resource,
-                rows: data,
-                page: payload.page || 0,
-                size: payload.size || 10000,
-                totalPages: response.data.page ? response.data.page.totalPages : 1,
-            });
-            commit("setStatus", 'success');
-        }
+        }, id) {
+            let [err, response] = await to(axios.delete(state.apiUrl + '/' + state.resource + '/' + id));
+            if (err) return handleError(err, 'Error occurred while deleting resource data.');
+        },
     }
 }

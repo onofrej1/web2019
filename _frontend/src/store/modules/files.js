@@ -1,7 +1,8 @@
 import axios from "axios";
+import to from 'await-to-js';
 import {
-    router
-} from './../../main'
+    handleError
+} from './../../functions';
 import {
     BASE_URL,
     API_URL
@@ -20,44 +21,28 @@ export default {
         apiUrl: API_URL,
         files: []
     },
-    getters: {
-
-    },
     mutations: {
         setFiles(state, files) {
             state.files = files;
         },
     },
     actions: {
-        uploadFile({dispatch}, formData) {
-            axiosFormData.post(BASE_URL + '/upload',
-                    formData,
-                ).then(function () {
-                    dispatch('fetchFiles');
-                    console.log('SUCCESS!!');
-                })
-                .catch(function () {
-                    console.log('FAILURE!!');
-                });
+        async uploadFile({
+            dispatch
+        }, formData) {
+            let [err, response] = await to(axiosFormData.post(BASE_URL + '/upload', formData));
+            if (err) return handleError(err, 'File upload error.');
+
+            dispatch('fetchFiles');
         },
-        fetchFiles({
+        async fetchFiles({
             commit,
-            dispatch,
             state
-        }, resource) {
-            //commit("setStatus", 'loading');
-            return axios.get(state.baseUrl + "/files").then(
-                response => {
-                    var data = response.data;
-                    commit("setFiles", data);
-                    //commit("setStatus", 'success');                    
-                    return {...response, data:data};
-                },
-                error => {
-                    //commit("setStatus", 'error');
-                    console.log(error);
-                }
-            );
+        }) {
+            let [err, response] = await to(axios.get(state.baseUrl + "/files"));
+            if (err) return handleError(err, 'Error occurred while fetching files.');
+            
+            commit("setFiles", response.data);
         }
     }
 };

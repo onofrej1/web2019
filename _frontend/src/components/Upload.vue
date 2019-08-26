@@ -7,7 +7,7 @@
             <p>
               Choose file
               <input type="file" id="file" ref="file" @change="handleFileUpload()">
-              <v-btn color="secondary" @click="upload()">Submit file</v-btn>
+              <v-btn small color="secondary" @click="upload()">Submit file</v-btn>
             </p>
 
             <v-layout row wrap>
@@ -17,15 +17,15 @@
 
                   <v-card-title primary-title>
                     <div>
-                      <h3 class="headline mb-0">{{ file.path }}</h3>
+                      <h4 class="headline mb-0">{{ file.path }}</h4>
                     </div>
                   </v-card-title>
 
                   <v-card-actions>
-                    <v-btn flat color="orange">
+                    <v-btn text color="orange">
                       <v-icon>delete</v-icon>Delete
                     </v-btn>
-                    <v-btn flat color="primary">
+                    <v-btn text color="primary">
                       <v-icon>save_alt</v-icon>Download
                     </v-btn>
                   </v-card-actions>

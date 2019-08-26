@@ -1,9 +1,13 @@
 import axios from "axios";
+import to from 'await-to-js';
 import {router} from './../../main'
 import {
     BASE_URL,
     API_URL
 } from './../../constants';
+import {
+    handleError
+} from './../../functions';
 
 const axiosForm = axios.create({
     headers: {
@@ -16,54 +20,24 @@ export default {
         baseUrl: BASE_URL,
         apiUrl: API_URL,
     },
-    getters: {
-
-    },
-    mutations: {
-       
-    },
     actions: {
-        login({
+        async login({
             state
         }, data) {
-            return axios({
-                method: 'post',
-                url: state.baseUrl + "/login",
-                data: {
-                    username: data.username,
-                    password: data.password,
-                },
-            }).then(
-                response => {
-                    localStorage.setItem('token', response.data);
-                    //router.push({name: 'home'});
-                },
-                error => {
-                    console.log(error);
-                    return Promise.reject(error);
-                }
-            );
+            let [err, response] = await to(axios.post(state.baseUrl + "/login", data));
+            if (err) return handleError(err, 'Login error.');
+
+            localStorage.setItem('token', response.data);
         },
         logout() {
             localStorage.removeItem('token');
             router.push({name: 'login'});
         },
-        register({
+        async register({
             state
         }, data) {
-            axios({
-                method: 'post',
-                url: state.baseUrl + "/registration",
-                data: data
-            }).then(
-                response => {
-                    console.log("data", response.data);
-                },
-                error => {
-                    console.log(error);
-
-                }
-            );
+            let [err, response] = await to(axios.post(state.baseUrl + "/registration",data));
+            if (err) return handleError(err, 'User registration error.');
         },
         /*checkUserName({
             state
@@ -72,15 +46,7 @@ export default {
                 method: 'post',
                 url: state.baseUrl + "/check-username",
                 data: username
-            }).then(
-                response => {
-                    return response.data;
-                },
-                error => {
-                    console.log(error);
-                }
-            );
+            });
         },*/
-
     }
 };

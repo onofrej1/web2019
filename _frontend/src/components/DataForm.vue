@@ -155,7 +155,6 @@ export default {
         name: relation.resourceTable + "_options"
       });
       if (!this.data[relation.name]) return;
-      console.log(relation);
 
       this.data[relation.name] = {
         value: this.data[relation.name].id,
