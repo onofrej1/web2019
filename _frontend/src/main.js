@@ -18,6 +18,7 @@ import {getToken, axiosSetInterceptors} from './functions';
 
 //import 'vuetify/dist/vuetify.min.css' // Ensure you are using css-loader
 //import '~vuetify/src/stylus/main' // Ensure you are using stylus-loader
+import 'vue-multiselect/dist/vue-multiselect.min.css';
 
 Vue.use(require('vue-moment'));
 Vue.use(VueRouter)

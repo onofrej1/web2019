@@ -59,18 +59,19 @@ public class ApiController {
 		// binder.registerCustomEditor(Book.class, new BookEditor(bookRepo));
 	}
 
-	@RequestMapping(value = "/events/{id}/", method = RequestMethod.PUT)
+	@RequestMapping(value = "/events/{id}/", method = RequestMethod.PATCH)
 	public ResponseEntity<Object> updateEvent(@PathVariable("id") long id, @RequestBody Event event) {
 
-		Set<Run> deleteRuns = runRepo.findByEvent(event).stream()
+		Set<Run> deleteRuns = runRepo.findByEventId(event.getId()).stream()
 				.filter(run -> !event.getRunIds().contains(run.getId())).collect(Collectors.toSet());
 
 		runRepo.deleteAll(deleteRuns);
 
 		for (Run run : event.getRuns()) {
 			run.setEvent(event);
+			runRepo.save(run);
 		}
-
+		
 		eventRepo.save(event);
 
 		return new ResponseEntity<Object>(HttpStatus.OK);
@@ -78,12 +79,15 @@ public class ApiController {
 
 	@RequestMapping(value = "/events/", method = RequestMethod.POST)
 	public ResponseEntity<Object> createEvent(@RequestBody Event event) {
-		System.out.println(event);
-		for (Run run : event.getRuns()) {
-			runRepo.save(run);
-			run.setEvent(event);
-		}
+		//System.out.println(event);
+		Set<Run> runs =  event.getRuns();
 		eventRepo.save(event);
+		System.out.println(event.getId());
+		for (Run run : runs) {	
+			System.out.println(run.getName());
+			run.setEvent(event);
+			runRepo.save(run);
+		}		
 
 		return new ResponseEntity<Object>(HttpStatus.OK);
 	}

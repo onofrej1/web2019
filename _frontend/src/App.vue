@@ -62,4 +62,10 @@ export default {
   height: 45px;
 }
 
+.multiselect__tags {
+  border-radius: 0 !important;
+  border: none !important;
+  border-bottom: 1px solid gray !important;
+}
+
 </style>

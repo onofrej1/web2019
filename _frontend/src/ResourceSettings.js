@@ -1,6 +1,6 @@
 const moment = require('moment');
 import ResultList from './components/ResultList.vue';
-import { VIcon } from 'vuetify/lib'
+import { VIcon, VTextField } from 'vuetify/lib'
 
 
 var footer = {
@@ -44,6 +44,7 @@ var items = {
 var runInline = {
   name: 'inline',
   props: ['model'],
+  components: {VTextField},
   template: `
     <div>
       <v-text-field
@@ -97,8 +98,9 @@ const articles = {
     {
       name: 'category',
       type: 'relation',
-      resourceTable: 'categories',
-      show: 'category',
+      resource: 'categories',
+      //show: 'category',
+      render: (item) => `${item.category}`
     },
     {
       name: 'source',
@@ -116,7 +118,7 @@ const articles = {
       name: 'content',
       type: 'editor'
     },
-    { name: 'tags', type: 'pivotRelation', resourceTable: 'tags', show: 'tag', label: 'Tags' },
+    { name: 'tags', type: 'auto', url: 'api/tags/search/findByTag', resource: 'tags', show: 'tag', render: (item) => `${item.tag}`, label: 'Tags' },
   ],
   list: [{
       field: 'title'
@@ -146,7 +148,7 @@ const users = {
       name: 'email',
       type: 'text'
     },    
-    { name: 'roles', type: 'pivotRelation', resourceTable: 'roles', show: 'name', label: 'Roles' },
+    { name: 'roles', type: 'pivotRelation', resource: 'roles', show: 'name', label: 'Roles' },
   ],
   list: [{
       field: 'username'
@@ -195,9 +197,9 @@ const menuItems = {
   form: [
     { label: 'Title', name: 'title', type: 'text' },
     { label: 'Link', name: 'link', type: 'text' },
-    { label: 'Menu', name: 'menu', validate: 'required', type: 'relation', resourceTable: 'menus', show: 'name' },
-    { label: 'Page', name: 'page', validate: 'required', type: 'relation', resourceTable: 'pages', show: 'title' },
-    { label: 'Parent', name: 'parent', type: 'relation', resourceTable: 'menuItems', show: 'title' },
+    { label: 'Menu', name: 'menu', validate: 'required', type: 'relation', resource: 'menus', show: 'name' },
+    { label: 'Page', name: 'page', validate: 'required', type: 'relation', resource: 'pages', show: 'title' },
+    { label: 'Parent', name: 'parent', type: 'relation', resource: 'menuItems', show: 'title' },
   ],
   list: [
     { field: 'title', label: 'Title' },
@@ -214,7 +216,7 @@ const results = {
   form: [
     { label: 'Place', name: 'place', type: 'text' },
     { label: 'Category', name: 'category', type: 'text' },
-    { label: 'Runner', name: 'runner', validate: 'required', type: 'relation', resourceTable: 'runners', render: (item) => `${item.lastName} ${item.firstName}`},    
+    { label: 'Runner', name: 'runner', validate: 'required', type: 'relation', resource: 'runners', render: (item) => `${item.lastName} ${item.firstName}`},    
   ],
   list: [
     { field: 'place', label: 'Place' },
@@ -329,7 +331,7 @@ const runs = {
     {
       name: 'event',
       type: 'relation',
-      resourceTable: 'events',
+      resource: 'events',
       show: 'name',
     },
     {

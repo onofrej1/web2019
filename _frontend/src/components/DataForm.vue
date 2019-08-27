@@ -67,7 +67,49 @@
                 @input="menu[field.name] = false"
               ></v-date-picker>
             </v-menu>
-            
+
+            <p v-if="field.type=='relation'" class="mt-4">
+              <label>{{ field.label || field.name }}</label>
+              <multiselect
+                v-model="data[field.name]"
+                :options="getOptions(field)"
+                track-by="value"
+                label="text"
+                v-bind="getProps(field)"
+                v-validate="field.validate"
+              ></multiselect>
+            </p>
+
+            <p v-if="field.type=='auto'" class="mt-4">
+              <label>{{ field.label || field.name }}</label>
+              <multiselect
+                v-model="data[field.name]"
+                :options="getOptions(field)"
+                track-by="value"
+                label="text"
+                v-bind="getProps(field)"
+                v-validate="field.validate"
+                :multiple="true"
+                :taggable="true"
+                @tag="(search) => addTag(search, field)"
+                @search-change="(search) => ajaxSearch(search, field)"
+              ></multiselect>
+            </p>
+
+            <p v-if="field.type=='pivotRelation'" class="mt-4">
+              <label>{{ field.label || field.name }}</label>
+              <multiselect
+                v-model="data[field.name]"
+                :options="getOptions(field)"
+                track-by="value"
+                label="text"
+                :multiple="true"
+                v-bind="getProps(field)"
+                v-validate="field.validate"
+              ></multiselect>
+            </p>
+
+            <!--
             <v-select
               v-if="field.type=='relation'"
               v-model="data[field.name]"
@@ -96,9 +138,10 @@
                 >{{ data.item && data.item.text }}</v-chip>
               </template>
             </v-combobox>
+            -->
 
             <template v-if="field.type==='inline'">
-              <inline-input :key="field.name" :data="data[field.name]" :field="field"></inline-input>
+              <inline-input :key="field.name" :data="data[field.name] || []" :field="field"></inline-input>
             </template>
           </v-flex>
         </template>
@@ -117,6 +160,8 @@
 
 <script>
 import InlineInput from "./InlineInput";
+import Multiselect from "vue-multiselect";
+
 //import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 //import TextEditor from "./TextEditor";
 import QuillEditor from "./QuillEditor";
@@ -128,42 +173,47 @@ export default {
   props: {
     data: Object,
     fields: Array,
+    options: Array,
     actions: Object
   },
   data: function() {
     return {
-      menu: {}
+      menu: {},
+      value: ""
       //ClassicEditor: ClassicEditor
     };
   },
   mounted() {
     this.pivotRelations.forEach(relation => {
       this.getResource({
-        resource: relation.resourceTable,
-        name: relation.resourceTable + "_options"
+        resource: relation.resource,
+        name: relation.resource + "_options"
       });
       if (!this.data[relation.name]) return;
 
       this.data[relation.name] = this.data[relation.name].map(v => ({
         value: v.id,
-        text: v[relation.show]
+        text: relation.render ? relation.render(v) : v[relation.show]
       }));
     });
     this.relations.forEach(relation => {
       this.getResource({
-        resource: relation.resourceTable,
-        name: relation.resourceTable + "_options"
+        resource: relation.resource,
+        name: relation.resource + "_options"
       });
       if (!this.data[relation.name]) return;
 
+      let value = this.data[relation.name];
+
       this.data[relation.name] = {
-        value: this.data[relation.name].id,
-        text: this.data[relation.name][relation.show]
+        value: value.id,
+        text: relation.render ? relation.render(value) : value[relation.show]
       };
     });
   },
   components: {
     InlineInput,
+    Multiselect,
     //TextEditor,
     QuillEditor
   },
@@ -179,20 +229,39 @@ export default {
   },
   methods: {
     ...mapActions("resources", ["getResource"]),
+    ajaxSearch: function(search, field) {
+      console.log(search);
+      //this.isLoading = true
+      this.getResource({
+        url: field.url+'?search='+search,
+        name: field.resource +'_options',
+        resource: field.resource
+      });
+    },
+    addTag: function(search, field) {
+      console.log('add');
+      console.log(search);
+      /*const tag = {
+        value: search.,
+        text: newTag.substring(0, 2) + Math.floor((Math.random() * 10000000))
+      }
+      this.options.push(tag)
+      this.value.push(tag)*/
+    },
     getOptions: function(field) {
       let emptyOption = { value: null, text: "" };
 
-      if (!this.resources[field.resourceTable + "_options"]) {
-        return;
+      if (!this.resources[field.resource + "_options"]) {
+        return [];
       }
 
       return [emptyOption].concat(
-        this.resources[field.resourceTable + "_options"].rows.map(data => ({
+        this.resources[field.resource + "_options"].rows.map(data => ({
           value: data.id,
-          text: field.show ? data[field.show] : field.render(data)
+          text: field.render ? field.render(data) : data[field.show]
         }))
       );
-    },
+    },    
     getProps: function(field) {
       let customProps = field.props;
       let commonProps = {
@@ -219,6 +288,7 @@ export default {
           });
           this.relations.forEach(relation => {
             let value = data[relation.name];
+
             data[relation.name] =
               isNaN(value) && value !== undefined ? value.value : value;
           });

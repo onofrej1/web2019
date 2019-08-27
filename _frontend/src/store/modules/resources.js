@@ -109,13 +109,12 @@ export default {
             let [err, response] = await to(axios.get(url + pagination));
             if (err) return handleError(err, 'Error occurred while fetching resource data.');
 
-            var data = response.data._embedded[payload.resource];
+            let data = response.data._embedded[payload.resource];
 
             commit("setData", {
                 resource: payload.resource,
                 name: payload.name || payload.resource,
                 rows: data,
-                fetch: url + pagination,
                 page: payload.page || 0,
                 size: payload.size || 10000,
                 totalPages: response.data.page ? response.data.page.totalPages : 1,
@@ -123,10 +122,31 @@ export default {
             commit("setStatus", 'success');
         },
 
+        /*async getResourceOptions({
+            commit,
+            state
+        }, payload) {
+            //commit("setStatus", 'loading');                              
+            let [err, response] = await to(axios.get(state.baseUrl + "/"+payload.url+'?search='+payload.search));
+            if (err) return handleError(err, 'Error occurred while fetching options data.');
+
+            let data = response.data._embedded[payload.resource];
+
+            commit("setData", {
+                resource: payload.resource,
+                name: payload.name || payload.resource,
+                rows: data,
+                page: payload.page || 0,
+                size: payload.size || 10000,
+                totalPages: response.data.page ? response.data.page.totalPages : 1,
+            });
+            //commit("setStatus", 'success');
+        },*/
+
         async saveResource({
-            dispatch,
             state
         }, data) {
+            
             state.relations.forEach(relation => {
                 if (data[relation.name]) {
                     data[relation.name] = state.apiUrl + "/" + relation.resourceTable + '/' + data[relation.name];
@@ -143,12 +163,11 @@ export default {
 
             let url = getSaveResourceUrl(data.id, state);
 
-            let [err, response] = await to(axios[data.id ? "patch" : "post"](url, data));
+            let [err] = await to(axios[data.id ? "patch" : "post"](url, data));
             if (err) return handleError(err, 'Error occurred while saving resource data.');
         },
 
         async deleteResource({
-            dispatch,
             state
         }, id) {
             let [err, response] = await to(axios.delete(state.apiUrl + '/' + state.resource + '/' + id));

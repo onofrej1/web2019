@@ -27,7 +27,7 @@ public class Event{
 	@NotNull
     private String locality;
     
-	@OneToMany(mappedBy="event", cascade=CascadeType.ALL)
+	@OneToMany(mappedBy="event")
 	@OrderBy(value = "run_date ASC")
     private Set<Run> runs;
 
@@ -36,14 +36,16 @@ public class Event{
 	}
 
 	public void setId(Long id) {
-		id = id;
+		System.out.println("set id");
+		this.id = id;
 	}
 
-	public String getName() {
+	public String getName() {		
 		return name;
 	}
 
 	public void setName(String name) {
+		System.out.println("set name");
 		this.name = name;
 	}
 
