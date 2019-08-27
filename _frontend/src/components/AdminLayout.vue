@@ -167,7 +167,7 @@ export default {
 }
 
 .main {
-  margin-left: 300px;
+  margin-left: 310px;
   margin-top: 65px;
   padding: 10px;
   width: 100%;

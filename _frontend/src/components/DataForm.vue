@@ -141,7 +141,7 @@
             -->
 
             <template v-if="field.type==='inline'">
-              <inline-input :key="field.name" :data="data[field.name] || []" :field="field"></inline-input>
+              <inline-input :key="field.name" @change="data[field.name] = $event" :data="data[field.name] || []" :field="field"></inline-input>
             </template>
           </v-flex>
         </template>

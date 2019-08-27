@@ -74,22 +74,20 @@ public class ApiController {
 		
 		eventRepo.save(event);
 
-		return new ResponseEntity<Object>(HttpStatus.OK);
+		return ResponseEntity.ok("success");
 	}
 
 	@RequestMapping(value = "/events/", method = RequestMethod.POST)
 	public ResponseEntity<Object> createEvent(@RequestBody Event event) {
-		//System.out.println(event);
 		Set<Run> runs =  event.getRuns();
 		eventRepo.save(event);
-		System.out.println(event.getId());
+		
 		for (Run run : runs) {	
-			System.out.println(run.getName());
 			run.setEvent(event);
 			runRepo.save(run);
 		}		
 
-		return new ResponseEntity<Object>(HttpStatus.OK);
+		return ResponseEntity.ok("success");
 	}
 	
 	/*@RequestMapping(value="/apixx/{model}", method=RequestMethod.GET)

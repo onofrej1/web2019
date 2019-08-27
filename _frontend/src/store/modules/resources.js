@@ -149,22 +149,23 @@ export default {
             
             state.relations.forEach(relation => {
                 if (data[relation.name]) {
-                    data[relation.name] = state.apiUrl + "/" + relation.resourceTable + '/' + data[relation.name];
+                    data[relation.name] = state.apiUrl + "/" + relation.resource + '/' + data[relation.name];
                 }
             });
 
             let links = [];
             state.pivotRelations.forEach(relation => {
                 data[relation.name].forEach(d => {
-                    links.push(state.apiUrl + "/" + relation.resourceTable + '/' + d);
+                    links.push(state.apiUrl + "/" + relation.resource + '/' + d);
                 });
                 data[relation.name] = links;
             });
 
             let url = getSaveResourceUrl(data.id, state);
 
-            let [err] = await to(axios[data.id ? "patch" : "post"](url, data));
+            let [err, response] = await to(axios[data.id ? "patch" : "post"](url, data));
             if (err) return handleError(err, 'Error occurred while saving resource data.');
+            console.log(response);
         },
 
         async deleteResource({

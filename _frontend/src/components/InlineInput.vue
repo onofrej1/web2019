@@ -1,31 +1,22 @@
 
 <template>
-  <v-expansion-panels>
-    <v-expansion-panel :key="field.name">
-      <v-expansion-panel-header>
-        <div>{{ field.label || field.name }}</div>
-      </v-expansion-panel-header>
-      <v-expansion-panel-content :key="field.name" class="pa-3">
-        <template v-for="(f, index) in data">
-          {{ index }}
-          <div class="grey lighten-4 inline-wrapper" :key="field.name+'-'+index">
-            <component
-              :key="field.name+'-'+index"
-              v-bind:is="field.form"
-              class="text-xs-right"
-              :model="data[index]"
-            ></component>
-          </div>
-          <div :key="field.name+'-d'+index" class="text-xs-right">
-            <v-btn text @click="deleteItem(data, index)">
-              <v-icon :key="'remove'+index" small>delete</v-icon>Remove
-            </v-btn>
-          </div>
-        </template>
-        <v-btn color="primary" @click="addItem(field.name)">Add new</v-btn>
-      </v-expansion-panel-content>
-    </v-expansion-panel>
-  </v-expansion-panels>
+  <v-sheet class="pa-12 shadow">
+    <div>{{ field.label || field.name }}</div>
+
+    <template v-for="(f, index) in model">
+      <div :key="field.name+'-'+index">
+        <div class="greyxx lighten-5xx inline-wrapper">
+          <component v-bind:is="field.form" class="text-xs-right" :model="model[index]"></component>
+        </div>
+        <div class="text-right">
+          <v-btn text @click="deleteItem(model, index)">
+            <v-icon :key="'remove'+index" small>delete</v-icon>Remove
+          </v-btn>
+        </div>
+      </div>
+    </template>
+    <v-btn color="primary" @click="addItem(field.name)">Add new</v-btn>
+  </v-sheet>
 </template>
 
 <script>
@@ -35,13 +26,35 @@ export default {
     data: Array,
     field: Object
   },
+  data: function() {
+    return {
+      model: this.data
+    };
+  },
   methods: {
     addItem: function(field) {
-      this.data = [...this.data, {}];
+      this.model.push({});
     },
-    deleteItem: function(data, index) {
-      // test
-      data.splice(index, 1);
+    deleteItem: function(index) {
+      this.model.splice(index, 1);
+    }
+  },
+  computed: {
+    /*modelxxx: {
+      // getter
+      get: function() {
+        return this.model;
+      },
+      // setter
+      set: function(newValue) {
+        this.model = newValue;
+      }
+    }*/
+  },
+  watch: {
+    model: function(val) {
+      console.log("emit change");
+      this.$emit("change", val);
     }
   }
 };
@@ -49,6 +62,11 @@ export default {
 <style>
 .inline-wrapper {
   padding: 10px;
-  border-top: 4px solid grey !important;
+  border-top: 4px solid black !important;
+  background-color: #F8F8F8;
+}
+.shadow {
+   
+   xxxborder-left: 2px solid gray;
 }
 </style>

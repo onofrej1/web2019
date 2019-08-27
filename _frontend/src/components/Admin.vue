@@ -2,7 +2,7 @@
   <v-container fluid>
     <v-layout row>
       <v-flex v-if="showForm">
-        <v-card class="elevation-8">
+        <v-card class="elevation-8" style="width:80%; margin:auto">
           <!--<v-toolbar>
             <v-toolbar-title>{{ activeResource }}</v-toolbar-title>
           </v-toolbar>-->
