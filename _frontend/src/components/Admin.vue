@@ -192,7 +192,7 @@ export default {
     DataForm
   },
   mounted() {
-    this.init();
+    this.initialize();
   },
   computed: {
     ...mapState("resources", ["status"]),
@@ -243,7 +243,7 @@ export default {
       "saveResource",
       "deleteResource"
     ]),
-    init: function() {
+    initialize: function() {
       let resource = this.$route.params.resource;
       this.showForm = false;
 
@@ -300,11 +300,11 @@ export default {
     },
     async submit(e) {
       e.originalEvent.preventDefault();
+      this.showForm = false;
+      this.formData = {};
 
       await this.saveResource(e.data);
       this.getResourceData();
-      this.formData = {};
-      this.showForm = false;
     },
     cancel() {
       this.showForm = false;
@@ -357,7 +357,7 @@ export default {
     },
     $route() {
       this.page = 1;
-      this.init();
+      this.initialize();
     }
   }
 };
