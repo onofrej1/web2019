@@ -21,6 +21,7 @@
             <v-btn
               v-if="resource.actions.includes('create')"
               small
+              class="mr-1"
               color="primary"
               @click="createItem({})"
             >
@@ -28,7 +29,7 @@
             </v-btn>
             <v-menu v-if="resource.actions.includes('filter')" offset-y>
               <template v-slot:activator="{ on }">
-                <v-btn small color="primary" v-on="on" :disabled="filter.length == 0">
+                <v-btn small color="primary" class="mr-1" v-on="on" :disabled="filter.length == 0">
                   <v-icon>filter_list</v-icon>Add filter
                 </v-btn>
               </template>
@@ -145,16 +146,17 @@
               <component v-bind:is="resource.expandRow" :row="props.item"></component>
             </template>
           </v-data-table>
+          <v-layout>
+            <v-select
+              style="width:150px"
+              class="d-inline-block pl-4 d-flex"
+              v-model="itemsPerPage"
+              label="Items per page"
+              :items="[10, 20, 30].map(v => ({text: v, value: v}))"
+            ></v-select>
 
-          <v-select
-            style="width:100px"
-            class="d-inline-block pl-4"
-            v-model="itemsPerPage"
-            label="Items per page"
-            :items="[10, 20, 30].map(v => ({text: v, value: v}))"
-          ></v-select>
-
-          <v-pagination class="float-right" v-model="page" :length="resourceData.totalPages"></v-pagination>
+            <v-pagination class="text-rightx d-flex" v-model="page" :length="resourceData.totalPages"></v-pagination>
+          </v-layout>
         </template>
       </v-card>
     </v-flex>
@@ -271,7 +273,7 @@ export default {
       let emptyOption = { value: null, text: "" };
 
       return [emptyOption].concat(
-        this.resourceData.map(row => {
+        this.resourceData.rows.map(row => {
           return {
             value: row[field],
             text: row[field]

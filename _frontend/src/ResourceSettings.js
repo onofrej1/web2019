@@ -395,6 +395,7 @@ const events = {
     {
       name: 'runs',
       type: 'inline',
+      editLink: 'Edit runs',
       form: runInline
     },
   ],
@@ -408,9 +409,9 @@ const events = {
   ],
   bulkActions: [{}],
   expandRow: expandRun(),
-  footer: {
+  /*footer: {
     template: '<span>fffoter</span>'
-  },
+  },*/
   /*header: {
     template: '<span>fffoter</span>'
   }*/

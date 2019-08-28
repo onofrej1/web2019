@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-dialog v-model="dialog" min-width="290">
+    <v-dialog v-model="dialog" min-width="290" :width="modal.width || '100%'">
       <v-card elevation="2">
         <v-toolbar dense flat color="modal.color || primary">
           <span style="color:white">{{ modal.title }}</span>
@@ -8,7 +8,7 @@
         <v-card-text>
           {{ modal.message }}
           <template v-if="modal.component">
-            <component v-bind:is="modal.component" @close="close"></component>
+            <component v-bind:is="modal.component" v-bind="getProps()" @close="close"></component>
           </template>
         </v-card-text>
         <v-card-actions>
@@ -43,8 +43,11 @@ export default {
   },
   methods: {
     ...mapActions("modal", { closeModal: "close" }),
+    getProps() {
+      return this.modal.bind;
+    },
     close(data = null) {
-      console.log('confirm modal');
+      //console.log('confirm modal');
       if(this.modalProps.close) {
         this.modalProps.close(data);
       }
