@@ -98,7 +98,7 @@
         <template v-else>
           <v-data-table
             v-if="list && !resource.listView"
-            d-block            
+            d-block
             :single-expand="false"
             :expanded.sync="expanded"
             :headers="list"
@@ -107,7 +107,7 @@
             :options.sync="options"
             :server-items-length="resourceData.totalPages"
             item-key="id"
-            class="elevation-1"            
+            class="elevation-1"
             :show-expand="resource.expandRow ? true : false"
             :show-select="resource.bulkActions ? true : false"
           >
@@ -144,18 +144,6 @@
               <component v-bind:is="resource.expandRow" :row="props.item"></component>
             </template>
           </v-data-table>
-          <v-layout>
-            <!--<v-select
-              style="width:150px"
-              class="d-inline-block pl-4 d-flex"
-              v-model="itemsPerPage"
-              label="Items per page"
-              :items="[10, 20, 30].map(v => ({text: v, value: v}))"
-            ></v-select>
-
-            <v-pagination class="text-rightx d-flex" v-model="page" :length="resourceData.totalPages"></v-pagination>
-            -->
-          </v-layout>
         </template>
       </v-card>
     </v-flex>
@@ -178,11 +166,11 @@ export default {
       options: {},
       totalItems: 0,
       activeFilters: [],
-      search: {},      
+      search: {},
       actions: {
         edit: this.editItem,
         delete: this.deleteItem
-      },      
+      },
       expanded: [],
       selected: []
     };
@@ -344,18 +332,23 @@ export default {
       });
     },*/
     getResourceData(resource = null) {
-        //this.loading = true
-      const { sortBy, descending, page, itemsPerPage } = this.options;
+      //this.loading = true
+      console.log(this.options);
+      const { sortBy, sortDesc, page, itemsPerPage } = this.options;
       console.log(page);
       console.log(itemsPerPage);
+      console.log(sortBy[0]);
+      console.log(sortDesc[0]);
 
       this.getResource({
         resource: this.resourceData ? this.resourceData.resource : resource,
         page: page,
-        size: itemsPerPage
+        size: itemsPerPage,
+        sort: sortBy[0],
+        desc: sortDesc[0]
       });
 
-        /*return new Promise((resolve, reject) => {
+      /*return new Promise((resolve, reject) => {
           const { sortBy, descending, page, itemsPerPage } = this.options
 
           let items = this.getDesserts()
@@ -382,7 +375,7 @@ export default {
             items = items.slice((page - 1) * itemsPerPage, page * itemsPerPage)
           }          
         })*/
-      },
+    }
   },
   watch: {
     /*page: function(val) {
@@ -396,11 +389,11 @@ export default {
       this.initialize();
     },
     options: {
-        handler () {
-          this.getResourceData();
-        },
-        deep: true,
+      handler() {
+        this.getResourceData();
       },
+      deep: true
+    }
   }
 };
 </script>
