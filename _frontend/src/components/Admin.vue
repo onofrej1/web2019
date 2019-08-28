@@ -98,18 +98,16 @@
         <template v-else>
           <v-data-table
             v-if="list && !resource.listView"
-            d-block
-            :sort-by.sync="sortBy"
-            :itemsPerPage="itemsPerPage"
-            :sort-desc.sync="descending"
+            d-block            
             :single-expand="false"
             :expanded.sync="expanded"
             :headers="list"
             v-model="selected"
             :items="items"
+            :options.sync="options"
+            :server-items-length="resourceData.totalPages"
             item-key="id"
-            class="elevation-1"
-            hide-default-footer
+            class="elevation-1"            
             :show-expand="resource.expandRow ? true : false"
             :show-select="resource.bulkActions ? true : false"
           >
@@ -147,7 +145,7 @@
             </template>
           </v-data-table>
           <v-layout>
-            <v-select
+            <!--<v-select
               style="width:150px"
               class="d-inline-block pl-4 d-flex"
               v-model="itemsPerPage"
@@ -156,6 +154,7 @@
             ></v-select>
 
             <v-pagination class="text-rightx d-flex" v-model="page" :length="resourceData.totalPages"></v-pagination>
+            -->
           </v-layout>
         </template>
       </v-card>
@@ -176,16 +175,14 @@ export default {
       list: [],
       form: [],
       formData: {},
+      options: {},
+      totalItems: 0,
       activeFilters: [],
-      search: {},
-      page: 1,
-      itemsPerPage: 10,
+      search: {},      
       actions: {
         edit: this.editItem,
         delete: this.deleteItem
-      },
-      sortBy: "name",
-      descending: false,
+      },      
       expanded: [],
       selected: []
     };
@@ -204,6 +201,7 @@ export default {
     }),
     items: function() {
       let data = this.resourceData.rows;
+      console.log(this.resourceData);
 
       let search = this.search;
       if (!data) {
@@ -224,7 +222,7 @@ export default {
           return value === searchValue;
         });
       });
-
+      console.log(data);
       return data;
     },
 
@@ -253,11 +251,7 @@ export default {
       this.setList();
 
       if (this.resource.fetch) {
-        this.getResource({
-          resource: resource,
-          page: this.page,
-          size: this.itemsPerPage
-        });
+        this.getResourceData(resource);
       }
     },
     getSlotItemName(field) {
@@ -342,25 +336,71 @@ export default {
       }
       this.showForm = true;
     },
-    getResourceData() {
+    /*getResourceDataxx() {
       this.getResource({
         resource: this.resourceData.resource,
         page: this.page,
         size: this.itemsPerPage
       });
-    }
+    },*/
+    getResourceData(resource = null) {
+        //this.loading = true
+      const { sortBy, descending, page, itemsPerPage } = this.options;
+      console.log(page);
+      console.log(itemsPerPage);
+
+      this.getResource({
+        resource: this.resourceData ? this.resourceData.resource : resource,
+        page: page,
+        size: itemsPerPage
+      });
+
+        /*return new Promise((resolve, reject) => {
+          const { sortBy, descending, page, itemsPerPage } = this.options
+
+          let items = this.getDesserts()
+          const total = items.length
+
+          if (this.options.sortBy) {
+            items = items.sort((a, b) => {
+              const sortA = a[sortBy]
+              const sortB = b[sortBy]
+
+              if (descending) {
+                if (sortA < sortB) return 1
+                if (sortA > sortB) return -1
+                return 0
+              } else {
+                if (sortA < sortB) return -1
+                if (sortA > sortB) return 1
+                return 0
+              }
+            })
+          }
+
+          if (itemsPerPage > 0) {
+            items = items.slice((page - 1) * itemsPerPage, page * itemsPerPage)
+          }          
+        })*/
+      },
   },
   watch: {
-    page: function(val) {
+    /*page: function(val) {
       this.getResourceData();
     },
     itemsPerPage: function(val) {
       this.getResourceData();
-    },
+    },*/
     $route() {
-      this.page = 1;
+      //this.page = 1;
       this.initialize();
-    }
+    },
+    options: {
+        handler () {
+          this.getResourceData();
+        },
+        deep: true,
+      },
   }
 };
 </script>
