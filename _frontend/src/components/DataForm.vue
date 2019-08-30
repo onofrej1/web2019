@@ -141,7 +141,12 @@
             -->
 
             <template v-if="field.type==='inline'">
-              <inline-input :key="field.name" @change="data[field.name] = $event" :data="data[field.name] || []" :field="field"></inline-input>
+              <div class="text-left mt-3">
+                <v-btn small outlined @click="openModal(field)">
+                  <v-icon left small>edit</v-icon>
+                  {{ field.editLink || field.name }}
+                </v-btn>
+              </div>
             </template>
           </v-flex>
         </template>
@@ -152,8 +157,10 @@
       <component v-bind:is="actions" :submit="submit" :cancel="cancel"></component>
     </template>
     <template v-else>
-      <v-btn color="primary" @click="submit">Save</v-btn>
-      <v-btn @click="cancel">Cancel</v-btn>
+      <div class="text-right">
+        <v-btn color="primary" class="mr-1" @click="submit">Save</v-btn>
+        <v-btn @click="cancel">Cancel</v-btn>
+      </div>
     </template>
   </v-form>
 </template>
@@ -167,6 +174,20 @@ import Multiselect from "vue-multiselect";
 import QuillEditor from "./QuillEditor";
 import { mapState, mapActions } from "vuex";
 const moment = require("moment");
+
+let inline = {
+  name: "test",
+  components: { InlineInput },
+  props: ["field", "data"],
+  template: `
+      <inline-input 
+      :key="field.name" 
+      @change="data[field.name] = $event" 
+      :data="data[field.name] || []" 
+      :field="field">
+      </inline-input>
+  `
+};
 
 export default {
   name: "data-form",
@@ -229,17 +250,24 @@ export default {
   },
   methods: {
     ...mapActions("resources", ["getResource"]),
+    ...mapActions("modal", { showModal: "show" }),
     ajaxSearch: function(search, field) {
-      console.log(search);
-      //this.isLoading = true
       this.getResource({
-        url: field.url+'?search='+search,
-        name: field.resource +'_options',
+        url: field.url + "?search=" + search,
+        name: field.resource + "_options",
         resource: field.resource
       });
     },
+    openModal: function(field) {
+      this.showModal({
+        title: field.lable || field.name,
+        width: "60%",
+        bind: { field, data: this.data },
+        component: inline
+      });
+    },
     addTag: function(search, field) {
-      console.log('add');
+      console.log("add");
       console.log(search);
       /*const tag = {
         value: search.,
@@ -261,7 +289,7 @@ export default {
           text: field.render ? field.render(data) : data[field.show]
         }))
       );
-    },    
+    },
     getProps: function(field) {
       let customProps = field.props;
       let commonProps = {

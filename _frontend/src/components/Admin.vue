@@ -21,6 +21,7 @@
             <v-btn
               v-if="resource.actions.includes('create')"
               small
+              class="mr-1"
               color="primary"
               @click="createItem({})"
             >
@@ -28,7 +29,7 @@
             </v-btn>
             <v-menu v-if="resource.actions.includes('filter')" offset-y>
               <template v-slot:activator="{ on }">
-                <v-btn small color="primary" v-on="on" :disabled="filter.length == 0">
+                <v-btn small color="primary" class="mr-1" v-on="on" :disabled="filter.length == 0">
                   <v-icon>filter_list</v-icon>Add filter
                 </v-btn>
               </template>
@@ -98,17 +99,15 @@
           <v-data-table
             v-if="list && !resource.listView"
             d-block
-            :sort-by.sync="sortBy"
-            :itemsPerPage="itemsPerPage"
-            :sort-desc.sync="descending"
             :single-expand="false"
             :expanded.sync="expanded"
             :headers="list"
             v-model="selected"
             :items="items"
+            :options.sync="options"
+            :server-items-length="resourceData.totalPages"
             item-key="id"
             class="elevation-1"
-            hide-default-footer
             :show-expand="resource.expandRow ? true : false"
             :show-select="resource.bulkActions ? true : false"
           >
@@ -145,16 +144,6 @@
               <component v-bind:is="resource.expandRow" :row="props.item"></component>
             </template>
           </v-data-table>
-
-          <v-select
-            style="width:100px"
-            class="d-inline-block pl-4"
-            v-model="itemsPerPage"
-            label="Items per page"
-            :items="[10, 20, 30].map(v => ({text: v, value: v}))"
-          ></v-select>
-
-          <v-pagination class="float-right" v-model="page" :length="resourceData.totalPages"></v-pagination>
         </template>
       </v-card>
     </v-flex>
@@ -174,16 +163,14 @@ export default {
       list: [],
       form: [],
       formData: {},
+      options: {},
+      totalItems: 0,
       activeFilters: [],
       search: {},
-      page: 1,
-      itemsPerPage: 10,
       actions: {
         edit: this.editItem,
         delete: this.deleteItem
       },
-      sortBy: "name",
-      descending: false,
       expanded: [],
       selected: []
     };
@@ -202,6 +189,7 @@ export default {
     }),
     items: function() {
       let data = this.resourceData.rows;
+      console.log(this.resourceData);
 
       let search = this.search;
       if (!data) {
@@ -222,7 +210,7 @@ export default {
           return value === searchValue;
         });
       });
-
+      console.log(data);
       return data;
     },
 
@@ -251,11 +239,7 @@ export default {
       this.setList();
 
       if (this.resource.fetch) {
-        this.getResource({
-          resource: resource,
-          page: this.page,
-          size: this.itemsPerPage
-        });
+        this.getResourceData(resource);
       }
     },
     getSlotItemName(field) {
@@ -271,7 +255,7 @@ export default {
       let emptyOption = { value: null, text: "" };
 
       return [emptyOption].concat(
-        this.resourceData.map(row => {
+        this.resourceData.rows.map(row => {
           return {
             value: row[field],
             text: row[field]
@@ -340,24 +324,75 @@ export default {
       }
       this.showForm = true;
     },
-    getResourceData() {
+    /*getResourceDataxx() {
       this.getResource({
         resource: this.resourceData.resource,
         page: this.page,
         size: this.itemsPerPage
       });
+    },*/
+    getResourceData(resource = null) {
+      //this.loading = true
+      console.log(this.options);
+      const { sortBy, sortDesc, page, itemsPerPage } = this.options;
+      console.log(page);
+      console.log(itemsPerPage);
+      console.log(sortBy[0]);
+      console.log(sortDesc[0]);
+
+      this.getResource({
+        resource: this.resourceData ? this.resourceData.resource : resource,
+        page: page,
+        size: itemsPerPage,
+        sort: sortBy[0],
+        desc: sortDesc[0]
+      });
+
+      /*return new Promise((resolve, reject) => {
+          const { sortBy, descending, page, itemsPerPage } = this.options
+
+          let items = this.getDesserts()
+          const total = items.length
+
+          if (this.options.sortBy) {
+            items = items.sort((a, b) => {
+              const sortA = a[sortBy]
+              const sortB = b[sortBy]
+
+              if (descending) {
+                if (sortA < sortB) return 1
+                if (sortA > sortB) return -1
+                return 0
+              } else {
+                if (sortA < sortB) return -1
+                if (sortA > sortB) return 1
+                return 0
+              }
+            })
+          }
+
+          if (itemsPerPage > 0) {
+            items = items.slice((page - 1) * itemsPerPage, page * itemsPerPage)
+          }          
+        })*/
     }
   },
   watch: {
-    page: function(val) {
+    /*page: function(val) {
       this.getResourceData();
     },
     itemsPerPage: function(val) {
       this.getResourceData();
-    },
+    },*/
     $route() {
-      this.page = 1;
+      //this.page = 1;
       this.initialize();
+    },
+    options: {
+      handler() {
+        this.getResourceData();
+      },
+      deep: true
     }
   }
 };

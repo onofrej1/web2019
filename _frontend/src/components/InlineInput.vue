@@ -1,21 +1,24 @@
 
 <template>
-  <v-sheet class="pa-12 shadow">
-    <div>{{ field.label || field.name }}</div>
-
-    <template v-for="(f, index) in model">
-      <div :key="field.name+'-'+index">
-        <div class="greyxx lighten-5xx inline-wrapper">
-          <component v-bind:is="field.form" class="text-xs-right" :model="model[index]"></component>
-        </div>
-        <div class="text-right">
-          <v-btn text @click="deleteItem(model, index)">
+  <v-sheet class="pa-3 shadow">
+    <!--<h3>{{ field.label || field.name }}</h3>-->
+    <span v-if="!items.length">No items to edit.</span>
+    <template v-for="(f, index) in items">
+      <div :key="field.name+'-'+index" class="inline-wrapper pa-2 mb-4">
+        <component v-bind:is="field.form" :model="items[index]"></component>
+        <div class="text-right mt-1 mb-2">
+          <v-btn small @click="deleteItem(index)">
             <v-icon :key="'remove'+index" small>delete</v-icon>Remove
           </v-btn>
         </div>
       </div>
     </template>
-    <v-btn color="primary" @click="addItem(field.name)">Add new</v-btn>
+
+    <div class="text-right">
+      <v-btn small color="primary" @click="addItem()">
+        <v-icon>add</v-icon>Add new
+      </v-btn>
+    </div>
   </v-sheet>
 </template>
 
@@ -28,19 +31,19 @@ export default {
   },
   data: function() {
     return {
-      model: this.data
+      items: this.data
     };
   },
   methods: {
-    addItem: function(field) {
-      this.model.push({});
+    addItem: function() {
+      this.items.push({});
     },
     deleteItem: function(index) {
-      this.model.splice(index, 1);
+      this.items.splice(index, 1);
     }
   },
   computed: {
-    /*modelxxx: {
+    /*model: {
       // getter
       get: function() {
         return this.model;
@@ -52,7 +55,7 @@ export default {
     }*/
   },
   watch: {
-    model: function(val) {
+    items: function(val) {
       console.log("emit change");
       this.$emit("change", val);
     }
@@ -61,12 +64,8 @@ export default {
 </script>
 <style>
 .inline-wrapper {
-  padding: 10px;
-  border-top: 4px solid black !important;
-  background-color: #F8F8F8;
-}
-.shadow {
-   
-   xxxborder-left: 2px solid gray;
+  border: 1px solid lightgray;
+  border-top: 4px solid gray !important;
+  background-color: #f8f8f8;
 }
 </style>

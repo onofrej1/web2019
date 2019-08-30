@@ -5,10 +5,12 @@ import com.furca.model.Runner;
 
 import java.util.Date;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
@@ -21,6 +23,6 @@ public interface RunnerRepository extends PagingAndSortingRepository<Runner, Lon
 	  @Param("birthdate") Date birthdate
 	 );
 	
-	@Query("SELECT r FROM Runner r")
+	
 	public Page<Runner> findAll(Pageable pageable);
 }

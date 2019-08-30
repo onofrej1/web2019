@@ -102,11 +102,14 @@ export default {
             state
         }, payload) {
             commit("setStatus", 'loading');
+            console.log(payload);
+
             let url = payload.url ? state.baseUrl + "/" + payload.url : state.apiUrl + "/" + payload.resource;
             let sep = url.includes('?') ? '&' : '?';
             let pagination = payload.page !== undefined ? sep + 'page=' + (payload.page - 1) + '&size=' + payload.size : '';
+            let sorting = payload.sort !== undefined ? '&sort='+payload.sort+','+(payload.desc ? 'desc' : 'asc') : '';
 
-            let [err, response] = await to(axios.get(url + pagination));
+            let [err, response] = await to(axios.get(url + pagination + sorting));
             if (err) return handleError(err, 'Error occurred while fetching resource data.');
 
             let data = response.data._embedded[payload.resource];
