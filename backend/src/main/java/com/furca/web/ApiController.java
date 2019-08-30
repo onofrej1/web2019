@@ -2,6 +2,8 @@ package com.furca.web;
 
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +19,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import org.springframework.http.HttpStatus;
@@ -35,6 +38,9 @@ import org.springframework.data.domain.Page;
 import com.furca.model.*;
 import org.springframework.data.domain.Page;
 import com.furca.repository.*;
+import com.furca.search.SearchOperation;
+import com.furca.search.UserSpecificationsBuilder;
+import com.google.common.base.Joiner;
 
 @RestController
 public class ApiController {
@@ -47,6 +53,9 @@ public class ApiController {
 	
 	@Autowired
 	private RunnerRepository runnerRepo;
+	
+	@Autowired
+	private UserRepository userRepo;
 
 	@Autowired
 	private ApplicationContext context;
@@ -88,6 +97,36 @@ public class ApiController {
 		}		
 
 		return ResponseEntity.ok("success");
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, value = "/xusers")
+	@ResponseBody
+	public List<User> findAllBySpecification(@RequestParam(value = "search") String search) {
+	    UserSpecificationsBuilder builder = new UserSpecificationsBuilder();
+	    String operationSetExper = Joiner.on("|").join(SearchOperation.SIMPLE_OPERATION_SET);
+	    Pattern pattern = Pattern.compile(
+	      "(\\w+?)(" + operationSetExper + ")(\\p{Punct}?)(\\w+?)(\\p{Punct}?),");
+	    Matcher matcher = pattern.matcher(search + ",");
+	    
+	    while (matcher.find()) {
+	    	System.out.println(matcher.group(1));
+		    System.out.println(matcher.group(2));
+		    System.out.println(matcher.group(3));
+		    System.out.println(matcher.group(4));
+		    System.out.println(matcher.group(5));
+	        builder.with(
+	          matcher.group(1), 
+	          matcher.group(2), 
+	          matcher.group(4), 
+	          matcher.group(3), 
+	          matcher.group(5));
+	    }
+	 
+	    Specification<User> spec = builder.build();
+	    List<User> users = userRepo.findAll(spec);
+	    System.out.println(users);
+	    
+	    return users;
 	}
 	
 	/*@RequestMapping(value="/apixx/{model}", method=RequestMethod.GET)
