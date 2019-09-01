@@ -75,8 +75,9 @@ public class GenericSpecificationsBuilder<U> {
 
         while (!postFixedExprStack.isEmpty()) {
             Object mayBeOperand = postFixedExprStack.pop();
-
+            System.out.println(mayBeOperand);
             if (!(mayBeOperand instanceof String)) {
+            	System.out.println(((SpecSearchCriteria)mayBeOperand).getKey());
                 specStack.push(converter.apply((SpecSearchCriteria) mayBeOperand));
             } else {
                 Specification<U> operand1 = specStack.pop();

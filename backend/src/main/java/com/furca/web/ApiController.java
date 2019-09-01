@@ -25,6 +25,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,7 +39,10 @@ import org.springframework.data.domain.Page;
 import com.furca.model.*;
 import org.springframework.data.domain.Page;
 import com.furca.repository.*;
+import com.furca.search.CriteriaParser;
+import com.furca.search.GenericSpecificationsBuilder;
 import com.furca.search.SearchOperation;
+import com.furca.search.UserSpecification;
 import com.furca.search.UserSpecificationsBuilder;
 import com.google.common.base.Joiner;
 
@@ -127,6 +131,23 @@ public class ApiController {
 	    System.out.println(users);
 	    
 	    return users;
+	}
+	
+	@GetMapping("/users/spec")
+	@ResponseBody
+	public List<User> findAllByAdvPredicate(@RequestParam String search) {
+	    Specification<User> spec = resolveSpecificationFromInfixExpr(search);
+	    
+	    List<User> users = userRepo.findAll(spec);
+	    //System.out.println(users);
+	    
+	    return users;
+	}
+	 
+	protected Specification<User> resolveSpecificationFromInfixExpr(String searchParameters) {
+	    CriteriaParser parser = new CriteriaParser();
+	    GenericSpecificationsBuilder<User> specBuilder = new GenericSpecificationsBuilder<>();
+	    return specBuilder.build(parser.parse(searchParameters), UserSpecification::new);
 	}
 	
 	/*@RequestMapping(value="/apixx/{model}", method=RequestMethod.GET)
