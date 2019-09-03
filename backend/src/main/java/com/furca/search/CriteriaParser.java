@@ -55,9 +55,10 @@ public class CriteriaParser {
             } else if (token.equals(SearchOperation.LEFT_PARANTHESIS)) {
                 stack.push(SearchOperation.LEFT_PARANTHESIS);
             } else if (token.equals(SearchOperation.RIGHT_PARANTHESIS)) {
-                while (!stack.peek()
-                    .equals(SearchOperation.LEFT_PARANTHESIS))
+                while (!stack.peek().equals(SearchOperation.LEFT_PARANTHESIS)) {
                     output.push(stack.pop());
+                	//System.out.println(stack);
+                }
                 stack.pop();
             } else {
 
@@ -66,6 +67,8 @@ public class CriteriaParser {
                     output.push(new SpecSearchCriteria(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5)));
                 }
             }
+            //System.out.println(stack);
+            //System.out.println(output);
         });
 
         while (!stack.isEmpty())

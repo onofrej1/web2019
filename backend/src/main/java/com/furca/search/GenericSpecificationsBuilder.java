@@ -75,13 +75,15 @@ public class GenericSpecificationsBuilder<U> {
 
         while (!postFixedExprStack.isEmpty()) {
             Object mayBeOperand = postFixedExprStack.pop();
-            System.out.println(mayBeOperand);
+            //System.out.println(mayBeOperand);
             if (!(mayBeOperand instanceof String)) {
-            	System.out.println(((SpecSearchCriteria)mayBeOperand).getKey());
+            	//System.out.println(((SpecSearchCriteria)mayBeOperand).getKey());
                 specStack.push(converter.apply((SpecSearchCriteria) mayBeOperand));
             } else {
                 Specification<U> operand1 = specStack.pop();
                 Specification<U> operand2 = specStack.pop();
+                //System.out.println(operand1);
+                
                 if (mayBeOperand.equals(SearchOperation.AND_OPERATOR))
                     specStack.push(Specification.where(operand1)
                         .and(operand2));
