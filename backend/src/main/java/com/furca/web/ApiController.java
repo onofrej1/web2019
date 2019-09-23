@@ -39,6 +39,7 @@ import org.springframework.data.domain.Page;
 import com.furca.model.*;
 import org.springframework.data.domain.Page;
 import com.furca.repository.*;
+import com.furca.search.BasicSpecification;
 import com.furca.search.CriteriaParser;
 import com.furca.search.GenericSpecificationsBuilder;
 import com.furca.search.SearchOperation;
@@ -105,36 +106,25 @@ public class ApiController {
 	
 	@RequestMapping(method = RequestMethod.GET, value = "/xusers")
 	@ResponseBody
-	public List<User> findAllBySpecification(@RequestParam(value = "search") String search) {
-	    //UserSpecificationsBuilder builder = new UserSpecificationsBuilder();
-		GenericSpecificationsBuilder<User> builder = new GenericSpecificationsBuilder<>();
-	    String operationSetExper = Joiner.on("|").join(SearchOperation.SIMPLE_OPERATION_SET);
-	    /*Pattern pattern = Pattern.compile("(\\w+?)(" + operationSetExper + ")(\\p{Punct}?)(\\w+?)(\\p{Punct}?),");
-	    Matcher matcher = pattern.matcher(search + ",");*/
+	public List findAllBySpecification(@RequestParam(value = "search") String search) {
+		GenericSpecificationsBuilder<User> builder = new GenericSpecificationsBuilder<User>();
+	    Specification<User> spec = builder.build(search);
 	    
-	    Pattern pattern = Pattern.compile(
-	    	      "(\\p{Punct}?)(\\w+?)("
-	    	      + operationSetExper 
-	    	      + ")(\\p{Punct}?)(\\w+?)(\\p{Punct}?),");
-	    Matcher matcher = pattern.matcher(search + ",");
-	    while (matcher.find()) {
-	        builder.with(matcher.group(1), matcher.group(2), matcher.group(3), 
-	        matcher.group(5), matcher.group(4), matcher.group(6));
-	    }
-	    
-	    Specification<User> spec = builder.build(UserSpecification::new);
 	    List<User> users = userRepo.findAll(spec);
 	    System.out.println(users);
 	    
 	    return users;
 	}
 	
-	@GetMapping("/users/spec")
+	/*@GetMapping("/users/spec")
 	@ResponseBody
 	public List<User> findAllByAdvPredicate(@RequestParam String search) {
 	    Specification<User> spec = resolveSpecificationFromInfixExpr(search);
 	    
 	    List<User> users = userRepo.findAll(spec);
+	    
+	    Boolean a = true && false || false;
+	    System.out.println(a);
 	    //System.out.println(users);
 	    
 	    return users;
@@ -144,7 +134,7 @@ public class ApiController {
 	    CriteriaParser parser = new CriteriaParser();
 	    GenericSpecificationsBuilder<User> specBuilder = new GenericSpecificationsBuilder<>();
 	    return specBuilder.build(parser.parse(searchParameters), UserSpecification::new);
-	}
+	}/
 	
 	/*@RequestMapping(value="/apixx/{model}", method=RequestMethod.GET)
 	@ResponseBody 

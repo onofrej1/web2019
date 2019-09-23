@@ -1,14 +1,12 @@
 package com.furca.search;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
 import org.springframework.data.jpa.domain.Specification;
+import com.google.common.base.Joiner;
 
 public class GenericSpecificationsBuilder<U> {
 
@@ -42,15 +40,54 @@ public class GenericSpecificationsBuilder<U> {
         }
         return this;
     }
+    
+    private Specification<U> getSpecification(SpecSearchCriteria criteria) {
+        return (root, query, cb) -> {
+        	switch (criteria.getOperation()) {
+    		case EQUALITY:
+    			return cb.equal(root.get(criteria.getKey()), criteria.getValue());
+    		case NEGATION:
+    			return cb.notEqual(root.get(criteria.getKey()), criteria.getValue());
+    		case GREATER_THAN:
+    			return cb.greaterThan(root.get(criteria.getKey()), criteria.getValue().toString());
+    		case LESS_THAN:
+    			return cb.lessThan(root.get(criteria.getKey()), criteria.getValue().toString());
+    		case LIKE:
+    			return cb.like(root.get(criteria.getKey()), criteria.getValue().toString());
+    		case STARTS_WITH:
+    			return cb.like(root.get(criteria.getKey()), criteria.getValue() + "%");
+    		case ENDS_WITH:
+    			return cb.like(root.get(criteria.getKey()), "%" + criteria.getValue());
+    		case CONTAINS:
+    			return cb.like(root.get(criteria.getKey()), "%" + criteria.getValue() + "%");
+    		default:
+    			return null;
+    		}
+        };
+	}
 
-    public Specification<U> build(Function<SpecSearchCriteria, Specification<U>> converter) {
+    public Specification<U> build(String search) {
+    	
+    	//Pattern pattern = Pattern.compile("(\\w+?)(" + operationSetExper + ")(\\p{Punct}?)(\\w+?)(\\p{Punct}?),");
+	    //Matcher matcher = pattern.matcher(search + ",");
+    	String operationSetExper = Joiner.on("|").join(SearchOperation.SIMPLE_OPERATION_SET);
+	    Pattern pattern = Pattern.compile(
+	    	      "(\\p{Punct}?)(\\w+?)("
+	    	      + operationSetExper 
+	    	      + ")(\\p{Punct}?)(\\w+?)(\\p{Punct}?),");
+	    Matcher matcher = pattern.matcher(search + ",");
+	    
+	    while (matcher.find()) {
+	        with(matcher.group(1), matcher.group(2), matcher.group(3), 
+	        matcher.group(5), matcher.group(4), matcher.group(6));
+	    }
 
         if (params.size() == 0) {
             return null;
         }
 
         final List<Specification<U>> specs = params.stream()
-            .map(converter)
+            .map(o -> getSpecification(o))
             .collect(Collectors.toCollection(ArrayList::new));
 
         Specification<U> result = specs.get(0);
@@ -65,36 +102,6 @@ public class GenericSpecificationsBuilder<U> {
         }
         
         return result;
-    }
-
-    public Specification<U> build(Deque<?> postFixedExprStack, Function<SpecSearchCriteria, Specification<U>> converter) {
-
-        Deque<Specification<U>> specStack = new LinkedList<>();
-
-        Collections.reverse((List<?>) postFixedExprStack);
-
-        while (!postFixedExprStack.isEmpty()) {
-            Object mayBeOperand = postFixedExprStack.pop();
-            //System.out.println(mayBeOperand);
-            if (!(mayBeOperand instanceof String)) {
-            	//System.out.println(((SpecSearchCriteria)mayBeOperand).getKey());
-                specStack.push(converter.apply((SpecSearchCriteria) mayBeOperand));
-            } else {
-                Specification<U> operand1 = specStack.pop();
-                Specification<U> operand2 = specStack.pop();
-                //System.out.println(operand1);
-                
-                if (mayBeOperand.equals(SearchOperation.AND_OPERATOR))
-                    specStack.push(Specification.where(operand1)
-                        .and(operand2));
-                else if (mayBeOperand.equals(SearchOperation.OR_OPERATOR))
-                    specStack.push(Specification.where(operand1)
-                        .or(operand2));
-            }
-
-        }
-        return specStack.pop();
-
     }
 
 }
