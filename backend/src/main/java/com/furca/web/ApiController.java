@@ -1,5 +1,6 @@
 package com.furca.web;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import org.springframework.http.HttpStatus;
@@ -114,6 +116,22 @@ public class ApiController {
 	    System.out.println(users);
 	    
 	    return users;
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, value = "/test")
+	@ResponseBody
+	public List findBySpec(@RequestParam(value = "search") String search) throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	    Class className = Class.forName("com.furca.search.GenericSpecificationsBuilder");	    	    
+	    GenericSpecificationsBuilder sc = (GenericSpecificationsBuilder) className.getConstructor().newInstance();
+	    Specification spec = sc.build(search);	    	    	   
+	    
+	    String fullPathOfTheClass = "com.furca.repository.UserRepository";						
+		JpaSpecificationExecutor rep = (JpaSpecificationExecutor)context.getBean(Class.forName(fullPathOfTheClass));
+	    
+	    List data = rep.findAll(spec);	    
+	    System.out.println(data);
+	    
+	    return data;
 	}
 	
 	/*@GetMapping("/users/spec")
