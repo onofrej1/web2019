@@ -106,14 +106,19 @@ public class ApiController {
 		return ResponseEntity.ok("success");
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, value = "/xusers")
+	@RequestMapping(method = RequestMethod.GET, value = "/users")
 	@ResponseBody
-	public List findAllBySpecification(@RequestParam(value = "search") String search) {
-		GenericSpecificationsBuilder<User> builder = new GenericSpecificationsBuilder<User>();
-	    Specification<User> spec = builder.build(search);
+	public List findAllBySpecification(@RequestParam(value = "search") String search) throws ClassNotFoundException {
+		GenericSpecificationsBuilder<Specifiable> builder = new GenericSpecificationsBuilder<Specifiable>();
+	    Specification<Specifiable> spec = builder.build(search);
 	    
-	    List<User> users = userRepo.findAll(spec);
-	    System.out.println(users);
+	    String fullPathOfTheClass = "com.furca.repository.RunRepository";	
+	    
+		Class<JpaSpecificationExecutor<Specifiable>> cls = (Class<JpaSpecificationExecutor<Specifiable>>) Class.forName(fullPathOfTheClass);
+		JpaSpecificationExecutor<Specifiable> sc = (JpaSpecificationExecutor<Specifiable>) context.getBean(cls);
+	    
+	    List<Specifiable> users = sc.findAll(spec);	    
+	    //System.out.println(users);
 	    
 	    return users;
 	}

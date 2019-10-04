@@ -5,7 +5,7 @@ import java.util.Set;
 import javax.persistence.*;
 
 @Entity
-public class Run{
+public class Run implements Specifiable {
 	
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
