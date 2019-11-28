@@ -128,14 +128,13 @@ public class ApiController {
 	    Pageable pg = PageRequest.of(0, 3, Sort.by("id"));
 	    
 	    Page<Run> users = runRepo.findAll(pg);
-	    Page<Run> usersx = (Page<Run>)runRepo.findByEventId(3L, pg);
-	    //System.out.println(usersx.get(2));
+	    //Page<Run> usersx = (Page<Run>)runRepo.findByEventId(3L, pg);
 	    
-	    return usersx;
+	    return users;
 	}
 	
 	/*
-	@RequestMapping(value = "/apix/{model}", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/{model}", method = RequestMethod.GET)
 	public ResponseEntity<Object> aaa(@PathVariable("model") String model, Pageable pageable) throws ClassNotFoundException {
 		//System.out.println(pageable);
 		

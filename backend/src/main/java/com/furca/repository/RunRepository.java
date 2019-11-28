@@ -22,6 +22,6 @@ public interface RunRepository extends PagingAndSortingRepository<Run, Long>, Jp
 	Set<Run> findByEvent(Event event);
 	
 	@RestResource(path = "event", rel = "event")
-	public Page<Run> findByEventId(@Param("id") Long id, Pageable pg);
+	public Set<Run> findByEventId(@Param("id") Long id);
 	
 }
