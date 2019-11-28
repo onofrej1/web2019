@@ -7,7 +7,14 @@ import java.util.stream.Collectors;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 @Entity
+@Getter @Setter @NoArgsConstructor
 public class Event{
 	
 	@Override
@@ -29,58 +36,13 @@ public class Event{
     
 	@OneToMany(mappedBy="event")
 	@OrderBy(value = "run_date ASC")
+	@JsonBackReference
     private Set<Run> runs;
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		System.out.println("set id");
-		this.id = id;
-	}
-
-	public String getName() {		
-		return name;
-	}
-
-	public void setName(String name) {
-		System.out.println("set name");
-		this.name = name;
-	}
-
-	public String getLocality() {
-		return locality;
-	}
-
-	public void setLocality(String locality) {
-		this.locality = locality;
-	}
-
-	public Set<Run> getRuns() {
-		return runs;
-	}
-
-	public void setRuns(Set<Run> runs) {
-		this.runs = runs;		
-	}
-	
 	public List<Long> getRunIds() {
 		return this.getRuns()
 			.stream()
 			.map(Run::getId)
 			.collect(Collectors.toList());
 	}
-	
-	/*public void addRun(Run run) {
-        runs.add(run);
-        run.setEvent(this);
-    }
- 
-    public void removeRun(Run run) {
-    	run.setEvent(null);
-        runs.remove(run);
-    }*/
-	
-	
 }

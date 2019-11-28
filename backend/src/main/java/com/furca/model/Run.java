@@ -4,8 +4,17 @@ import java.util.Date;
 import java.util.Set;
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 @Entity
-public class Run{
+@Getter @Setter @NoArgsConstructor
+public class Run implements Searchable {
 	
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -23,6 +32,7 @@ public class Run{
     
     @ManyToOne
     @JoinColumn(name="event_id", nullable=false)
+    @JsonManagedReference
     private Event event;
     
     @Override
@@ -32,55 +42,6 @@ public class Run{
 	}       
 
 	@OneToMany(mappedBy="run")
+	@JsonBackReference
     private Set<Result> results;
-
-	public Long getId() {
-		return id;
-	}
-	
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Date getRunDate() {
-		return runDate;
-	}
-
-	public void setRunDate(Date runDate) {
-		this.runDate = runDate;
-	}
-
-	public int getEdition() {
-		return edition;
-	}
-
-	public void setEdition(int edition) {
-		this.edition = edition;
-	}
-
-	public Event getEvent() {
-		return event;
-	}
-
-	public void setEvent(Event event) {
-		this.event = event;
-	}
-
-	public Set<Result> getResults() {
-		return results;
-	}
-
-	public void setResults(Set<Result> results) {
-		this.results = results;
-	}
-    
-    
 }

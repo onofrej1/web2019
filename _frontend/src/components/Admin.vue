@@ -335,10 +335,10 @@ export default {
       //this.loading = true
       console.log(this.options);
       const { sortBy, sortDesc, page, itemsPerPage } = this.options;
-      console.log(page);
-      console.log(itemsPerPage);
-      console.log(sortBy[0]);
-      console.log(sortDesc[0]);
+      //console.log(page);
+      //console.log(itemsPerPage);
+      //console.log(sortBy[0]);
+      //console.log(sortDesc[0]);
 
       this.getResource({
         resource: this.resourceData ? this.resourceData.resource : resource,

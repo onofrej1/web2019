@@ -1,6 +1,5 @@
 package com.furca.web;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -59,12 +58,6 @@ public class ApiController {
 	private RunRepository runRepo;
 	
 	@Autowired
-	private RunnerRepository runnerRepo;
-	
-	@Autowired
-	private UserRepository userRepo;
-
-	@Autowired
 	private ApplicationContext context;
 
 	@Autowired
@@ -78,8 +71,10 @@ public class ApiController {
 	@RequestMapping(value = "/events/{id}/", method = RequestMethod.PATCH)
 	public ResponseEntity<Object> updateEvent(@PathVariable("id") long id, @RequestBody Event event) {
 
-		Set<Run> deleteRuns = runRepo.findByEventId(event.getId()).stream()
-				.filter(run -> !event.getRunIds().contains(run.getId())).collect(Collectors.toSet());
+		Set<Run> deleteRuns = runRepo.findByEventId(event.getId())
+				.stream()
+				.filter(run -> !event.getRunIds().contains(run.getId()))
+				.collect(Collectors.toSet());
 
 		runRepo.deleteAll(deleteRuns);
 
@@ -106,70 +101,40 @@ public class ApiController {
 		return ResponseEntity.ok("success");
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, value = "/xusers")
+	@RequestMapping(method = RequestMethod.GET, value = "/search/{entity}")
 	@ResponseBody
-	public List findAllBySpecification(@RequestParam(value = "search") String search) {
-		GenericSpecificationsBuilder<User> builder = new GenericSpecificationsBuilder<User>();
-	    Specification<User> spec = builder.build(search);
+	public List<Searchable> searchEntity(@PathVariable("entity") String entity, @RequestParam(value = "search") String search) throws ClassNotFoundException {
+		GenericSpecificationsBuilder<Searchable> builder = new GenericSpecificationsBuilder<Searchable>();
+	    Specification<Searchable> spec = builder.build(search);
 	    
-	    List<User> users = userRepo.findAll(spec);
-	    System.out.println(users);
+	    String fullPathOfTheClass = "com.furca.repository."+entity+"Repository";	
 	    
-	    return users;
-	}
-	
-	@RequestMapping(method = RequestMethod.GET, value = "/test")
-	@ResponseBody
-	public List findBySpec(@RequestParam(value = "search") String search) throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-	    Class className = Class.forName("com.furca.search.GenericSpecificationsBuilder");	    	    
-	    GenericSpecificationsBuilder sc = (GenericSpecificationsBuilder) className.getConstructor().newInstance();
-	    Specification spec = sc.build(search);	    	    	   
+		@SuppressWarnings("unchecked")
+		Class<JpaSpecificationExecutor<Searchable>> cls = (Class<JpaSpecificationExecutor<Searchable>>) Class.forName(fullPathOfTheClass);
+		JpaSpecificationExecutor<Searchable> sc = (JpaSpecificationExecutor<Searchable>) context.getBean(cls);
 	    
-	    String fullPathOfTheClass = "com.furca.repository.UserRepository";						
-		JpaSpecificationExecutor rep = (JpaSpecificationExecutor)context.getBean(Class.forName(fullPathOfTheClass));
-	    
-	    List data = rep.findAll(spec);	    
-	    System.out.println(data);
-	    
-	    return data;
-	}
-	
-	/*@GetMapping("/users/spec")
-	@ResponseBody
-	public List<User> findAllByAdvPredicate(@RequestParam String search) {
-	    Specification<User> spec = resolveSpecificationFromInfixExpr(search);
-	    
-	    List<User> users = userRepo.findAll(spec);
-	    
-	    Boolean a = true && false || false;
-	    System.out.println(a);
+	    List<Searchable> users = sc.findAll(spec);	    
 	    //System.out.println(users);
 	    
 	    return users;
 	}
-	 
-	protected Specification<User> resolveSpecificationFromInfixExpr(String searchParameters) {
-	    CriteriaParser parser = new CriteriaParser();
-	    GenericSpecificationsBuilder<User> specBuilder = new GenericSpecificationsBuilder<>();
-	    return specBuilder.build(parser.parse(searchParameters), UserSpecification::new);
-	}/
 	
-	/*@RequestMapping(value="/apixx/{model}", method=RequestMethod.GET)
-	@ResponseBody 
-	public Page<Runner> contactsPagesxx(@PathVariable(value="model") String model, Pageable pageable) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-		//Pageable pageable = size != null ? PageRequest.of(page, size) : Pageable.unpaged();
-		System.out.println(pageable);
-		String fullPathOfTheClass = "com.furca.repository.RunnerRepository";
-		
-		Class cls = Class.forName(fullPathOfTheClass);
-		PagingAndSortingRepository sc = (PagingAndSortingRepository)context.getBean(cls);
-		System.out.println(pageable.isPaged());
-		System.out.println(pageable.next());
-	    Page<Runner> pageResult = sc.findAll(pageable);
-
-	    return pageResult;
-	} 
+	@RequestMapping(method = RequestMethod.GET, value = "/runs")
+	@ResponseBody
+	public Page findAllTest(@RequestParam(value = "search") String search) {
+		GenericSpecificationsBuilder<User> builder = new GenericSpecificationsBuilder<User>();
+	    Specification<User> spec = builder.build(search);
+	    
+	    Pageable pg = PageRequest.of(0, 3, Sort.by("id"));
+	    
+	    Page<Run> users = runRepo.findAll(pg);
+	    Page<Run> usersx = (Page<Run>)runRepo.findByEventId(3L, pg);
+	    //System.out.println(usersx.get(2));
+	    
+	    return usersx;
+	}
 	
+	/*
 	@RequestMapping(value = "/apix/{model}", method = RequestMethod.GET)
 	public ResponseEntity<Object> aaa(@PathVariable("model") String model, Pageable pageable) throws ClassNotFoundException {
 		//System.out.println(pageable);

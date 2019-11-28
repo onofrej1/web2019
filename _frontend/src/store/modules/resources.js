@@ -102,7 +102,7 @@ export default {
             state
         }, payload) {
             commit("setStatus", 'loading');
-            console.log(payload);
+            //console.log(payload);
 
             let url = payload.url ? state.baseUrl + "/" + payload.url : state.apiUrl + "/" + payload.resource;
             let sep = url.includes('?') ? '&' : '?';
