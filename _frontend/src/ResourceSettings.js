@@ -87,7 +87,7 @@ const articles = {
   filter: [{
     field: 'content',
     type: 'text',
-    'op': 'contains',
+    'op': 'like',
     label: 'Content'
   }],
   form: [
@@ -306,22 +306,23 @@ const news = {
   ],
 };
 
-const runs = {
-  title: 'Run',
+const events = {
+  title: 'Event',
   group: "Runs",
+  apiUrl: 'api/events?with=Run',
   filter: [{
-    field: 'name',
+    field: 'run',
     type: 'select',
     op: 'eq'
   },
   {
     field: 'event',
     type: 'text',
-    op: 'contains'
+    op: 'like'
   }
 ],
   form: [{
-      name: 'name',
+      name: 'event',
       type: 'text'
     },
     {
@@ -329,27 +330,27 @@ const runs = {
       type: 'text'
     },
     {
-      name: 'event',
+      name: 'run',
       type: 'relation',
-      resource: 'events',
-      show: 'name',
+      resource: 'runs',
+      show: 'run',
     },
     {
-      name: 'runDate',
+      name: 'event_date',
       type: 'date'
     },
   ],
   list: [{
-      field: 'name'
+      field: 'event'
     },
     {
-      field: 'runDate',
+      field: 'event_date',
       label: 'Date',
-      render: (item, props) => `${moment(item.runDate, 'YYYY-MM-DD').format('DD/MM/YYYY')}`
+      render: (item, props) => `${moment(item.event_date, 'YYYY-MM-DD').format('DD/MM/YYYY')}`
     },
     {
-      field: 'event',
-      label: 'Event',
+      field: 'run',
+      label: 'Run',
       render: (item, props) => item.event ? item.event.name : ''
     },
     {
@@ -375,8 +376,8 @@ const expandRun = (props) => {
   };
 }
 
-const events = {
-  title: 'Event',
+const runs = {
+  title: 'Run',
   group: "Runs",
   apiUrl: '',
   filter: [{
@@ -385,23 +386,23 @@ const events = {
     'op': 'eq'
   }],
   form: [{
-      name: 'name',
+      name: 'run',
       type: 'text'
     },
     {
       name: 'locality',
       type: 'text'
     },
-    {
+    /* {
       name: 'runs',
       type: 'inline',
       editLink: 'Edit runs',
       form: runInline
-    },
+    }, */
   ],
   list: [
     {
-      field: 'name'
+      field: 'run'
     },
     {
       field: 'locality'
@@ -423,7 +424,7 @@ const runners = {
   filter: [{
     field: 'lastName',
     type: 'text',
-    'op': 'contains'
+    'op': 'like'
   }],
   form: [{
       name: 'firstName',

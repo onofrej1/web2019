@@ -105,7 +105,7 @@
             v-model="selected"
             :items="items"
             :options.sync="options"
-            :server-items-length="resourceData.totalPages"
+            :server-items-length="resourceData.totalRows"
             item-key="id"
             class="elevation-1"
             :show-expand="resource.expandRow ? true : false"
@@ -195,7 +195,7 @@ export default {
       if (!data) {
         return [];
       }
-      this.resource.filter.forEach(function(filter) {
+      /* this.resource.filter.forEach(function(filter) {
         data = data.filter(item => {
           let searchValue = search[filter.field];
           if (!searchValue) {
@@ -209,11 +209,10 @@ export default {
 
           return value === searchValue;
         });
-      });
+      }); */
       console.log(data);
       return data;
     },
-
     filter: function() {
       return this.resource.filter.filter(f => !this.activeFilters.includes(f));
     },
@@ -234,7 +233,6 @@ export default {
     initialize: function() {
       let resource = this.$route.params.resource;
       this.showForm = false;
-
       this.setResource(resource);
       this.setList();
 
@@ -324,71 +322,41 @@ export default {
       }
       this.showForm = true;
     },
-    /*getResourceDataxx() {
-      this.getResource({
-        resource: this.resourceData.resource,
-        page: this.page,
-        size: this.itemsPerPage
-      });
-    },*/
     getResourceData(resource = null) {
       //this.loading = true
-      console.log(this.options);
       const { sortBy, sortDesc, page, itemsPerPage } = this.options;
-      //console.log(page);
-      //console.log(itemsPerPage);
-      //console.log(sortBy[0]);
-      //console.log(sortDesc[0]);
+
+      const filter = this.resource.filter
+          .filter(f => this.search[f.field])
+          .map((f, i) => {
+        return 'filter[' + f.field + ']['+f.op+']=' + this.search[f.field];
+      }).join('&');
+
+      console.log(this.search);
 
       this.getResource({
         resource: this.resourceData ? this.resourceData.resource : resource,
+        url: this.resource.apiUrl,
         page: page,
         size: itemsPerPage,
         sort: sortBy[0],
-        desc: sortDesc[0]
+        desc: sortDesc[0],
+        filter: filter,
       });
-
-      /*return new Promise((resolve, reject) => {
-          const { sortBy, descending, page, itemsPerPage } = this.options
-
-          let items = this.getDesserts()
-          const total = items.length
-
-          if (this.options.sortBy) {
-            items = items.sort((a, b) => {
-              const sortA = a[sortBy]
-              const sortB = b[sortBy]
-
-              if (descending) {
-                if (sortA < sortB) return 1
-                if (sortA > sortB) return -1
-                return 0
-              } else {
-                if (sortA < sortB) return -1
-                if (sortA > sortB) return 1
-                return 0
-              }
-            })
-          }
-
-          if (itemsPerPage > 0) {
-            items = items.slice((page - 1) * itemsPerPage, page * itemsPerPage)
-          }          
-        })*/
     }
   },
   watch: {
-    /*page: function(val) {
-      this.getResourceData();
-    },
-    itemsPerPage: function(val) {
-      this.getResourceData();
-    },*/
     $route() {
       //this.page = 1;
       this.initialize();
     },
     options: {
+      handler() {
+        this.getResourceData();
+      },
+      deep: true
+    },
+    search: {
       handler() {
         this.getResourceData();
       },

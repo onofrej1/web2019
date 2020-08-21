@@ -16,7 +16,7 @@ const getSaveResourceUrl = (id, state) => {
     return apiUrl + "/" + state.resource + (id ? "/" + id + '/' : '/');
 }
 
-const settings = {};
+const defaultSettings = {};
 for (let name in ResourceSettings) {
     let resource = ResourceSettings[name];
     resource.filter = resource.filter ? resource.filter : [];
@@ -24,7 +24,7 @@ for (let name in ResourceSettings) {
     resource.fetch = resource.fetch !== undefined ? resource.fetch : true;
     resource.actions = resource.actions ? resource.actions : ['create', 'filter', 'refresh'];
 
-    settings[name] = resource;
+    defaultSettings[name] = resource;
 }
 
 const defaultResourceData = Object.keys(ResourceSettings).reduce((map, key) => {
@@ -32,7 +32,7 @@ const defaultResourceData = Object.keys(ResourceSettings).reduce((map, key) => {
         page: 0,
         size: 10,
         data: [],
-        totalPages: 1,
+        // totalPages: 1,
         name: key,
         resource: key
     };
@@ -45,10 +45,10 @@ export default {
         baseUrl: BASE_URL,
         apiUrl: API_URL,
         resource: "users",
-        settings: settings,
+        data: defaultResourceData,
+        settings: defaultSettings,
         relations: [],
         pivotRelations: [],
-        data: defaultResourceData,
         status: null,
     },
     getters: {
@@ -60,7 +60,7 @@ export default {
             state.resource = resource;
         },
         setRelations(state, resource) {
-            let form = state.settings[resource].form;
+            const form = state.settings[resource].form;
             state.relations = form.filter(field => field.type == 'relation');
             state.pivotRelations = form.filter(field => field.type == 'pivotRelation');
         },
@@ -71,13 +71,16 @@ export default {
             };
         },
         setData(state, payload) {
-            let dataObj = {
+            console.log(payload);
+            const dataObj = {
                 name: payload.name,
                 resource: payload.resource,
+                rows: payload.rows,
+                totalRows: payload.totalRows,
                 page: payload.page,
                 size: payload.size,
-                totalPages: payload.totalPages,
-                rows: payload.rows
+                sort: payload.sort,
+                // totalPages: payload.totalPages,
             };
 
             state.data = {
@@ -102,69 +105,37 @@ export default {
             state
         }, payload) {
             commit("setStatus", 'loading');
-            //console.log(payload);
+            console.log(payload);
 
-            let url = payload.url ? state.baseUrl + "/" + payload.url : state.apiUrl + "/" + payload.resource;
-            let sep = url.includes('?') ? '&' : '?';
-            let pagination = payload.page !== undefined ? sep + 'page=' + (payload.page - 1) + '&size=' + payload.size : '';
-            let sorting = payload.sort !== undefined ? '&sort='+payload.sort+','+(payload.desc ? 'desc' : 'asc') : '';
+            const url = payload.url ? state.baseUrl + "/" + payload.url : state.apiUrl + "/" + payload.resource;
+            const sep = url.includes('?') ? '&' : '?';
+            const pagination = payload.page !== undefined ? sep + 'offset=' + (payload.page - 1) + '&limit=' + payload.size : '';
+            const sorting = payload.sort !== undefined ? '&sort='+payload.sort+','+(payload.desc ? 'desc' : 'asc') : '';
+            const filter = payload.filter ? '&'+payload.filter : '';
 
-            let [err, response] = await to(axios.get(url + pagination + sorting));
+            let [err, response] = await to(axios.get(url + pagination + sorting + filter));
             if (err) return handleError(err, 'Error occurred while fetching resource data.');
 
-            let data = response.data._embedded[payload.resource];
+            let { rows, totalRows } = response.data; // ._embedded[payload.resource];
 
             commit("setData", {
                 resource: payload.resource,
                 name: payload.name || payload.resource,
-                rows: data,
+                rows: rows,
+                totalRows: totalRows,
+
                 page: payload.page || 0,
                 size: payload.size || 10000,
-                totalPages: response.data.page ? response.data.page.totalPages : 1,
+                sort: payload.sort,
+                // totalPages: response.data.page ? response.data.page.totalPages : 4,
             });
             commit("setStatus", 'success');
         },
 
-        /*async getResourceOptions({
-            commit,
-            state
-        }, payload) {
-            //commit("setStatus", 'loading');                              
-            let [err, response] = await to(axios.get(state.baseUrl + "/"+payload.url+'?search='+payload.search));
-            if (err) return handleError(err, 'Error occurred while fetching options data.');
-
-            let data = response.data._embedded[payload.resource];
-
-            commit("setData", {
-                resource: payload.resource,
-                name: payload.name || payload.resource,
-                rows: data,
-                page: payload.page || 0,
-                size: payload.size || 10000,
-                totalPages: response.data.page ? response.data.page.totalPages : 1,
-            });
-            //commit("setStatus", 'success');
-        },*/
-
         async saveResource({
             state
         }, data) {
-            
-            state.relations.forEach(relation => {
-                if (data[relation.name]) {
-                    data[relation.name] = state.apiUrl + "/" + relation.resource + '/' + data[relation.name];
-                }
-            });
-
-            let links = [];
-            state.pivotRelations.forEach(relation => {
-                data[relation.name].forEach(d => {
-                    links.push(state.apiUrl + "/" + relation.resource + '/' + d);
-                });
-                data[relation.name] = links;
-            });
-
-            let url = getSaveResourceUrl(data.id, state);
+            const url = getSaveResourceUrl(data.id, state);
 
             let [err, response] = await to(axios[data.id ? "patch" : "post"](url, data));
             if (err) return handleError(err, 'Error occurred while saving resource data.');

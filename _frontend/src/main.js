@@ -34,8 +34,8 @@ const routes = [{
     component: Admin,
     meta: {
       adminPage: true,
-      requiresAuth: true,
-      roles: ['ROLE_ADMIN', 'ROLE_MANAGER']
+      // requiresAuth: true,
+      // roles: ['ROLE_ADMIN', 'ROLE_MANAGER']
     }
   },
   {
