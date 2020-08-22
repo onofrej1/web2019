@@ -25,11 +25,11 @@
               <div class="mt-1 mb-2">
                 <small>
                   <v-icon small>date_range</v-icon>
-                  {{ formatDate(article.publishedOn) }}
+                  {{ formatDate(article.published_at) }}
                   <v-icon small>person</v-icon>
-                  {{ article.publishedBy }}
+                  {{ article.published_by }}
                   <v-icon small>label</v-icon>
-                  {{ article.category.category }}
+                  {{ /* article.category.category */ null }}
                 </small>
               </div>
               <div v-html="truncate(article.content)"></div>
@@ -66,7 +66,7 @@ export default {
   computed: {
     ...mapState("resources", { resourceData: "data" }),
     articles: function() {
-      return this.resourceData.articles;
+      return this.resourceData.articles.rows;
     }
     /*article: function() {
       return this.resourceData.articles.find(
@@ -78,12 +78,12 @@ export default {
     $route() {
       let id = this.$route.params.id;
       this.article = id
-        ? this.resourceData.articles.find(a => a.id == id)
+        ? this.resourceData.articles.rows.find(a => a.id == id)
         : null;
     }
   },
   mounted() {
-    this.getResource("articles");
+    this.getResource({resource: "articles"});
   },
   methods: {
     ...mapActions("resources", ["getResource"]),

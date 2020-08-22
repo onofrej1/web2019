@@ -31,7 +31,7 @@ const defaultResourceData = Object.keys(ResourceSettings).reduce((map, key) => {
     map[key] = {
         page: 0,
         size: 10,
-        data: [],
+        rows: [],
         // totalPages: 1,
         name: key,
         resource: key
@@ -133,7 +133,7 @@ export default {
         async saveResource({state}, data) {
             const url = getSaveResourceUrl(data.id, state);
 
-            let [err, response] = await to(axios[data.id ? "patch" : "post"](url, data));
+            let [err] = await to(axios[data.id ? "patch" : "post"](url, data));
             if (err) return handleError(err, 'Error occurred while saving resource data.');
         },
 
@@ -149,7 +149,7 @@ export default {
         async deleteResource({
             state
         }, id) {
-            let [err, response] = await to(axios.delete(state.apiUrl + '/' + state.resource + '/' + id));
+            let [err] = await to(axios.delete(state.apiUrl + '/' + state.resource + '/' + id));
             if (err) return handleError(err, 'Error occurred while deleting resource data.');
         },
     }

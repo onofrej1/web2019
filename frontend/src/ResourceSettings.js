@@ -292,7 +292,7 @@ const news = {
     {
       type: "date",
       label: "Published on",
-      name: 'publishedOn'
+      name: 'published'
     },
   ],
   customForm: bookForm,

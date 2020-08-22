@@ -20,7 +20,7 @@
             <slot name="sidebar-content">
               <div :key="item.id" v-for="item in news">
                 <v-icon>date_range</v-icon>
-                <strong>{{ moment(item.publishedOn).format('DD/MM/YYYY') }}</strong>
+                <strong>{{ moment(item.published).format('DD/MM/YYYY') }}</strong>
                 <p style="padding-left: 5px; margin-top: 3px">
                   <span v-html="item.content"></span>
                 </p>              
@@ -45,7 +45,7 @@ export default {
   computed: {
     ...mapState("resources", { resources: "data" }),
     news: function() {
-      return this.resources.news;
+      return this.resources.news.rows;
     }
   },
   methods: {

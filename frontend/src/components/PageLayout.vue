@@ -60,11 +60,11 @@ export default {
     ...mapState("resources", { resources: "data" }),
     menuItems: function() {
       let tree = [];
-      this.resources.menuItems.data
+      this.resources.menuItems.rows
         .filter(i => !i.parent)
         .forEach(m => {
-          let items = this.resources.menuItems
-            .filter(i => i.parent && i.parent.id === m.id)
+          let items = this.resources.menuItems.rows
+            .filter(i => i.parent_id === m.id)
             .map(item => this.createMenuItem(item));
 
           tree.push({ ...this.createMenuItem(m), items: items });
@@ -76,15 +76,15 @@ export default {
     ...mapActions("resources", ["getResource"]),
     createMenuItem: function(menuItem) {
       let item = { title: menuItem.title };
-      if (menuItem.page) {
-        item.link = "/pages/" + menuItem.page.id;
+      if (menuItem.page_id) {
+        item.link = "/pages/" + menuItem.page_id;
       } else {
         item.link = menuItem.link;
         item.isExternalLink = /^https?:\/\//.test(item.link);
       }
 
-      let items = this.resources.menuItems
-            .filter(i => i.parent && i.parent.id === menuItem.id)
+      let items = this.resources.menuItems.rows
+            .filter(i => i.parent_id === menuItem.id)
             .map(item => this.createMenuItem(item));
 
       item.items = items;
