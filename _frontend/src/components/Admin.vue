@@ -96,14 +96,14 @@
           ></component>
         </template>
         <template v-else>
+
           <v-data-table
-            v-if="list && !resource.listView"
             d-block
             :single-expand="false"
             :expanded.sync="expanded"
             :headers="list"
             v-model="selected"
-            :items="items"
+            :items="resourceData.rows"
             :options.sync="options"
             :server-items-length="resourceData.totalRows"
             item-key="id"
@@ -164,7 +164,6 @@ export default {
       form: [],
       formData: {},
       options: {},
-      totalItems: 0,
       activeFilters: [],
       search: {},
       actions: {
@@ -187,32 +186,6 @@ export default {
       resourceData: "getResourceData",
       resource: "getResourceSettings"
     }),
-    items: function() {
-      let data = this.resourceData.rows;
-      console.log(this.resourceData);
-
-      let search = this.search;
-      if (!data) {
-        return [];
-      }
-      /* this.resource.filter.forEach(function(filter) {
-        data = data.filter(item => {
-          let searchValue = search[filter.field];
-          if (!searchValue) {
-            return true;
-          }
-          let value = item[filter.field];
-
-          if (filter.op === "contains") {
-            return value.includes(searchValue);
-          }
-
-          return value === searchValue;
-        });
-      }); */
-      console.log(data);
-      return data;
-    },
     filter: function() {
       return this.resource.filter.filter(f => !this.activeFilters.includes(f));
     },
@@ -227,11 +200,17 @@ export default {
     ...mapActions("resources", [
       "setResource",
       "getResource",
+      "fetchData",
       "saveResource",
       "deleteResource"
     ]),
     initialize: function() {
+      console.log(this.options);
+      this.options = { ...this.options, page: 1, itemsPerPage: 5, sortBy: [] };
+
       let resource = this.$route.params.resource;
+      // this.options[resource] = this.options[resource] ? this.options[resource] : {};
+
       this.showForm = false;
       this.setResource(resource);
       this.setList();
@@ -264,16 +243,16 @@ export default {
     createItem: function() {
       this.formData = {};
       this.setForm();
+      this.showForm = true;
     },
     editItem: function(item) {
       this.setForm();
-      let data = {};
+      const url = this.resource.name+'/'+item.id;
 
-      this.form.forEach(field => {
-        data[field.name] = item[field.name];
+      this.fetchData(url).then(data => {
+        this.formData = data;
+        this.showForm = true;
       });
-
-      this.formData = data;
     },
     deleteItem: function(item) {
       if (window.confirm("Realy delete ?")) {
@@ -320,19 +299,16 @@ export default {
       for (let prop of this.resource.form) {
         this.form.push({ ...prop });
       }
-      this.showForm = true;
     },
     getResourceData(resource = null) {
       //this.loading = true
-      const { sortBy, sortDesc, page, itemsPerPage } = this.options;
+      const { sortBy = [], sortDesc = [], page, itemsPerPage } = this.options;
 
       const filter = this.resource.filter
           .filter(f => this.search[f.field])
           .map((f, i) => {
         return 'filter[' + f.field + ']['+f.op+']=' + this.search[f.field];
       }).join('&');
-
-      console.log(this.search);
 
       this.getResource({
         resource: this.resourceData ? this.resourceData.resource : resource,

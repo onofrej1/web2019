@@ -53,7 +53,7 @@ export default {
     },
     getters: {
         getResourceData: state => state.data[state.resource],
-        getResourceSettings: state => state.settings[state.resource]
+        getResourceSettings: state => ({ ...state.settings[state.resource], name: state.resource })
     },
     mutations: {
         setResource(state, resource) {
@@ -67,11 +67,10 @@ export default {
         clearData(state, resource) {
             state.data = {
                 ...state.data,
-                [resource]: {}
+                [resource]: { resource, data: [], totalRows: 0 },
             };
         },
         setData(state, payload) {
-            console.log(payload);
             const dataObj = {
                 name: payload.name,
                 resource: payload.resource,
@@ -96,6 +95,7 @@ export default {
         setResource({
             commit
         }, resource) {
+            commit("clearData", resource);
             commit("setResource", resource);
             commit("setRelations", resource);
         },
@@ -105,7 +105,6 @@ export default {
             state
         }, payload) {
             commit("setStatus", 'loading');
-            console.log(payload);
 
             const url = payload.url ? state.baseUrl + "/" + payload.url : state.apiUrl + "/" + payload.resource;
             const sep = url.includes('?') ? '&' : '?';
@@ -116,7 +115,7 @@ export default {
             let [err, response] = await to(axios.get(url + pagination + sorting + filter));
             if (err) return handleError(err, 'Error occurred while fetching resource data.');
 
-            let { rows, totalRows } = response.data; // ._embedded[payload.resource];
+            let { rows, totalRows } = response.data;
 
             commit("setData", {
                 resource: payload.resource,
@@ -124,22 +123,27 @@ export default {
                 rows: rows,
                 totalRows: totalRows,
 
-                page: payload.page || 0,
-                size: payload.size || 10000,
+                page: payload.page || null,
+                size: payload.size || null,
                 sort: payload.sort,
                 // totalPages: response.data.page ? response.data.page.totalPages : 4,
             });
             commit("setStatus", 'success');
         },
-
-        async saveResource({
-            state
-        }, data) {
+        async saveResource({state}, data) {
             const url = getSaveResourceUrl(data.id, state);
 
             let [err, response] = await to(axios[data.id ? "patch" : "post"](url, data));
             if (err) return handleError(err, 'Error occurred while saving resource data.');
-            console.log(response);
+        },
+
+        async fetchData({
+            state
+        }, url) {
+            let [err, response] = await to(axios.get(state.apiUrl+'/'+url));
+            if (err) return handleError(err, 'Error occurred while saving resource data.');
+
+            return response.data;
         },
 
         async deleteResource({
