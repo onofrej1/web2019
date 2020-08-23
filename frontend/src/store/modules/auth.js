@@ -14,6 +14,7 @@ import {
         'Content-Type': 'application/x-www-form-urlencoded'
     }
 }); */
+axios.defaults.withCredentials = true;
 
 export default {
     namespaced: true,
@@ -25,19 +26,22 @@ export default {
         async login({
             state
         }, data) {
-            let [err, response] = await to(axios.post(state.baseUrl + "/login", data));
-            if (err) return handleError(err, 'Login error.');
+            await axios.get('http://localhost:8000/sanctum/csrf-cookie');
+            let [err, response] = await to(axios.post(state.apiUrl+'/login', data));
+            if (err) throw err;
 
-            localStorage.setItem('token', response.data);
+            console.log(response);
         },
-        logout() {
-            localStorage.removeItem('token');
-            router.push({name: 'login'});
+        logout({state}) {
+            axios.get(state.apiUrl+'/logout').then((response) => {
+                console.log(response);
+                router.push({name: 'login'});
+            });
         },
         async register({
             state
         }, data) {
-            let [err] = await to(axios.post(state.baseUrl + "/registration",data));
+            let [err] = await to(axios.post(state.apiUrl + "/register", data));
             if (err) return handleError(err, 'User registration error.');
         },
         /*checkUserName({

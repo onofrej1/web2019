@@ -43,6 +43,8 @@ Route::resource('roles', 'RoleController');
 Route::resource('permissions', 'PermissionController');
 
 Route::post('login', 'UserController@login');
+Route::post('register', 'UserController@register');
+
 Route::get('logout', 'UserController@logout');
 
 

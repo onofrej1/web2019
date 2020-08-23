@@ -54,8 +54,6 @@ import { mapState, mapActions } from "vuex";
 import PageSidebarLayout from "./PageSidebarLayout";
 import { IMAGES_URL } from "./../constants";
 import { formatDate, truncate } from "./../functions";
-import axios from "axios";
-axios.defaults.withCredentials = true;
 
 export default {
   name: "Article",
@@ -70,12 +68,12 @@ export default {
     ...mapState("resources", { resourceData: "data" }),
     articles: function() {
       return this.resourceData.articles.rows;
-    }
-    /*article: function() {
-      return this.resourceData.articles.find(
+    },
+    article: function() {
+      return this.resourceData.articles.rows.find(
         article => article.id == this.$route.params.id
       );
-    }*/
+    }
   },
   watch: {
     $route() {
@@ -87,36 +85,11 @@ export default {
   },
   mounted() {
     this.getResource({resource: "articles"});
-    // this.login();
-    /* axios.get('http://127.0.0.1:8000/sanctum/csrf-cookie').then(response => {
-      // Login...
-      console.log(response);
-    }).catch(e => {
-      console.log(e);
-    }); */
   },
   methods: {
     ...mapActions("resources", ["getResource"]),
     formatDate: formatDate,
     truncate: truncate,
-    login: async function() {
-      await axios.get('http://localhost:8000/sanctum/csrf-cookie');
-      await axios.post('http://localhost:8000/api/login', {email: 'erik.onofrej@centrum.sk', password: 'onofrej1'});
-
-      /* axios.get('http://localhost:8000/api/logout').then((response) => {
-        console.log(response);
-      }).catch((e) => {
-        console.log(e);
-      }); */
-
-      axios.get('http://localhost:8000/api/user').then((response) => {
-        console.log('ok');
-        console.log(response);
-      }).catch((e) => {
-        console.log(e);
-      });
-
-    }
   }
 };
 </script>

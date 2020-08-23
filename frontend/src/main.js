@@ -9,9 +9,9 @@ import Admin from "./components/Admin.vue";
 import Home from "./components/Home.vue";
 import Page from "./components/Page.vue";
 import Article from "./components/Article.vue";
-/* import Login from "./components/Login.vue";
+import Login from "./components/Login.vue";
 import Register from "./components/Register.vue";
-import Upload from './components/Upload.vue';
+/* import Upload from './components/Upload.vue';
 import ParseResults from './components/ParseResults.vue';
 
 */
@@ -57,6 +57,16 @@ const routes = [{
     component: Home,
     name: 'home'
   },
+  {
+    path: '/login',
+    component: Login,
+    name: 'login'
+  },
+  {
+    path: '/register',
+    component: Register,
+    name: 'register'
+  },
     /*
   {
     path: '/upload',
@@ -68,16 +78,7 @@ const routes = [{
       roles: ['ROLE_ADMIN', 'ROLE_MANAGER']
     }
   },
-  {
-    path: '/login',
-    component: Login,
-    name: 'login'
-  },
-  {
-    path: '/register',
-    component: Register,
-    name: 'register'
-  },
+
   {
     path: '/parse',
     component: ParseResults,
