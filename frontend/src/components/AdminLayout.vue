@@ -108,7 +108,7 @@ export default {
   data: () => ({
     drawer: true,
     groupIcons: {
-      Permissions: "account_circle",
+      Users: "account_circle",
       Runs: "calendar_today",
       Content: "list_alt",
       Blog: "list_alt"

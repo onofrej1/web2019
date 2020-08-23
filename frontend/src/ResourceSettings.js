@@ -108,11 +108,11 @@ const articles = {
       type: 'text'
     },
     {
-      name: 'publishedBy',
+      name: 'published_by',
       type: 'text'
     },
     {
-      name: 'publishedOn',
+      name: 'published_at',
       type: 'date'
     },
     {
@@ -125,17 +125,17 @@ const articles = {
       field: 'title'
     },
     {
-      field: 'publishedBy'
+      field: 'published_by'
     },
     {
-      field: 'publishedOn'
+      field: 'published_at'
     }
   ]
 }
 
 const users = {
   title: 'User',
-  group: 'Permissions',
+  group: 'Users',
   filter: [{
     field: 'username',
     type: 'text',
@@ -160,9 +160,28 @@ const users = {
   ]
 }
 
+const permissions = {
+  title: 'Permission',
+  group: 'Users',
+  filter: [{
+    field: 'name',
+    type: 'text',
+    'op': 'eq'
+  }],
+  form: [{
+    name: 'name',
+    type: 'text'
+  },
+  ],
+  list: [{
+    field: 'name'
+  },
+  ]
+}
+
 const roles = {
   title: 'Role',
-  group: 'Permissions',
+  group: 'Users',
   filter: [{
     field: 'name',
     type: 'text',
@@ -179,7 +198,7 @@ const roles = {
   ]
 }
 
-/* const menus = {
+const menus = {
   title: 'Menu',
   filter: [],
   group: 'Content',
@@ -189,7 +208,7 @@ const roles = {
   list: [
     { field: 'name', label: 'Title'}
   ],
-} */
+}
 
 const menuItems = {
   title: 'MenuItem',
@@ -212,19 +231,19 @@ const results = {
   title: 'Results',
   filter: [],
   actions: ['create'],
-  //apiUrl: 'results?category=A',
+  apiUrl: 'api/results?with=runner',
   group: 'Runs',
   form: [
     { label: 'Place', name: 'place', type: 'text' },
     { label: 'Category', name: 'category', type: 'text' },
-    { label: 'Runner', name: 'runner', validate: 'required', type: 'relation', resource: 'runners', render: (item) => `${item.lastName} ${item.firstName}`},    
+    { label: 'Runner', name: 'runner', validate: 'required', type: 'relation', resource: 'runners', render: (item) => `${item.last_name} ${item.first_name}`},
   ],
   list: [
     { field: 'place', label: 'Place' },
-    { field: 'name', label: 'Name'},
+    { field: 'last_name', label: 'Name', render: (item) => `<div>${item.runner.last_name} ${item.runner.first_name}</div>`},
     { field: 'category', label: 'Category' },
-    { field: 'runningNumber', label: 'Running number' },
-    { field: 'finishTime', label: 'Finish time' },
+    { field: 'start_number', label: 'Running number' },
+    { field: 'finish_time', label: 'Finish time' },
   ],
   // listView: ResultList,
   fetch: false,
@@ -273,7 +292,8 @@ const pages = {
   filter: [],
   form: [
     { label: 'Title', name: 'title', type: 'text' },
-    { type: "editor", label: "Content", name: 'content' },
+    { label: 'Content', name: 'content', type: 'text'}
+    /* { type: "editor", label: "Content", name: 'content' }, */
   ],
   list: [
     { field: 'title', label: 'Title', render: (item) => `<div>${item.title}</div>` }
@@ -287,7 +307,8 @@ const news = {
   form: [{
       label: 'Content',
       name: 'content',
-      type: 'editor'
+      // type: 'editor'
+      type: 'text',
     },
     {
       type: "date",
@@ -301,7 +322,7 @@ const news = {
       label: 'Content'
     },
     {
-      field: 'publishedOn',
+      field: 'published',
       label: 'Published'
     }
   ],
@@ -428,28 +449,28 @@ const runners = {
     'op': 'like'
   }],
   form: [{
-      name: 'firstName',
+      name: 'first_name',
       type: 'text'
     },
     {
-      name: 'lastName',
+      name: 'last_name',
       type: 'text'
     },
     {
-      name: 'birthdate',
+      name: 'born',
       type: 'date'
     },
   ],
   list: [{
-      field: 'lastName'
+      field: 'last_name'
     },
     {
-      field: 'firstName'
+      field: 'first_name'
     },
     {
-      field: 'birthdate',
+      field: 'born',
       label: 'Date',
-      render: (item) => `${moment(item.birthdate, 'YYYY-MM-DD').format('DD/MM/YYYY')}`
+      render: (item) => `${moment(item.born, 'YYYY-MM-DD').format('YYYY')}`
     },
   ],
   //listView: RunnerList,
@@ -466,8 +487,9 @@ export default {
   events,
   runners,
   roles,
+  permissions,
   pages,
-  //menus,
+  menus,
   menuItems,
   results,
   news,

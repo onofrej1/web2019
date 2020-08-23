@@ -295,7 +295,7 @@ export default {
         key: field.name,
         name: field.name,
         label: field.label || field.name,
-        "data-vv-name": field.name,
+        // "data-vv-name": field.name,
         // "error-messages": this.errors.collect(field.name)
       };
       return { ...commonProps, ...customProps };
@@ -303,12 +303,12 @@ export default {
     getFlexAttribute(field) {
       return field.flex || "xs12 sm12 md12 lg12";
     },
-    submit: function() {
+    submit: function(e) {
       let data = this.data;
       console.log(data);
 
-      /* this.$validator.validateAll().then(valid => {
-        if (valid) {
+      // this.$validator.validateAll().then(valid => {
+      //  if (valid) {
           this.pivotRelations.forEach(relation => {
             data[relation.name] = data[relation.name].map(v => v.value);
           });
@@ -319,8 +319,8 @@ export default {
               isNaN(value) && value !== undefined ? value.value : value;
           });
           this.$emit("submit", { data: data, originalEvent: e });
-        }
-      }); */
+      //  }
+      // });
     },
     cancel: function() {
       this.$emit("cancel");

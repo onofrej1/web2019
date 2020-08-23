@@ -61,7 +61,7 @@ export default {
     menuItems: function() {
       let tree = [];
       this.resources.menuItems.rows
-        .filter(i => !i.parent)
+        .filter(i => !i.parent_id)
         .forEach(m => {
           let items = this.resources.menuItems.rows
             .filter(i => i.parent_id === m.id)
