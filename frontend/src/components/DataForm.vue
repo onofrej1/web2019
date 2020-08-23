@@ -1,6 +1,6 @@
 
 <template>
-  <ValidationObserver v-slot="{ invalid }">
+  <ValidationObserver v-slot="{ invalid }" ref="form">
   <v-form>
     <v-container>
       <v-layout row wrap>
@@ -310,20 +310,23 @@ export default {
       let data = this.data;
       console.log(data);
 
-      // this.$validator.validateAll().then(valid => {
-      //  if (valid) {
-          this.pivotRelations.forEach(relation => {
-            data[relation.name] = data[relation.name].map(v => v.value);
-          });
-          this.relations.forEach(relation => {
-            let value = data[relation.name];
+      this.$refs.form.validate().then(success => {
+        if (!success) {
+          return;
+        }
 
-            data[relation.name] =
-              isNaN(value) && value !== undefined ? value.value : value;
-          });
-          this.$emit("submit", { data: data, originalEvent: e });
-      //  }
-      // });
+        this.pivotRelations.forEach(relation => {
+          data[relation.name] = data[relation.name].map(v => v.value);
+        });
+        this.relations.forEach(relation => {
+          let value = data[relation.name];
+
+          data[relation.name] =
+            isNaN(value) && value !== undefined ? value.value : value;
+        });
+
+        this.$emit("submit", { data: data, originalEvent: e });
+      });
     },
     cancel: function() {
       this.$emit("cancel");
