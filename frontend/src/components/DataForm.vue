@@ -1,11 +1,13 @@
 
 <template>
+  <ValidationObserver v-slot="{ invalid }">
   <v-form>
     <v-container>
       <v-layout row wrap>
         <template v-for="field in fields">
           <v-flex :key="field.name" :[getFlexAttribute(field)]="true">
-            <ValidationProvider :key="field.name" :rules="field.validate" v-slot="{ errors }">
+            <!-- TODO replace :vid with dynamic attribute -->
+            <ValidationProvider :vid="field.vid" :key="field.name" :rules="field.validate" v-slot="{ errors }">
 
             <v-text-field
               v-if="field.type=='text'"
@@ -144,7 +146,7 @@
               </div>
             </template>
 
-              <span>{{ errors[0] }}</span>
+              <span class="text-danger">{{ errors[0] }}</span>
             </ValidationProvider>
           </v-flex>
         </template>
@@ -152,15 +154,16 @@
     </v-container>
     <v-spacer></v-spacer>
     <template v-if="actions">
-      <component v-bind:is="actions" :submit="submit" :cancel="cancel"></component>
+      <component v-bind:is="actions" :disabled="invalid" :submit="submit" :cancel="cancel"></component>
     </template>
     <template v-else>
       <div class="text-right">
-        <v-btn color="primary" class="mr-1" @click="submit">Save</v-btn>
+        <v-btn color="primary" :disabled="invalid" class="mr-1" @click="submit">Save</v-btn>
         <v-btn @click="cancel">Cancel</v-btn>
       </div>
     </template>
   </v-form>
+  </ValidationObserver>
 </template>
 
 <script>

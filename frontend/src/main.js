@@ -3,8 +3,8 @@ import App from './App.vue'
 import vuetify from './plugins/vuetify';
 import store from './store'
 import VueRouter from 'vue-router'
-import { ValidationProvider } from 'vee-validate';
-
+//  from 'vee-validate';
+import { ValidationProvider, ValidationObserver } from 'vee-validate/dist/vee-validate.full.esm';
 import Admin from "./components/Admin.vue";
 import Home from "./components/Home.vue";
 import Page from "./components/Page.vue";
@@ -24,6 +24,7 @@ import 'vue-multiselect/dist/vue-multiselect.min.css';
 
 // Vue.use(require('vue-moment'));
 Vue.use(VueRouter);
+Vue.component('ValidationObserver', ValidationObserver);
 Vue.component('ValidationProvider', ValidationProvider);
 
 /* Vue.use(VeeValidate, {

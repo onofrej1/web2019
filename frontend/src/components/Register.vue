@@ -31,10 +31,10 @@ import { VBtn } from 'vuetify/lib'
 
 let actions = {
   name: "actions",
-  props: ["submit", "cancel"],
+  props: ["submit", "cancel", "disabled"],
   components: {VBtn},
   template: `<div class="text-xs-right">
-    <v-btn color="primary" text-xs-right @click="submit">
+    <v-btn :disabled="disabled" color="primary" text-xs-right @click="submit">
       Submit
     </v-btn>
   </div>`
@@ -77,6 +77,7 @@ export default {
           inputType: "password",
           validate: "required|min:6",
           flex: "xs6 md6",
+          vid: "password",
           props: {
             "prepend-inner-icon": "lock"
           }
@@ -90,7 +91,6 @@ export default {
           flex: "xs6 md6",
           props: {
             "prepend-inner-icon": "lock",
-            'data-vv-as': "password"
           }
         },
         {
