@@ -121,7 +121,7 @@
 
             <template
               v-for="field in list"
-              v-slot:[getSlotItemName(field)]="{ item, props, headers }"
+              v-slot:[getSlotItemName(field)]="{ item, props }"
             >
               <span
                 :key="field.name"
@@ -306,7 +306,7 @@ export default {
 
       const filter = this.resource.filter
           .filter(f => this.search[f.field])
-          .map((f, i) => {
+          .map((f) => {
         return 'filter[' + f.field + ']['+f.op+']=' + this.search[f.field];
       }).join('&');
 

@@ -30,7 +30,7 @@ export default {
         async uploadFile({
             dispatch
         }, formData) {
-            let [err, response] = await to(axiosFormData.post(BASE_URL + '/upload', formData));
+            let [err] = await to(axiosFormData.post(BASE_URL + '/upload', formData));
             if (err) return handleError(err, 'File upload error.');
 
             dispatch('fetchFiles');

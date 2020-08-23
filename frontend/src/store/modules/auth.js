@@ -9,11 +9,12 @@ import {
     handleError
 } from './../../functions';
 
-const axiosForm = axios.create({
+/* const axiosForm = axios.create({
     headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
     }
-});
+}); */
+
 export default {
     namespaced: true,
     state: {
@@ -36,7 +37,7 @@ export default {
         async register({
             state
         }, data) {
-            let [err, response] = await to(axios.post(state.baseUrl + "/registration",data));
+            let [err] = await to(axios.post(state.baseUrl + "/registration",data));
             if (err) return handleError(err, 'User registration error.');
         },
         /*checkUserName({
