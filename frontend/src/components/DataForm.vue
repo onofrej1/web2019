@@ -7,7 +7,7 @@
         <template v-for="field in fields">
           <v-flex :key="field.name" :[getFlexAttribute(field)]="true">
             <!-- TODO replace :vid with dynamic attribute -->
-            <ValidationProvider :vid="field.vid" :key="field.name" :rules="field.validate" v-slot="{ errors }">
+            <ValidationProvider :vid="field.vid" :key="field.name" :name="field.name" :rules="field.validate" v-slot="{ errors }">
 
             <v-text-field
               v-if="field.type=='text'"
@@ -172,7 +172,7 @@ import Multiselect from "vue-multiselect";
 
 //import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 //import TextEditor from "./TextEditor";
-// import QuillEditor from "./QuillEditor";
+import QuillEditor from "./QuillEditor";
 import { mapState, mapActions } from "vuex";
 const moment = require("moment");
 
@@ -237,7 +237,7 @@ export default {
     InlineInput,
     Multiselect,
     //TextEditor,
-    // QuillEditor
+    QuillEditor
   },
   computed: {
     ...mapState("resources", { resources: "data" }),

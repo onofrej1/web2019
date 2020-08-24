@@ -292,8 +292,7 @@ const pages = {
   filter: [],
   form: [
     { label: 'Title', name: 'title', type: 'text' },
-    { label: 'Content', name: 'content', type: 'text'}
-    /* { type: "editor", label: "Content", name: 'content' }, */
+    { type: "editor", label: "Content", name: 'content' },
   ],
   list: [
     { field: 'title', label: 'Title', render: (item) => `<div>${item.title}</div>` }
@@ -307,8 +306,7 @@ const news = {
   form: [{
       label: 'Content',
       name: 'content',
-      // type: 'editor'
-      type: 'text',
+      type: 'editor'
     },
     {
       type: "date",

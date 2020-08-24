@@ -79,7 +79,7 @@ export default {
         "underline",
         "header",
         "italic"
-        //"selImage"
+        // "selImage"
       ]
     });
 
@@ -91,7 +91,7 @@ export default {
     this.editor.on("text-change", () => this.update());
     let me = this;
 
-    this.editor.on("selection-change", function(range, oldRange, source) {
+    this.editor.on("selection-change", function(range) {
       if (range) {
         me.selectionIndex = range.index;
         if (range.length == 0) {

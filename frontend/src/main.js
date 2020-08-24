@@ -4,13 +4,14 @@ import vuetify from './plugins/vuetify';
 import store from './store'
 import VueRouter from 'vue-router'
 //  from 'vee-validate';
-import { ValidationProvider, ValidationObserver } from 'vee-validate/dist/vee-validate.full.esm';
+import { ValidationProvider, ValidationObserver/*, localize*/ } from 'vee-validate/dist/vee-validate.full.esm';
 import Admin from "./components/Admin.vue";
 import Home from "./components/Home.vue";
 import Page from "./components/Page.vue";
 import Article from "./components/Article.vue";
 import Login from "./components/Login.vue";
 import Register from "./components/Register.vue";
+// import sk from 'vee-validate/dist/locale/sk.json';
 /* import Upload from './components/Upload.vue';
 import ParseResults from './components/ParseResults.vue';
 
@@ -24,6 +25,7 @@ import 'vue-multiselect/dist/vue-multiselect.min.css';
 
 // Vue.use(require('vue-moment'));
 Vue.use(VueRouter);
+// localize('sk', sk);
 Vue.component('ValidationObserver', ValidationObserver);
 Vue.component('ValidationProvider', ValidationProvider);
 

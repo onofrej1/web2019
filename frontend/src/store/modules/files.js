@@ -30,16 +30,16 @@ export default {
         async uploadFile({
             dispatch
         }, formData) {
-            let [err] = await to(axiosFormData.post(BASE_URL + '/upload', formData));
+            console.log(formData);
+            let [err] = await to(axiosFormData.post(API_URL + '/upload', formData));
             if (err) return handleError(err, 'File upload error.');
 
             dispatch('fetchFiles');
         },
         async fetchFiles({
             commit,
-            state
         }) {
-            let [err, response] = await to(axios.get(state.baseUrl + "/files"));
+            let [err, response] = await to(axios.get(API_URL + "/files"));
             if (err) return handleError(err, 'Error occurred while fetching files.');
             
             commit("setFiles", response.data);

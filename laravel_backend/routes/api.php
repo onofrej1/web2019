@@ -46,6 +46,9 @@ Route::post('login', 'UserController@login');
 Route::post('register', 'UserController@register');
 
 Route::get('logout', 'UserController@logout');
+Route::post('upload','FileController@uploadFile');
+Route::get('files','FileController@getFiles');
+
 
 
 
