@@ -12,12 +12,10 @@ import Article from "./components/Article.vue";
 import Login from "./components/Login.vue";
 import Register from "./components/Register.vue";
 // import sk from 'vee-validate/dist/locale/sk.json';
-/* import Upload from './components/Upload.vue';
+import Upload from './components/Upload.vue';
 import ParseResults from './components/ParseResults.vue';
 
-*/
 import {getToken, axiosSetInterceptors} from './functions';
-
 
 //import 'vuetify/dist/vuetify.min.css' // Ensure you are using css-loader
 //import '~vuetify/src/stylus/main' // Ensure you are using stylus-loader
@@ -70,29 +68,29 @@ const routes = [{
     component: Register,
     name: 'register'
   },
-    /*
+
   {
     path: '/upload',
     name: 'upload',
     component: Upload,
     meta: {
-      adminPage: true,
-      requiresAuth: true,
-      roles: ['ROLE_ADMIN', 'ROLE_MANAGER']
+      // adminPage: true,
+      // requiresAuth: true,
+      // roles: ['ROLE_ADMIN', 'ROLE_MANAGER']
     }
   },
 
-  {
-    path: '/parse',
-    component: ParseResults,
-    name: 'parse',
-    meta: {
-      adminPage: true,
-      requiresAuth: true,
-      roles: ['ROLE_ADMIN', 'ROLE_MANAGER']
+    {
+      path: '/parse',
+      component: ParseResults,
+      name: 'parse',
+      meta: {
+        // adminPage: true,
+        // requiresAuth: true,
+        // roles: ['ROLE_ADMIN', 'ROLE_MANAGER']
+      },
     },
-  },
-   */
+
 ];
 
 axiosSetInterceptors();
